@@ -1,22 +1,21 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FolderContext } from '../../components/folder/FolderContext';
-import { Button, Container, Row, Col,Card } from 'react-bootstrap';
+import { Button, Container, Row, Col, Card } from 'react-bootstrap';
 import FolderForm from './FolderForm';
-import { ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
 import '../../styles/folderList.css';
 import { FaFolder } from 'react-icons/fa';
 import FolderContextMenu from '../../components/folder/FolderContextMenu';
+
 const FolderList = () => {
   const { folders, addFolder, deleteFolder } = useContext(FolderContext);
   const [showForm, setShowForm] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState(null);
-  const [addedFolders,setAddedFolders] = useState(folders);
+  const [addedFolders, setAddedFolders] = useState(folders);
 
-  //Synchronize the added folders state
   useEffect(() => {
     setAddedFolders(folders);
   }, [folders]);
-
 
   const handleSaveFolder = (newFolder) => {
     addFolder(newFolder);
@@ -32,19 +31,19 @@ const FolderList = () => {
         deleteFolder(folderId);
         break;
       case 'modify':
-      
+        // Handle modify
         break;
       case 'favorite':
-        
+        // Handle favorite
         break;
       case 'archive':
-       
+        // Handle archive
         break;
       case 'details':
-       
+        // Handle details
         break;
       case 'clientInfo':
-       
+        // Handle client info
         break;
       default:
         break;
@@ -61,7 +60,7 @@ const FolderList = () => {
           </Col>
           <Col className="text-end">
             <Button
-               className="px-4 py-2 add-folder-button"
+              className="px-4 py-2 add-folder-button"
               onClick={() => setShowForm(true)}
             >
               + Add Folder
@@ -73,51 +72,50 @@ const FolderList = () => {
         <Row className="g-4">
           {addedFolders.map((folder) => (
             <Col xs={12} md={6} lg={4} key={folder._id}>
-              <ContextMenuTrigger id={`folder-${folder._id}`}>
-                <div
-                  className={`folder-item ${
-                    selectedFolder === folder ? "selected" : ""
-                  }`}
-                  onClick={() => setSelectedFolder(folder)}
-                >
-                  <Card
-                    className={`p-3 shadow-sm ${
-                      selectedFolder === folder ? "border-secondary" : ""
+              <ContextMenu> {/* Each folder gets its own ContextMenu wrapper */}
+                <ContextMenuTrigger>
+                  <div
+                    className={`folder-item ${
+                      selectedFolder === folder ? "selected" : ""
                     }`}
-                    style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                    onClick={() => setSelectedFolder(folder)}
                   >
-                    <div className="d-flex align-items-center">
-                      <div className="folder-icon me-3">
-                        <FaFolder size={40}  />
+                    <Card
+                      className={`p-3 shadow-sm ${
+                        selectedFolder === folder ? "border-secondary" : ""
+                      }`}
+                      style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                    >
+                      <div className="d-flex align-items-center">
+                        <div className="folder-icon me-3">
+                          <FaFolder size={40} />
+                        </div>
+                        <div className="folder-details">
+                          <div className="folder-name fw-semibold">
+                            {folder.folderName}
+                          </div>
+                          <div className="folder-client text-muted">
+                            {folder.client?.name || "N/A"}
+                          </div>
+                          <div className="folder-date text-muted small">
+                            {new Date().toLocaleDateString()}
+                          </div>
+                        </div>
                       </div>
-                      <div className="folder-details">
-                        <div className="folder-name fw-semibold">
-                          {folder.folderName}
-                        </div>
-                        <div className="folder-client text-muted">
-                          {folder.client?.name || "N/A"}
-                        </div>
-                        <div className="folder-date text-muted small">
-                          {new Date().toLocaleDateString()}
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </ContextMenuTrigger>
+                    </Card>
+                  </div>
+                </ContextMenuTrigger>
+
+                {/* Folder Context Menu */}
+                <FolderContextMenu
+                  folderId={folder._id}
+                  onAction={handleAction}
+                />
+              </ContextMenu>
             </Col>
           ))}
         </Row>
       </div>
-
-      {/* Folder Context Menus */}
-      {folders.map((folder) => (
-        <FolderContextMenu
-          key={folder._id}
-          folderId={folder._id}
-          onAction={handleAction}
-        />
-      ))}
 
       {/* Folder Form Modal */}
       <FolderForm
