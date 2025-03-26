@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import Navbar from './Navbar';
 import { motion } from "framer-motion";
+import Navbar from "./NavBar";
 import imagesWebsite from "../assets/images/imagesWebsite.png";
 
 const Hero = () => {
@@ -21,8 +21,7 @@ const Hero = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-hidden">
-      <Navbar />
-
+<Navbar/>
       {/* Hero Section */}
       <section className="mt-7 pt-39 pb-39 md:pt-40 md:pb-52 relative">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">

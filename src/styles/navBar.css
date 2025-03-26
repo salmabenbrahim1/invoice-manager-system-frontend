@@ -1,0 +1,14 @@
+.navbar-container .navbar-brand{
+  font-weight: bold;
+  text-transform: uppercase;
+  color: rgb(128, 0, 128);
+
+
+}
+.navbar-container .nav-link{
+  color: black;
+}
+ .me-auto .nav-link:hover{
+    color: rgb(128, 0, 128);
+    
+}

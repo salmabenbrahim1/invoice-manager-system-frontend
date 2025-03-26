@@ -1,0 +1,16 @@
+ .add-folder-button{
+    background-color:#6d33a7;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    text-decoration: none;
+ }
+ .folder-icon{
+      color: #6d33a7;
+      margin-right: 20px;
+ }
+ .card-border{
+   color: #6d33a7;
+ }
+ 
