@@ -6,7 +6,8 @@ import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
 import '../../styles/folderList.css';
 import { FaFolder } from 'react-icons/fa';
 import FolderContextMenu from '../../components/folder/FolderContextMenu';
-
+import SideBar from '../../components/SideBar';
+import Navbar from '../../components/Navbar';
 const FolderList = () => {
   const { folders, addFolder, deleteFolder } = useContext(FolderContext);
   const [showForm, setShowForm] = useState(false);
@@ -51,7 +52,10 @@ const FolderList = () => {
   };
 
   return (
+    
     <Container fluid className="d-flex vh-100 p-0">
+                    <SideBar />
+
       {/* Left Side: Folder List */}
       <div className="d-flex flex-column flex-grow-1 p-4">
         <Row className="d-flex justify-content-between align-items-center mb-4">
