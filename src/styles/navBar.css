@@ -12,3 +12,48 @@
     color: rgb(128, 0, 128);
     
 }
+
+.user-section {
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-icon {
+  color: #75529e;
+  font-size: 1.5rem;
+}
+
+.user-name {
+  color: #75529e;
+  font-weight: 600;
+}
+
+.login-button {
+  border: 1px solid #75529e;
+  color: #75529e;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #75529e;
+  color: white;
+  text-decoration: none;
+}
+
+/* For mobile responsiveness (if we make a mobile app) */
+@media (max-width: 768px) {
+  .user-section {
+    margin-top: 10px;
+    justify-content: center;
+    width: 100%;
+  }
+}

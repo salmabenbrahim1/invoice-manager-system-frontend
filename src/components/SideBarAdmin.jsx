@@ -5,9 +5,9 @@ import { FaUsers, FaChartBar,  FaSignOutAlt } from 'react-icons/fa';
 
 const SideBarAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Simule que l'utilisateur est connecté
+  const [isLoggedIn, setIsLoggedIn] = useState(true); 
   
-  // Fonction pour gérer la déconnexion
+ 
   const handleLogout = () => {
     // Logique de déconnexion ici (ex. supprimer le token, rediriger, etc.)
     setIsLoggedIn(false); 
@@ -40,7 +40,7 @@ const SideBarAdmin = () => {
             >
               <FaChartBar className="mr-2" /> BI Dashboard
             </NavLink>
-             {/* Déconnexion */}
+             {/* Logout */}
         {isLoggedIn && (
           <div
             onClick={handleLogout}
