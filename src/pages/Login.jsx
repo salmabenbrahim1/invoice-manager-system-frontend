@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import imagesWebsite from '../assets/images/imagesWebsite.png';
+import { validateEmail, login } from '../services/authService';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,11 +10,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,8 +29,7 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:9090/api/auth/login', { email, password: motDePasse });
-      const user = response.data;
+      const user = await login(email, motDePasse);
 
       if (user) {
         switch (user.role) {
@@ -58,8 +52,7 @@ const Login = () => {
         setError('Email ou mot de passe incorrect');
       }
     } catch (error) {
-      console.error('Erreur :', error);
-      setError('Une erreur s\'est produite lors de la connexion');
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -67,7 +60,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Section Gauche */}
       <motion.div 
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -76,16 +68,11 @@ const Login = () => {
       >
         <div className="relative z-10">
           <div className="mt-8">
-            <img 
-              src={imagesWebsite} 
-              alt="MyInvoice App Preview" 
-              className="w-full h-auto"
-            />
+            <img src={imagesWebsite} alt="MyInvoice App Preview" className="w-full h-auto" />
           </div>
         </div>
       </motion.div>
 
-      {/* Section Droite */}
       <motion.div 
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -94,7 +81,7 @@ const Login = () => {
       >
         <div className="w-full max-w-md">
           <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Login</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-8">
+          <p className="text-gray-800 dark:text-gray-300 mb-8">
             Welcome! Please enter your details.
           </p>
 
@@ -107,7 +94,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e]"
-                placeholder="nom@exemple.com"
+                placeholder="nom@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required

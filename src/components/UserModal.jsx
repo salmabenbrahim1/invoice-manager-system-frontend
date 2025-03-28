@@ -28,11 +28,23 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                         <>
                             <div>
                                 <label htmlFor="cin" className="block text-sm font-medium text-gray-700">CIN</label>
-                                <input type="text" id="cin" name="cin" className="w-full px-4 py-2 border rounded-lg" placeholder="Your CIN" defaultValue={user?.cin} />
+                                <input
+                                    type="text"
+                                    id="cin"
+                                    name="cin"
+                                    className="w-full px-4 py-2 border rounded-lg"
+                                    placeholder="Enter your CIN"
+                                    defaultValue={user?.cin}
+                                />
                             </div>
                             <div>
                                 <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                                <select id="gender" name="gender" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#75529e]" defaultValue={user?.gender}>
+                                <select
+                                    id="gender"
+                                    name="gender"
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#75529e]"
+                                    defaultValue={user?.gender}
+                                >
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
                                 </select>
@@ -40,29 +52,68 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                             <div className="flex space-x-4">
                                 <div className="flex-1">
                                     <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First Name</label>
-                                    <input type="text" id="firstName" name="firstName" className="w-full px-4 py-2 border rounded-lg" required defaultValue={user?.firstName} />
+                                    <input
+                                        type="text"
+                                        id="firstName"
+                                        name="firstName"
+                                        className="w-full px-4 py-2 border rounded-lg"
+                                        placeholder="Enter your first name"
+                                        required
+                                        defaultValue={user?.firstName}
+                                    />
                                 </div>
                                 <div className="flex-1">
                                     <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last Name</label>
-                                    <input type="text" id="lastName" name="lastName" className="w-full px-4 py-2 border rounded-lg" required defaultValue={user?.lastName} />
+                                    <input
+                                        type="text"
+                                        id="lastName"
+                                        name="lastName"
+                                        className="w-full px-4 py-2 border rounded-lg"
+                                        placeholder="Enter your last name"
+                                        required
+                                        defaultValue={user?.lastName}
+                                    />
                                 </div>
                             </div>
                         </>
                     ) : (
                         <div>
                             <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">Company Name</label>
-                            <input type="text" id="companyName" name="companyName" className="w-full px-4 py-2 border rounded-lg" placeholder="Company Name" defaultValue={user?.companyName} />
+                            <input
+                                type="text"
+                                id="companyName"
+                                name="companyName"
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="Enter company name"
+                                defaultValue={user?.companyName}
+                            />
                         </div>
                     )}
 
                     <div className="flex space-x-4">
                         <div className="flex-1">
                             <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email" id="email" name="email" className="w-full px-4 py-2 border rounded-lg" required defaultValue={user?.email} />
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="Enter your email"
+                                required
+                                defaultValue={user?.email}
+                            />
                         </div>
                         <div className="flex-1">
                             <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
-                            <input type="text" id="phone" name="phone" className="w-full px-4 py-2 border rounded-lg" required defaultValue={user?.phone} />
+                            <input
+                                type="text"
+                                id="phone"
+                                name="phone"
+                                className="w-full px-4 py-2 border rounded-lg"
+                                placeholder="Enter your phone number"
+                                required
+                                defaultValue={user?.phone}
+                            />
                         </div>
                     </div>
 

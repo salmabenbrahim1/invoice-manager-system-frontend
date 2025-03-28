@@ -4,6 +4,7 @@ import { FaUserPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft, FaUser, FaBuild
 import UserModal from "../components/UserModal";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { fetchUsers, deleteUser, saveUser } from "../services/userService"; 
 
 const UsersPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,46 +13,35 @@ const UsersPage = () => {
     const [error, setError] = useState(null);
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1); // État pour la pagination
-    const [filterRole, setFilterRole] = useState("all"); // État pour le filtre par rôle
-    const [searchQuery, setSearchQuery] = useState(""); // État pour la barre de recherche
-    const usersPerPage = 6; // Nombre d'utilisateurs à afficher par page
+    const [currentPage, setCurrentPage] = useState(1); // Pagination
+    const [filterRole, setFilterRole] = useState("all"); // Filter by role
+    const [searchQuery, setSearchQuery] = useState(""); // Search query
+    const usersPerPage = 6;
 
     useEffect(() => {
-        fetchUsers();
+        fetchUsersData();
     }, []);
 
-    const fetchUsers = () => {
-        setLoading(true);
-        fetch("http://localhost:9090/api/users")
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Users data:", data); // Debugging
-                setUsers(data);
-                setLoading(false);
-            })
-            .catch((error) => {
-                console.error("Error fetching users:", error); // Debugging
-                setError("Error fetching users.");
-                setLoading(false);
-            });
+    const fetchUsersData = async () => {
+        try {
+            setLoading(true);
+            const data = await fetchUsers();
+            setUsers(data);
+        } catch (error) {
+            setError("Error fetching users.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDelete = (id) => {
-        fetch(`http://localhost:9090/api/users/${id}`, {
-            method: "DELETE",
-        })
-            .then((response) => {
-                if (response.ok) {
-                    fetchUsers();
-                    toast.success("User deleted successfully!");
-                } else {
-                    toast.error("Error deleting the user.");
-                }
-            })
-            .catch(() => {
-                toast.error("Error deleting the user.");
-            });
+    const handleDelete = async (id) => {
+        try {
+            await deleteUser(id);
+            fetchUsersData();
+            toast.success("User deleted successfully!");
+        } catch (error) {
+            toast.error("Error deleting the user.");
+        }
     };
 
     const handleEdit = (user) => {
@@ -59,7 +49,7 @@ const UsersPage = () => {
         setIsModalOpen(true);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         const formData = {
@@ -71,33 +61,24 @@ const UsersPage = () => {
             role: isPerson ? "INDEPENDENT ACCOUNTANT" : "COMPANY",
         };
 
-        setLoading(true);
-        setError(null);
-
-        const url = selectedUser ? `http://localhost:9090/api/users/${selectedUser.id}` : "http://localhost:9090/api/users";
-        const method = selectedUser ? "PUT" : "POST";
-
-        fetch(url, {
-            method: method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                fetchUsers();
-                toast.success(selectedUser ? "User updated successfully!" : "User added successfully!");
-                setLoading(false);
-                setIsModalOpen(false);
-                setSelectedUser(null);
-            })
-            .catch(() => {
-                toast.error(selectedUser ? "Error updating the user." : "Error adding the user.");
-            });
+        try {
+            setLoading(true);
+            setError(null);
+            await saveUser(formData, selectedUser?.id);
+            fetchUsersData();
+            toast.success(selectedUser ? "User updated successfully!" : "User added successfully!");
+            setIsModalOpen(false);
+            setSelectedUser(null);
+        } catch (error) {
+            toast.error(selectedUser ? "Error updating the user." : "Error adding the user.");
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Filtrage des utilisateurs par rôle et recherche
+    // Filtering users by role and searching
     const filteredUsers = users.filter((user) => {
-        const matchesRole = filterRole === "all" || user.role === filterRole;
+        const matchesRole = (filterRole === "all" || user.role === filterRole) && user.role !== "ADMIN"; // Exclude admins
 
         const matchesSearch =
             (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -108,19 +89,18 @@ const UsersPage = () => {
         return matchesRole && matchesSearch;
     });
 
-    // Calcul des utilisateurs à afficher pour la page actuelle
+    // Calculate the users to display for the current page
     const indexOfLastUser = currentPage * usersPerPage;
     const indexOfFirstUser = indexOfLastUser - usersPerPage;
     const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
 
-    // Fonction pour passer à la page suivante
+    // Pagination
     const nextPage = () => {
         if (currentPage < Math.ceil(filteredUsers.length / usersPerPage)) {
             setCurrentPage(currentPage + 1);
         }
     };
 
-    // Fonction pour revenir à la page précédente
     const prevPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
@@ -131,7 +111,7 @@ const UsersPage = () => {
         <AdminLayout>
             <div className="flex justify-between mb-4">
                 <div className="flex space-x-4">
-                    {/* Barre de recherche */}
+                    {/* Search bar */}
                     <input
                         type="text"
                         placeholder="Search by email or name..."
@@ -140,7 +120,7 @@ const UsersPage = () => {
                         className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
 
-                    {/* Filtre par rôle */}
+                    {/* Filter by role */}
                     <select
                         value={filterRole}
                         onChange={(e) => setFilterRole(e.target.value)}
@@ -152,7 +132,7 @@ const UsersPage = () => {
                     </select>
                 </div>
 
-                {/* Bouton "Add Client" */}
+                {/* Add Client button */}
                 <button
                     onClick={() => {
                         setSelectedUser(null);
@@ -221,7 +201,7 @@ const UsersPage = () => {
                 </table>
             </div>
 
-            {/* Pagination et affichage du nombre d'utilisateurs */}
+            {/* Pagination and user count display */}
             <div className="flex justify-between items-center mt-4">
                 <span className="text-gray-700">
                     Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
