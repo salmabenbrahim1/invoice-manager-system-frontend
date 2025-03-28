@@ -127,11 +127,9 @@ const Login = () => {
               className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition flex items-center justify-center text-lg"
               disabled={loading}
             >
-              {loading ? (
-                <span className="animate-spin">🌀</span>
-              ) : (
-                'Login'
-              )}
+            
+                Login
+             
             </button>
           </form>
         </div>
