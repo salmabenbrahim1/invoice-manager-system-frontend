@@ -1,58 +1,60 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
-import { FaUsers, FaChartBar,  FaSignOutAlt } from 'react-icons/fa'; 
+import { FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
+import '../styles/sideBar.css';
 
 const SideBarAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
-  
- 
+
+  // Logout function
   const handleLogout = () => {
-    // Logique de déconnexion ici (ex. supprimer le token, rediriger, etc.)
     setIsLoggedIn(false); 
-     window.location.href = "/login";
+    window.location.href = "/login";
   };
 
   return (
-    <div className="w-64 h-full bg-[#75529e] text-white p-5 shadow-lg">
-      <nav className="flex flex-col space-y-2">
+    <div className="sidebar-container">
+      <nav className="flex flex-col space-y-4">
         {/* Admin Section */}
         <div
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center cursor-pointer mb-3 hover:text-gray-200 transition"
+          className="sidebar-toggle"
         >
-          {isOpen ? <ChevronDown /> : <ChevronRight />}
-          <span className="ml-2 text-lg font-semibold">Admin</span>
+          {isOpen ? <ChevronDown className="text-xl" /> : <ChevronRight className="text-xl" />}
+          <span className="sidebar-toggle-text">Admin</span>
         </div>
 
         {isOpen && (
-          <div className="ml-5 flex flex-col space-y-2">
+          <div className="sidebar-submenu">
             <NavLink
               to="/users"
-              className="flex items-center px-3 py-2 rounded-md hover:bg-white/10 transition"
+              className="sidebar-link"
             >
-              <FaUsers className="mr-2" /> Users
+              <FaUsers className="mr-3 text-lg" /> 
+              <span className="text-md">Users</span>
             </NavLink>
             <NavLink
               to="/dashboard"
-              className="flex items-center px-3 py-2 rounded-md hover:bg-white/10 transition"
+              className="sidebar-link"
             >
-              <FaChartBar className="mr-2" /> BI Dashboard
+              <FaChartBar className="mr-3 text-lg" />
+              <span className="text-md">BI Dashboard</span>
             </NavLink>
-             {/* Logout */}
-        {isLoggedIn && (
-          <div
-            onClick={handleLogout}
-            className="flex items-center px-3 py-2 rounded-md hover:bg-white/10 transition cursor-pointer mt-5"
-          >
-            <FaSignOutAlt className="mr-2" /> Logout
-          </div>
-        )}
-          </div>
-        )}
 
-       
+            {/* Logout */}
+            {isLoggedIn && (
+              <div
+                onClick={handleLogout}
+                className="sidebar-link"
+              >
+                <FaSignOutAlt className="mr-3 text-lg" />
+                <span className="text-md">Logout</span>
+              </div>
+            )}
+          </div>
+        )}
       </nav>
     </div>
   );
