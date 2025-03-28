@@ -17,13 +17,13 @@ const Login = () => {
     setLoading(true);
 
     if (!validateEmail(email)) {
-      setError('Veuillez entrer une adresse email valide.');
+      setError('Please enter a valid email address.');
       setLoading(false);
       return;
     }
 
     if (!motDePasse) {
-      setError('Veuillez entrer un mot de passe.');
+      setError('Please enter a password.');
       setLoading(false);
       return;
     }
@@ -46,10 +46,10 @@ const Login = () => {
             navigate('/client');
             break;
           default:
-            setError('Rôle non reconnu');
+            setError('Unrecognized role');
         }
       } else {
-        setError('Email ou mot de passe incorrect');
+        setError('Incorrect email or password');
       }
     } catch (error) {
       setError(error.message);
@@ -127,11 +127,9 @@ const Login = () => {
               className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition flex items-center justify-center text-lg"
               disabled={loading}
             >
-              {loading ? (
-                <span className="animate-spin">🌀</span>
-              ) : (
-                'Login'
-              )}
+            
+                Login
+             
             </button>
           </form>
         </div>
