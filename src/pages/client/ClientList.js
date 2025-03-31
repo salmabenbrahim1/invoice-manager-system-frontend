@@ -5,7 +5,7 @@ import { FaUser, FaEdit, FaTrash, FaUserPlus } from 'react-icons/fa';
 import { useClient } from '../../components/client/ClientContext';
 import UpdateClientForm from './UpdateClientForm';
 import { toast } from 'react-toastify';
-import ConfirmModal from '../../components/ConfirmModal'; 
+import ConfirmModal from '../../components/ConfirmModal';
 
 const ClientList = () => {
   const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
@@ -14,7 +14,7 @@ const ClientList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [clientToEdit, setClientToEdit] = useState(null);
-  
+
   // Confirmation modal state
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
@@ -25,14 +25,14 @@ const ClientList = () => {
   };
 
   // Show confirmation modal before deleting a client
-  const requestDeleteClient = (clientId) => {
-    setClientToDelete(clientId);
+  const requestDeleteClient = (client) => {
+    setClientToDelete(client);
     setShowConfirmModal(true);
   };
 
   const deleteClient = async () => {
     if (clientToDelete) {
-      await handleDeleteClient(clientToDelete);
+      await handleDeleteClient(clientToDelete._id);
       toast.success("Client deleted successfully.");
     } else {
       toast.info("Client deletion canceled.");
@@ -64,7 +64,7 @@ const ClientList = () => {
       <div className="flex flex-col flex-grow p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">My Clients</h2>
-          
+
           <input
             type="text"
             placeholder="Search by email or name..."
@@ -101,13 +101,13 @@ const ClientList = () => {
                   <td className="px-6 py-4 text-sm text-gray-600">{client.email}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">{client.phoneNumber}</td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    <button 
+                    <button
                       onClick={() => openEditModal(client)}
                       className="text-blue-500 hover:text-blue-700 mr-2">
                       <FaEdit />
                     </button>
                     <button
-                      onClick={() => requestDeleteClient(client._id)}
+                      onClick={() => requestDeleteClient(client)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash />
@@ -145,7 +145,7 @@ const ClientList = () => {
         onHide={() => setShowConfirmModal(false)}
         onConfirm={deleteClient}
         title="Delete Client"
-        message="Are you sure you want to delete this client? This action cannot be undone."
+        message={`Are you sure you want to delete the client "${clientToDelete?.name}"? This action cannot be undone.`}
       />
     </div>
   );

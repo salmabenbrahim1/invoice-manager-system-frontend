@@ -5,7 +5,7 @@ import { useClient } from '../../components/client/ClientContext';
 import { useFolder } from '../../components/folder/FolderContext';
 
 
-const FolderForm = ({ show, onHide, onSave }) => {
+const AddFolderForm = ({ show, onHide, onSave }) => {
   const { clients, handleAddClient } = useClient();
   const { handleAddFolder } = useFolder();
 
@@ -94,7 +94,7 @@ const FolderForm = ({ show, onHide, onSave }) => {
 
       
       const folderData = {
-        name: folderName,
+        folderName: folderName,
         description: folderDescription,
         clientId: clientData,
         clientName: clientName,
@@ -205,7 +205,7 @@ const FolderForm = ({ show, onHide, onSave }) => {
 
         {step === 2 && (
           <>
-            <h5>2. Folder Information</h5>
+            <h5>2. Folder Informations</h5>
             <Form>
               <Form.Group className="mb-3">
                 <Form.Label>Folder Name <span style={{ color: "red" }}>*</span></Form.Label>
@@ -252,4 +252,4 @@ const FolderForm = ({ show, onHide, onSave }) => {
   );
 };
 
-export default FolderForm;
+export default AddFolderForm;

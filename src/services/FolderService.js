@@ -1,14 +1,16 @@
 import axios from 'axios';
 
+// Axios instance configured with base URL of the backend
 const api = axios.create({
-  baseURL: 'http://localhost:9090/api', // my backend URL
+  //backend URL
+  baseURL: 'http://localhost:9090/api'
 });
 
+//fetching all folders from the backend
 export const getFolders = async () => {
   try {
     const response = await api.get('/folders');
-    return response.data.map(folder => ({
-      ...folder,
+    return response.data.map(folder => ({ ...folder,
       clientName: folder.client ? folder.client.name : '', 
     }));
   } catch (error) {
@@ -17,20 +19,37 @@ export const getFolders = async () => {
   }
 };
 
-
+//adding a new folder to the backend
 export const addFolder = async (folder) => {
-  const response = await api.post('/folders', folder);
-  console.log("API Folder Response:", response.data); // Debugging
+  try{
+    const response = await api.post('/folders', folder);
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error adding folder:", error);
+    throw error;
+  }
+}
 
-  return response.data;
-};
-
+//deleting a folder by its ID
 export const deleteFolder = async (folderId) => {
-  const response = await api.delete(`/folders/${folderId}`);
-  return response.data;
+  try{
+    const response = await api.delete(`/folders/${folderId}`);
+    return response.data;
+  }catch (error) {
+    console.error("Error updating folder:", error);
+    throw error;  
+  }
 };
 
-export const updateFolder = async (folderId, folder) => {
-  const response = await api.put(`/folders/${folderId}`, folder);
-  return response.data;
+// updating an existing folder's details
+export const updateFolder = async (folderId, updatedFolder) => {
+  try {
+    const response = await api.put(`/folders/${folderId}`, updatedFolder);
+    return response.data;  
+  } catch (error) {
+    console.error("Error updating folder:", error);
+    throw error;  
+  }
 };
+
