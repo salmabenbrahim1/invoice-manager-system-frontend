@@ -39,7 +39,7 @@ function App() {
 
                   <Route path="/admin" element={<AdminDashboard />} />
                   <Route path="/users" element={<UsersPage />} />
-                  <Route path='company' element={<CompanyDashboard />} />
+                  <Route path='/company' element={<CompanyDashboard />} />
 
                   <Route path='/manage_clients' element={<ManageClientsPage />} />
                   <Route path="/my-folders" element={<FolderList />} />
