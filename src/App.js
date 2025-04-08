@@ -5,11 +5,12 @@ import { ClientProvider } from './components/client/ClientContext';
 import { FolderProvider } from './components/folder/FolderContext';
 import FolderList from './pages/folder/FolderList';
 import { ToastContainer } from 'react-toastify';
-import UsersPage from './pages/UsersPage';
+import UsersPage from "./pages/admin/UsersPage";
+import { UserProvider } from "./context/UserContext";
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import CompanyDashboard from './pages/CompanyDashboard';
-import AdminDashbard from './pages/AdminDashboard';
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageClientsPage from './pages/ManageClientsPage';
 import ClientList from './pages/client/ClientList';
 import Archive from './pages/folder/Archive';
@@ -18,6 +19,7 @@ function App() {
   return (
     <div >
       <BrowserRouter>
+      <UserProvider>
         <ClientProvider>
           <FolderProvider>
             <ToastContainer />
@@ -28,7 +30,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashbard/>} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/users" element={<UsersPage />} />
               <Route path='company' element={<CompanyDashboard/>}/>
 <Route path='/manage_clients' element={<ManageClientsPage/>}/>
@@ -40,6 +42,8 @@ function App() {
 
           </FolderProvider>
         </ClientProvider>
+        </UserProvider>
+
       </BrowserRouter>
     </div>
   );

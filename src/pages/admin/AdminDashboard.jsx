@@ -1,8 +1,8 @@
-import AdminLayout from '../components/AdminLayout';
+import AdminLayout from '../../components/admin/AdminLayout';
 import React, { useEffect, useState } from "react";
 import { FaBuilding, FaUserTie } from "react-icons/fa";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { fetchUserStats } from '../services/userService';
+import { fetchUserStats } from '../../services/userService';
 
 const AdminDashboard = () => {
   const [userStats, setUserStats] = useState([]);

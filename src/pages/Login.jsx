@@ -34,10 +34,10 @@ const Login = () => {
       if (user) {
         switch (user.role) {
           case 'ADMIN':
-            navigate('/PageAdmin');
+            navigate('/admin');
             break;
           case 'COMPANY':
-            navigate('/cabinet');
+            navigate('/company');
             break;
           case 'COMPTABLE':
             navigate('/comptable');
@@ -84,6 +84,7 @@ const Login = () => {
           <p className="text-gray-800 dark:text-gray-300 mb-8">
             Welcome! Please enter your details.
           </p>
+        
 
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
