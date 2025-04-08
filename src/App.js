@@ -12,29 +12,38 @@ import Home from './pages/Home';
 import ClientList from './pages/client/ClientList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
+import InvoiceList from './pages/invoice/InvoiceList';
+import { InvoiceProvider } from './components/invoice/InvoiceContext';
 
 function App() {
   return (
-    <div >
+    <div>
       <BrowserRouter>
+        {/* Maintain the hierarchy but optimize providers */}
         <ClientProvider>
           <FolderProvider>
-            <ToastContainer />
-            <Navbar />
+            <InvoiceProvider>
+              <Navbar />
+              <ToastContainer />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/home" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/PageAdmin" element={<PageAdmin />} />
+                <Route path="/users" element={<UsersPage />} />
+                
+                <Route path="/my-folders" element={<FolderList />} />
+                <Route path="/manage-invoices" element={<FolderList />} />
 
-
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/PageAdmin" element={<PageAdmin />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path="/my-folders" element={<FolderList />} />
-              <Route path="/my-clients" element={<ClientList/>} />
-              <Route path="/favorites" element ={<Favorite/>} />
-              <Route path="/archive" element={<Archive/>} />
-            </Routes>
-
+                <Route 
+                  path="/my-folders/:folderId/invoices" 
+                  element={<InvoiceList />} 
+                />
+                <Route path="/my-clients" element={<ClientList/>} />
+                <Route path="/favorites" element={<Favorite/>} />
+                <Route path="/archive" element={<Archive/>} />
+              </Routes>
+            </InvoiceProvider>
           </FolderProvider>
         </ClientProvider>
       </BrowserRouter>

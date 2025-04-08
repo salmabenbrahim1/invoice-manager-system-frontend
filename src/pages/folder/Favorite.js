@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FaFolder, FaStar } from "react-icons/fa";
+import { FaFolder, FaStar,FaSearch } from "react-icons/fa";
 import { useFolder } from "../../components/folder/FolderContext";
 import { Container, Button } from "react-bootstrap";
-import SideBar from "../../components/SideBar";
+import SideBar from "../../components/Sidebar";
 
 const Favorite = () => {
   const { favoriteFolders, toggleFavorite } = useFolder();
@@ -15,23 +15,23 @@ const Favorite = () => {
     if (storedFavorites) {
       setFavoriteFoldersState(JSON.parse(storedFavorites));
     }
-  }, []); 
+  }, []);
 
-  
-  
-  
+
+
+
   const handleRemoveFavorite = (folderId) => {
     toggleFavorite(folderId);
-    
+
     // using localStorage:
     //updating the local state and localStorage after the change
     const updatedFavorites = favoriteFolders.filter((folder) => folder._id !== folderId);
     setFavoriteFoldersState(updatedFavorites);
-  
+
     // saving the updated favorites in localStorage
     localStorage.setItem("favoriteFolders", JSON.stringify(updatedFavorites));
   };
-  
+
 
   const filteredFavoriteFolders = favoriteFoldersState.filter((folder) =>
     (folder.folderName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
@@ -44,13 +44,16 @@ const Favorite = () => {
       <div className="d-flex flex-column flex-grow-1 p-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2 className="text-2xl font-semibold">Favorite Folders</h2>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 border border-gray-400 rounded-lg bg-gray-100 shadow-md"
-          />
+          <div className="relative">
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg  shadow-md"
+            />
+          </div>
         </div>
 
         {/* List of favorite folders */}

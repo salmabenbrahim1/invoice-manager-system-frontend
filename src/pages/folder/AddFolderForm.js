@@ -10,7 +10,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
   const { handleAddFolder } = useFolder();
 
   // Step 1: Client Info, Step 2: Folder Info
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
   const [clientType, setClientType] = useState('existing');
 
   // Folder Info
@@ -43,13 +43,13 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
       }
       // Email validation regex pattern
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if ( clientType === 'new' && !emailRegex.test(newClient.email)) {
+      if (clientType === 'new' && !emailRegex.test(newClient.email)) {
         toast.warn('Please enter a valid email address.');
         return;
       }
       // Phone number validation regex (supports international formats)
       const phoneRegex = /^\+?[0-9]{8,15}$/;
-      if ( clientType === 'new'&& !phoneRegex.test(newClient.phoneNumber)) {
+      if (clientType === 'new' && !phoneRegex.test(newClient.phoneNumber)) {
         toast.warn('Please enter a valid phone number (8-15 digits, optional "+").');
         return;
       }
@@ -89,10 +89,10 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
         clientData = { id: selectedClientId };
 
         const selectedClient = clients.find((client) => client._id === selectedClientId);
-        clientName = selectedClient ? selectedClient.name : ''; 
+        clientName = selectedClient ? selectedClient.name : '';
       }
 
-      
+
       const folderData = {
         folderName: folderName,
         description: folderDescription,
@@ -111,9 +111,8 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
         createdFolder.client = selectedClient;
       }
 
-      toast.success('Folder created successfully!');
-      onSave(createdFolder); // Add the new folder to the list
-      onHide(); // Close the Form
+      onSave(createdFolder);
+      onHide();
     } catch (error) {
       console.error('Error creating folder:', error);
       toast.error('Failed to create folder.');
@@ -146,12 +145,15 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                   type="radio"
                   label="Existing Client"
                   name="clientType"
+                  id="clientTypeExisting"
                   checked={clientType === 'existing'}
                   onChange={() => setClientType('existing')}
                 />
                 {clientType === 'existing' && (
                   <Form.Control
                     as="select"
+                    id="existingClientSelect"
+                    name="existingClientSelect"
                     value={selectedClientId}
                     onChange={(e) => setSelectedClientId(e.target.value)}
                   >
@@ -170,6 +172,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                   type="radio"
                   label="New Client"
                   name="clientType"
+                  id="clientTypeNew"
                   checked={clientType === 'new'}
                   onChange={() => setClientType('new')}
                 />
@@ -178,6 +181,9 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                     <Form.Control
                       type="text"
                       placeholder="Client Name"
+                      id="clientName"
+                      name="clientName"
+                      autoComplete="name"
                       value={newClient.name}
                       onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
                       className="mb-2"
@@ -185,6 +191,9 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                     <Form.Control
                       type="email"
                       placeholder="Email Address"
+                      id="clientEmail"
+                      name="clientEmail"
+                      autoComplete="email"
                       value={newClient.email}
                       onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
                       className="mb-2"
@@ -192,6 +201,9 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                     <Form.Control
                       type="text"
                       placeholder="Phone Number"
+                      id="clientPhone"
+                      name="clientPhone"
+                      autoComplete="tel"
                       value={newClient.phoneNumber}
                       onChange={(e) => setNewClient({ ...newClient, phoneNumber: e.target.value })}
                       className="mb-2"
@@ -199,6 +211,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                   </>
                 )}
               </Form.Group>
+
             </Form>
           </>
         )}
@@ -208,25 +221,33 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
             <h5>2. Folder Informations</h5>
             <Form>
               <Form.Group className="mb-3">
-                <Form.Label>Folder Name <span style={{ color: "red" }}>*</span></Form.Label>
+                <Form.Label htmlFor="folderName">
+                  Folder Name <span style={{ color: 'red' }}>*</span>
+                </Form.Label>
                 <Form.Control
                   type="text"
+                  id="folderName"
+                  name="folderName"
                   placeholder="Enter folder name"
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
                   required
                 />
               </Form.Group>
+
               <Form.Group className="mb-3">
-                <Form.Label>Folder Description</Form.Label>
+                <Form.Label htmlFor="folderDescription">Folder Description</Form.Label>
                 <Form.Control
                   as="textarea"
+                  id="folderDescription"
+                  name="folderDescription"
                   rows={3}
                   placeholder="Enter folder description (optional)"
                   value={folderDescription}
                   onChange={(e) => setFolderDescription(e.target.value)}
                 />
               </Form.Group>
+
             </Form>
           </>
         )}
