@@ -1,5 +1,5 @@
 import React from 'react';
-import SideBarAdmin from './SideBarAdmin';
+import SideBarAdmin from '../SideBarAdmin';
 
 const AdminLayout = ({ children }) => {
   return (
