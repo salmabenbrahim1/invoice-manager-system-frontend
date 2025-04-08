@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import { FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../styles/sideBar.css';
+import '../../styles/sidebar.css';
 
-const SideBarAdmin = () => {
+const SidebarAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
 
@@ -60,4 +60,4 @@ const SideBarAdmin = () => {
   );
 };
 
-export default SideBarAdmin;
+export default SidebarAdmin;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import SideBar from '../../components/SideBar';
+import SideBar from '../../components/Sidebar';
 import AddClientForm from './AddClientForm';
-import { FaUser, FaEdit, FaTrash, FaUserPlus } from 'react-icons/fa';
+import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
 import { useClient } from '../../components/client/ClientContext';
 import UpdateClientForm from './UpdateClientForm';
 import { toast } from 'react-toastify';
@@ -61,24 +61,30 @@ const ClientList = () => {
     <div className="flex h-screen">
       <SideBar />
 
-      <div className="flex flex-col flex-grow p-4">
+      <div className="flex flex-col flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">My Clients</h2>
+          <div className="flex space-x-4">
 
-          <input
-            type="text"
-            placeholder="Search by email or name..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 border-2 border-gray-400 rounded-lg bg-gray-100 shadow-md"
-          />
-
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            <FaUserPlus className="mr-2" /> Add Client
-          </button>
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-3 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search folders..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg  shadow-md"
+              />
+            </div>
+            <div>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              >
+                <FaUserPlus className="mr-2" /> Add Client
+              </button>
+            </div>
+          </div>
         </div>
 
         <div>

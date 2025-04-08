@@ -15,33 +15,51 @@ import ManageClientsPage from './pages/ManageClientsPage';
 import ClientList from './pages/client/ClientList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
+import InvoiceList from './pages/invoice/InvoiceList';
+import { InvoiceProvider } from './components/invoice/InvoiceContext';
+
 function App() {
   return (
-    <div >
+    <div>
       <BrowserRouter>
-      <UserProvider>
-        <ClientProvider>
-          <FolderProvider>
-            <ToastContainer />
-            <Navbar />
+
+        <UserProvider>
+
+          <ClientProvider>
+            <FolderProvider>
+              <InvoiceProvider>
+                <ToastContainer />
+                <Navbar />
 
 
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/users" element={<UsersPage />} />
-              <Route path='company' element={<CompanyDashboard/>}/>
-<Route path='/manage_clients' element={<ManageClientsPage/>}/>
-<Route path="/my-folders" element={<FolderList />} />
-<Route path="/my-clients" element={<ClientList/>} />
-              <Route path="/favorites" element ={<Favorite/>} />
-              <Route path="/archive" element={<Archive/>} />
-            </Routes>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
 
-          </FolderProvider>
-        </ClientProvider>
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="/users" element={<UsersPage />} />
+                  <Route path='/company' element={<CompanyDashboard />} />
+
+                  <Route path='/manage_clients' element={<ManageClientsPage />} />
+                  <Route path="/my-folders" element={<FolderList />} />
+                  <Route path="/manage-invoices" element={<FolderList />} />
+
+                  <Route
+                    path="/my-folders/:folderId/invoices" element={<InvoiceList />}
+                  />
+
+
+                  <Route path="/my-clients" element={<ClientList />} />
+                  <Route path="/favorites" element={<Favorite />} />
+                  <Route path="/archive" element={<Archive />} />
+                </Routes>
+
+
+              </InvoiceProvider>
+            </FolderProvider>
+          </ClientProvider>
+
         </UserProvider>
 
       </BrowserRouter>

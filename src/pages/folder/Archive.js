@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useFolder } from "../../components/folder/FolderContext";
 import { Container } from "react-bootstrap";
-import { FaFolder } from "react-icons/fa";
-import SideBar from "../../components/SideBar";
+import { FaFolder,FaSearch } from "react-icons/fa";
+import SideBar from "../../components/Sidebar";
 
 const Archive = () => {
   const { archivedFolders } = useFolder();
@@ -27,13 +27,16 @@ const Archive = () => {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Archived Folders</h2>
           {/* Search Input */}
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 pl-10 border-2 border-gray-400 rounded-lg bg-gray-100 shadow-md transition-all hover:bg-gray-100"
-          />
+          <div className="relative">
+            <FaSearch className="absolute left-3 top-3 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg  shadow-md"
+            />
+          </div>
         </div>
 
         {/* List of archived folders */}

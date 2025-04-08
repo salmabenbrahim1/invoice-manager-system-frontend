@@ -15,7 +15,7 @@ const NavBar = () => {
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
           <Nav className="me-auto">
             <Nav.Link href="home">Home</Nav.Link>
-            <Nav.Link href="manage-invoices">Manage Invoices</Nav.Link>
+            <Nav.Link  href="manage-invoices">Manage Invoices</Nav.Link>
             <Nav.Link href="contact-us">Contact Us</Nav.Link>
           </Nav>
         </Navbar.Collapse>

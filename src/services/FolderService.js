@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-// Axios instance configured with base URL of the backend
 const api = axios.create({
   //backend URL
   baseURL: 'http://localhost:9090/api'
@@ -27,6 +26,7 @@ export const addFolder = async (folder) => {
   }
   catch (error) {
     console.error("Error adding folder:", error);
+
     throw error;
   }
 }
