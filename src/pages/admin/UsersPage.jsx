@@ -1,48 +1,21 @@
-import React, { useState, useEffect } from "react";
-import AdminLayout from "../components/AdminLayout";
-import { FaUserPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft, FaUser, FaBuilding } from "react-icons/fa";
-import UserModal from "../components/UserModal";
-import { toast, ToastContainer } from "react-toastify";
+import React, { useState } from "react";
+import AdminLayout from "../../components/admin/AdminLayout";
+import { FaUserPlus, FaEdit, FaTrash, FaUser, FaBuilding } from "react-icons/fa";
+import UserModal from "../../components/admin/UserModal";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchUsers, deleteUser, saveUser } from "../services/userService"; 
+import Pagination from "../../components/Pagination";
+import { useUsers } from "../../context/UserContext";
 
 const UsersPage = () => {
+    const { users, loading, handleDelete, handleSave } = useUsers();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPerson, setIsPerson] = useState(true);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1); // Pagination
-    const [filterRole, setFilterRole] = useState("all"); // Filter by role
-    const [searchQuery, setSearchQuery] = useState(""); // Search query
+    const [currentPage, setCurrentPage] = useState(1);
+    const [filterRole, setFilterRole] = useState("all");
+    const [searchQuery, setSearchQuery] = useState("");
     const usersPerPage = 6;
-
-    useEffect(() => {
-        fetchUsersData();
-    }, []);
-
-    const fetchUsersData = async () => {
-        try {
-            setLoading(true);
-            const data = await fetchUsers();
-            setUsers(data);
-        } catch (error) {
-            setError("Error fetching users.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleDelete = async (id) => {
-        try {
-            await deleteUser(id);
-            fetchUsersData();
-            toast.success("User deleted successfully!");
-        } catch (error) {
-            toast.error("Error deleting the user.");
-        }
-    };
 
     const handleEdit = (user) => {
         setSelectedUser(user);
@@ -61,25 +34,13 @@ const UsersPage = () => {
             role: isPerson ? "INDEPENDENT ACCOUNTANT" : "COMPANY",
         };
 
-        try {
-            setLoading(true);
-            setError(null);
-            await saveUser(formData, selectedUser?.id);
-            fetchUsersData();
-            toast.success(selectedUser ? "User updated successfully!" : "User added successfully!");
-            setIsModalOpen(false);
-            setSelectedUser(null);
-        } catch (error) {
-            toast.error(selectedUser ? "Error updating the user." : "Error adding the user.");
-        } finally {
-            setLoading(false);
-        }
+        await handleSave(formData, selectedUser?.id);
+        setIsModalOpen(false);
+        setSelectedUser(null);
     };
 
-    // Filtering users by role and searching
     const filteredUsers = users.filter((user) => {
-        const matchesRole = (filterRole === "all" || user.role === filterRole) && user.role !== "ADMIN"; // Exclude admins
-
+        const matchesRole = (filterRole === "all" || user.role === filterRole) && user.role !== "ADMIN";
         const matchesSearch =
             (user.email && user.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
             (user.firstName && user.firstName.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -88,24 +49,10 @@ const UsersPage = () => {
 
         return matchesRole && matchesSearch;
     });
-
-    // Calculate the users to display for the current page
-    const indexOfLastUser = currentPage * usersPerPage;
-    const indexOfFirstUser = indexOfLastUser - usersPerPage;
-    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
-
-    // Pagination
-    const nextPage = () => {
-        if (currentPage < Math.ceil(filteredUsers.length / usersPerPage)) {
-            setCurrentPage(currentPage + 1);
-        }
-    };
-
-    const prevPage = () => {
-        if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-        }
-    };
+    
+//Pagination
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const currentUsers = filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
 
     return (
         <AdminLayout>
@@ -145,17 +92,16 @@ const UsersPage = () => {
             </div>
 
             <UserModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                    setIsModalOpen(false);
-                    setSelectedUser(null);
-                }}
-                onSubmit={handleSubmit}
-                isPerson={isPerson}
-                setIsPerson={setIsPerson}
-                error={error}
-                user={selectedUser}
-            />
+           isOpen={isModalOpen}
+            onClose={() => {
+        setIsModalOpen(false);
+        setSelectedUser(null);
+                         }}
+    onSubmit={handleSubmit}
+    isPerson={isPerson}
+    setIsPerson={setIsPerson}
+    user={selectedUser}  
+                        />
 
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white">
@@ -201,32 +147,18 @@ const UsersPage = () => {
                 </table>
             </div>
 
-            {/* Pagination and user count display */}
-            <div className="flex justify-between items-center mt-4">
-                <span className="text-gray-700">
-                    Showing {indexOfFirstUser + 1} to {Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
-                </span>
-                <div className="flex space-x-4">
-                    <button
-                        onClick={prevPage}
-                        disabled={currentPage === 1}
-                        className="flex items-center bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
-                    >
-                        <FaArrowLeft className="mr-2" /> Previous
-                    </button>
-                    <button
-                        onClick={nextPage}
-                        disabled={currentPage === Math.ceil(filteredUsers.length / usersPerPage)}
-                        className="flex items-center bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 disabled:opacity-50"
-                    >
-                        Next <FaArrowRight className="ml-2" />
-                    </button>
-                </div>
-            </div>
+            {/* Pagination */}
+
+            <Pagination 
+                currentPage={currentPage} 
+                totalPages={totalPages} 
+                onNext={() => setCurrentPage(currentPage + 1)} 
+                onPrev={() => setCurrentPage(currentPage - 1)} 
+            />
 
             <ToastContainer />
         </AdminLayout>
     );
 };
 
-export default UsersPage;
+export default UsersPage;  

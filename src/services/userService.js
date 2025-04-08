@@ -1,6 +1,17 @@
 
-const API_URL = "http://localhost:9090/api/users";
+import axios from 'axios';
 
+const API_URL = "http://localhost:9090/api/users";
+const APIDash_URL = "http://localhost:9090/api/users/dashboard";
+
+export const fetchUserStats = async () => {
+  try {
+    const response = await axios.get(APIDash_URL); 
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch user statistics');
+  }
+};
 export const fetchUsers = async () => {
     try {
         const response = await fetch(API_URL);
