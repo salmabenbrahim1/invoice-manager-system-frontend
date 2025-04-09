@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { useClient } from '../../components/client/ClientContext';
-
+import { useClient } from '../../context/ClientContext';
 const AddClientForm = ({ show, onHide }) => {
   const { handleAddClient } = useClient();
 

@@ -1,22 +1,24 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './pages/Login';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ClientProvider } from './components/client/ClientContext';
-import { FolderProvider } from './components/folder/FolderContext';
-import FolderList from './pages/folder/FolderList';
-import { ToastContainer } from 'react-toastify';
-import UsersPage from "./pages/admin/UsersPage";
+
+import { ClientProvider } from './context/ClientContext';
+import { FolderProvider } from './context/FolderContext';
 import { UserProvider } from "./context/UserContext";
-import Navbar from './components/NavBar';
+import { InvoiceProvider } from './context/InvoiceContext';
+import FolderList from './pages/folder/FolderList';
+import UsersPage from "./pages/admin/UsersPage";
 import Home from './pages/Home';
 import CompanyDashboard from './pages/CompanyDashboard';
+import NavBar from './components/NavBar';
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageClientsPage from './pages/ManageClientsPage';
 import ClientList from './pages/client/ClientList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import InvoiceList from './pages/invoice/InvoiceList';
-import { InvoiceProvider } from './components/invoice/InvoiceContext';
+import { ToastContainer } from 'react-toastify';
+
 
 function App() {
   return (
@@ -29,7 +31,7 @@ function App() {
             <FolderProvider>
               <InvoiceProvider>
                 <ToastContainer />
-                <Navbar />
+                <NavBar />
 
 
                 <Routes>

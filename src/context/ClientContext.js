@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getClients,addClient,deleteClient,updateClient } from '../../services/ClientService';
+import { getClients,addClient,deleteClient,updateClient } from '../services/ClientService';
 
 const ClientContext = createContext();
 

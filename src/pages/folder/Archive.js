@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useFolder } from "../../components/folder/FolderContext";
+import { useFolder } from "../../context/FolderContext";
 import { Container } from "react-bootstrap";
 import { FaFolder,FaSearch } from "react-icons/fa";
 import SideBar from "../../components/Sidebar";

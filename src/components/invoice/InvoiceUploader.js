@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaFileUpload, FaTimes } from 'react-icons/fa';
-import { useInvoice } from '../../components/invoice/InvoiceContext';
+import { useInvoice } from '../../context/InvoiceContext';
 
 const InvoiceUploader = ({ onClose, onUploadSuccess }) => {
   const { isLoading, setIsLoading, currentFolderId } = useInvoice();

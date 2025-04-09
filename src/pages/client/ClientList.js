@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import SideBar from '../../components/Sidebar';
-import AddClientForm from './AddClientForm';
+import AddClientForm from '../../components/client/AddClientForm';
 import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
-import { useClient } from '../../components/client/ClientContext';
-import UpdateClientForm from './UpdateClientForm';
+import { useClient } from '../../context/ClientContext';
+import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/ConfirmModal';
 

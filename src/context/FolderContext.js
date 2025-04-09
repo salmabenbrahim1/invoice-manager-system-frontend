@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getFolders, deleteFolder, addFolder, updateFolder } from '../../services/FolderService';
+import { getFolders, deleteFolder, addFolder, updateFolder } from '../services/FolderService';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 

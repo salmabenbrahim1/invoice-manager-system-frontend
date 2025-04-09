@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { useFolder } from '../../components/folder/FolderContext';
+import { useFolder } from '../../context/FolderContext';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import AddFolderForm from './AddFolderForm';
+import AddFolderForm from '../../components/folder/AddFolderForm';
 import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
 import '../../styles/folderList.css';
 import FolderContextMenu from '../../components/folder/FolderContextMenu';
-import SideBar from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import ConfirmModal from '../../components/ConfirmModal';
 import { toast } from 'react-toastify';
-import UpdateFolderForm from './UpdateFolderForm';
+import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
 import { FaFolder, FaStar, FaSearch} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
@@ -110,7 +110,7 @@ const FolderList = () => {
 
   return (
     <Container fluid className="flex h-screen vh-100 p-0">
-      <SideBar />
+      <Sidebar />
 
       <div className="flex flex-col flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-10">

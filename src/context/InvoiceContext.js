@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, useCallback} from 'react';
-import { getInvoices, createInvoice, deleteInvoice } from '../../services/InvoiceService';
-import { useFolder } from '../folder/FolderContext';
+import { getInvoices, createInvoice, deleteInvoice } from '../services/InvoiceService';
+import { useFolder } from './FolderContext';
 
 import { toast } from 'react-toastify';
 

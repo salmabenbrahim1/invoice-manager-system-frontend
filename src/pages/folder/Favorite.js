@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { FaFolder, FaStar,FaSearch } from "react-icons/fa";
-import { useFolder } from "../../components/folder/FolderContext";
+import { useFolder } from "../../context/FolderContext";
 import { Container, Button } from "react-bootstrap";
 import SideBar from "../../components/Sidebar";
 

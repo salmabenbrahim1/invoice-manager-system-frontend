@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { useClient } from '../../components/client/ClientContext';
-import { useFolder } from '../../components/folder/FolderContext';
+import { useClient } from '../../context/ClientContext';
+import { useFolder } from '../../context/FolderContext';
 
 
 const AddFolderForm = ({ show, onHide, onSave }) => {
