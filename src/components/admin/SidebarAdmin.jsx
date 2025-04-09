@@ -6,17 +6,19 @@ import '../../styles/sidebar.css';
 
 const SidebarAdmin = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); 
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   // Logout function
   const handleLogout = () => {
-    setIsLoggedIn(false); 
+    setIsLoggedIn(false);
     window.location.href = "/login";
   };
 
   return (
     <div className="sidebar-container">
-      <nav className="flex flex-col space-y-4">
+      <hr className="sidebar-divider" />
+
+      <nav className="flex flex-column space-y-4">
         {/* Admin Section */}
         <div
           onClick={() => setIsOpen(!isOpen)}
@@ -32,7 +34,7 @@ const SidebarAdmin = () => {
               to="/users"
               className="sidebar-link"
             >
-              <FaUsers className="mr-3 text-lg" /> 
+              <FaUsers className="mr-3 text-lg" />
               <span className="text-md">Users</span>
             </NavLink>
             <NavLink
@@ -56,6 +58,7 @@ const SidebarAdmin = () => {
           </div>
         )}
       </nav>
+      <hr />
     </div>
   );
 };

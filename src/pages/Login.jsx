@@ -60,7 +60,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
@@ -73,7 +73,7 @@ const Login = () => {
         </div>
       </motion.div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
@@ -84,7 +84,7 @@ const Login = () => {
           <p className="text-gray-800 dark:text-gray-300 mb-8">
             Welcome! Please enter your details.
           </p>
-        
+
 
           <form onSubmit={handleSubmit}>
             <div className="mb-6">
@@ -97,6 +97,7 @@ const Login = () => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e]"
                 placeholder="nom@gmail.com"
                 value={email}
+                autoComplete="username"
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
@@ -112,6 +113,7 @@ const Login = () => {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e]"
                 placeholder="••••••••"
                 value={motDePasse}
+                autoComplete="current-password"
                 onChange={(e) => setMotDePasse(e.target.value)}
                 required
               />
@@ -123,14 +125,14 @@ const Login = () => {
               </div>
             )}
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition flex items-center justify-center text-lg"
               disabled={loading}
             >
-            
-                Login
-             
+
+              Login
+
             </button>
           </form>
         </div>

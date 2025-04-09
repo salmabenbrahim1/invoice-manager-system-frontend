@@ -72,7 +72,7 @@ export const FolderProvider = ({ children }) => {
     };
     updateCurrentFolder();
   }, [folderId, folders]);
-
+  
   // Update an existing folder from API
   const handleUpdateFolder = async (folderId, updatedData) => {
     try {

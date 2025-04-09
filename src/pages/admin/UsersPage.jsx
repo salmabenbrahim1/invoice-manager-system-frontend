@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { FaUserPlus, FaEdit, FaTrash, FaUser, FaBuilding } from "react-icons/fa";
 import UserModal from "../../components/admin/UserModal";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Pagination from "../../components/Pagination";
-import { useUsers } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const UsersPage = () => {
-    const { users, loading, handleDelete, handleSave } = useUsers();
+    const { users, handleDeleteUser, handleSaveUser } = useUser();
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPerson, setIsPerson] = useState(true);
+
     const [selectedUser, setSelectedUser] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [filterRole, setFilterRole] = useState("all");
@@ -34,7 +35,7 @@ const UsersPage = () => {
             role: isPerson ? "INDEPENDENT ACCOUNTANT" : "COMPANY",
         };
 
-        await handleSave(formData, selectedUser?.id);
+        await handleSaveUser(formData, selectedUser?._id);
         setIsModalOpen(false);
         setSelectedUser(null);
     };
@@ -49,8 +50,8 @@ const UsersPage = () => {
 
         return matchesRole && matchesSearch;
     });
-    
-//Pagination
+
+    //Pagination
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
     const currentUsers = filteredUsers.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
 
@@ -92,16 +93,16 @@ const UsersPage = () => {
             </div>
 
             <UserModal
-           isOpen={isModalOpen}
-            onClose={() => {
-        setIsModalOpen(false);
-        setSelectedUser(null);
-                         }}
-    onSubmit={handleSubmit}
-    isPerson={isPerson}
-    setIsPerson={setIsPerson}
-    user={selectedUser}  
-                        />
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedUser(null);
+                }}
+                onSubmit={handleSubmit}
+                isPerson={isPerson}
+                setIsPerson={setIsPerson}
+                user={selectedUser}
+            />
 
             <div className="overflow-x-auto">
                 <table className="min-w-full bg-white">
@@ -116,7 +117,7 @@ const UsersPage = () => {
                     </thead>
                     <tbody>
                         {currentUsers.map((user) => (
-                            <tr key={user.id}>
+                            <tr key={user._id}>
                                 <td className="px-6 py-4 border-b border-gray-300">
                                     {user.role === "INDEPENDENT ACCOUNTANT" ? (
                                         <FaUser className="text-blue-500" />
@@ -135,7 +136,7 @@ const UsersPage = () => {
                                         <FaEdit />
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(user.id)}
+                                        onClick={() => handleDeleteUser(user._id)}
                                         className="text-red-500 hover:text-red-700"
                                     >
                                         <FaTrash />
@@ -149,14 +150,13 @@ const UsersPage = () => {
 
             {/* Pagination */}
 
-            <Pagination 
-                currentPage={currentPage} 
-                totalPages={totalPages} 
-                onNext={() => setCurrentPage(currentPage + 1)} 
-                onPrev={() => setCurrentPage(currentPage - 1)} 
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onNext={() => setCurrentPage(currentPage + 1)}
+                onPrev={() => setCurrentPage(currentPage - 1)}
             />
 
-            <ToastContainer />
         </AdminLayout>
     );
 };

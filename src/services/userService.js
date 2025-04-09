@@ -1,52 +1,54 @@
-
 import axios from 'axios';
 
 const API_URL = "http://localhost:9090/api/users";
 const APIDash_URL = "http://localhost:9090/api/users/dashboard";
 
+// Fetch dashboard stats
 export const fetchUserStats = async () => {
   try {
-    const response = await axios.get(APIDash_URL); 
+    const response = await axios.get(APIDash_URL);
     return response.data;
   } catch (error) {
     throw new Error('Failed to fetch user statistics');
   }
 };
+
+// Fetch all users
 export const fetchUsers = async () => {
-    try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("Failed to fetch users");
-        return await response.json();
-    } catch (error) {
-        throw error;
-    }
+  try {
+    const response = await axios.get(API_URL);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch users');
+  }
 };
 
-export const deleteUser = async (id) => {
-    try {
-        const response = await fetch(`${API_URL}/${id}`, {
-            method: "DELETE",
-        });
-        if (!response.ok) throw new Error("Failed to delete user");
-        return response;
-    } catch (error) {
-        throw error;
-    }
+// Create a user
+export const createUser = async (userData) => {
+  try {
+    const response = await axios.post(API_URL, userData);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to create user');
+  }
 };
 
-export const saveUser = async (userData, userId = null) => {
-    const method = userId ? "PUT" : "POST";
-    const url = userId ? `${API_URL}/${userId}` : API_URL;
+// Update a user
+export const updateUser = async (userId, userData) => {
+  try {
+    const response = await axios.put(`${API_URL}/${userId}`, userData);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update user');
+  }
+};
 
-    try {
-        const response = await fetch(url, {
-            method,
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(userData),
-        });
-        if (!response.ok) throw new Error("Failed to save user");
-        return await response.json();
-    } catch (error) {
-        throw error;
-    }
+// Delete a user
+export const deleteUser = async (userId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to delete user');
+  }
 };

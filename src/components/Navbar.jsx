@@ -10,7 +10,7 @@ const NavBar = () => {
   return (
     <Navbar bg="light" expand="lg" className='navbar-container'>
       <Container>
-        <Navbar.Brand href="home" className="flex-grow-1 text-center">Invoice Management</Navbar.Brand>
+        <Navbar.Brand href="home" className="flex-grow-1 text-center">Invoice Manager</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
           <Nav className="me-auto">

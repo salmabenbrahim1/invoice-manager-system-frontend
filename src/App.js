@@ -7,7 +7,7 @@ import FolderList from './pages/folder/FolderList';
 import { ToastContainer } from 'react-toastify';
 import UsersPage from "./pages/admin/UsersPage";
 import { UserProvider } from "./context/UserContext";
-import Navbar from './components/Navbar';
+import Navbar from './components/NavBar';
 import Home from './pages/Home';
 import CompanyDashboard from './pages/CompanyDashboard';
 import AdminDashboard from "./pages/admin/AdminDashboard";
