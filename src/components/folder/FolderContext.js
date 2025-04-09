@@ -8,12 +8,11 @@ export const FolderContext = createContext();
 export const useFolder = () => useContext(FolderContext);
 
 export const FolderProvider = ({ children }) => {
-
   const [folders, setFolders] = useState([]);
 
   // the current folder is the one selected by the user 
-  const [currentFolder, setCurrentFolder] = useState('');
-  const { folderId } = useParams(); 
+  const [currentFolder, setCurrentFolder] = useState(null);
+  const { folderId } = useParams();
 
   const [archivedFolders, setArchivedFolders] = useState([]);
   const [favoriteFolders, setFavoriteFolders] = useState([]);
@@ -22,12 +21,14 @@ export const FolderProvider = ({ children }) => {
   const handleAddFolder = async (folder) => {
     try {
       const newFolder = await addFolder(folder);
-      setFolders((folders) => [...folders, newFolder]);
+      setFolders((prevFolders) => [...prevFolders, newFolder]);
       return newFolder;
     } catch (error) {
-      console.error("Failed to add folder:", error);
+      console.error('Failed to add folder:', error);
+      toast.error('Failed to add folder. Please try again.');
     }
   };
+
 
   // Delete a folder from API
   const handleDeleteFolder = async (folderId) => {
@@ -53,34 +54,38 @@ export const FolderProvider = ({ children }) => {
     fetchFolders();
   }, []);
 
- 
   useEffect(() => {
     const updateCurrentFolder = () => {
-    if (folders.length > 0) {
-      if (!folderId) {
-        //set the first folder as default if no folderId in URL
-        setCurrentFolder(folders[0]);
-      } else {
-        const folderToSet = folders.find((folder) => folder._id === folderId);
-        if (folderToSet) {
-          setCurrentFolder(folderToSet); 
+      if (folders.length > 0) {
+        if (!folderId) {
+          // Default to first folder if no folderId in URL
+          setCurrentFolder(folders[0]);
         } else {
-          console.error('Folder not found.');
+          const folderToSet = folders.find((folder) => folder._id === folderId);
+          if (folderToSet) {
+            setCurrentFolder(folderToSet);
+          } else {
+            console.error('Folder not found.');
+          }
         }
       }
-    }
-  };
+    };
     updateCurrentFolder();
   }, [folderId, folders]);
 
   // Update an existing folder from API
   const handleUpdateFolder = async (folderId, updatedData) => {
-    const updatedFolder = await updateFolder(folderId, updatedData);
-    setFolders((prevFolders) =>
-      prevFolders.map((folder) =>
-        folder._id === folderId ? { ...folder, ...updatedFolder } : folder
-      )
-    );
+    try {
+      const updatedFolder = await updateFolder(folderId, updatedData);
+      setFolders((prevFolders) =>
+        prevFolders.map((folder) =>
+          folder._id === folderId ? { ...folder, ...updatedFolder } : folder
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update folder:', error);
+      toast.error('Failed to update folder. Please try again.');
+    }
   };
 
   // Archive folders
@@ -88,8 +93,8 @@ export const FolderProvider = ({ children }) => {
     const folderToArchive = folders.find((folder) => folder._id === folderId);
     if (!folderToArchive) return;
 
-    setArchivedFolders([...archivedFolders, folderToArchive]);
-    setFolders(folders.filter((folder) => folder._id !== folderId));
+    setArchivedFolders((prevArchived) => [...prevArchived, folderToArchive]);
+    setFolders((prevFolders) => prevFolders.filter((folder) => folder._id !== folderId));
   };
 
   // Favorite folders
@@ -97,8 +102,7 @@ export const FolderProvider = ({ children }) => {
     setFavoriteFolders((prevFavorites) => {
       const isFavorite = prevFavorites.some((fav) => fav._id === folderId);
       if (isFavorite) {
-        // Remove from favorites
-        return prevFavorites.filter((fav) => fav._id !== folderId); 
+        return prevFavorites.filter((fav) => fav._id !== folderId);
       } else {
         const folderToAdd = folders.find((f) => f._id === folderId);
         return [...prevFavorites, folderToAdd];
@@ -106,7 +110,7 @@ export const FolderProvider = ({ children }) => {
     });
   };
 
-  // Ensuring `currentFolder` is always updated when folder is switched
+  // Ensuring `currentFolder` is always updated when folder is switched 
   const handleFolderSwitch = (folderId) => {
     const folderToSet = folders.find((folder) => folder._id === folderId);
     if (folderToSet) {
@@ -129,7 +133,7 @@ export const FolderProvider = ({ children }) => {
         archiveFolder,
         handleUpdateFolder,
         toggleFavorite,
-        handleFolderSwitch, 
+        handleFolderSwitch,
       }}
     >
       {children}
