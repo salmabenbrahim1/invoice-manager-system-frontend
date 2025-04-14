@@ -1,5 +1,5 @@
 import React from 'react';
-import CompanyLayout from '../components/CompanyLayout';
+import CompanyLayout from '../../components/company/CompanyLayout';
 
 const CompanyDashboard = () => {
   return (

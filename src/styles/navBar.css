@@ -57,3 +57,52 @@
     width: 100%;
   }
 }
+.user-section {
+  position: relative;
+}
+
+.user-icon-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-icon {
+  font-size: 2.5rem;
+  color: #333;
+  transition: transform 0.2s ease;
+}
+
+.user-icon:hover {
+  transform: scale(1.1);
+}
+
+.custom-user-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  width: 230px;
+  z-index: 10;
+}
+
+.menu-item {
+  padding: 0.5rem 0;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  color: #007bff;
+}
+
+.logout {
+  color: #d9534f;
+}
+
+.user-info {
+  pointer-events: none;
+}

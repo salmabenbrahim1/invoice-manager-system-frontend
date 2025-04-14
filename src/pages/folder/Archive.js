@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useFolder } from "../../context/FolderContext";
 import { Container } from "react-bootstrap";
 import { FaFolder,FaSearch } from "react-icons/fa";
-import SideBar from "../../components/Sidebar";
+import SideBar from "../../components/SideBar";
 
 const Archive = () => {
   const { archivedFolders } = useFolder();

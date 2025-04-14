@@ -5,7 +5,7 @@ import AddFolderForm from '../../components/folder/AddFolderForm';
 import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
 import '../../styles/folderList.css';
 import FolderContextMenu from '../../components/folder/FolderContextMenu';
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/SideBar';
 import ConfirmModal from '../../components/ConfirmModal';
 import { toast } from 'react-toastify';
 import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
