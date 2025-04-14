@@ -4,7 +4,7 @@ import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import { FaUser, FaStar, FaFolder } from 'react-icons/fa';
 import { GoArchive } from 'react-icons/go';
 import { NavLink } from 'react-router-dom';
-import '../styles/sidebar.css';
+import '../styles/sideBar.css'; 
 
 const Sidebar = () => {
   const [foldersOpen, setFoldersOpen] = useState(false);

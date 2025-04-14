@@ -31,10 +31,11 @@ const UsersPage = () => {
             phone: e.target.phone.value,
             cin: isPerson ? e.target.cin?.value : undefined,
             gender: isPerson ? e.target.gender?.value : undefined,
+            firstName: isPerson ? e.target.firstName?.value : undefined,
+            lastName: isPerson ? e.target.lastName?.value : undefined,
             companyName: !isPerson ? e.target.companyName?.value : undefined,
             role: isPerson ? "INDEPENDENT ACCOUNTANT" : "COMPANY",
         };
-
         await handleSaveUser(formData, selectedUser?._id);
         setIsModalOpen(false);
         setSelectedUser(null);

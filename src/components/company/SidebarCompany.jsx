@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../styles/sidebar.css';
+import '../../styles/sideBar.css'; 
 
 const SideBarCompany = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,12 +37,7 @@ const SideBarCompany = () => {
               <span className="text-md">Dashboard</span>
             </NavLink>
 
-            {isLoggedIn && (
-              <div onClick={handleLogout} className="sidebar-link">
-                <FaSignOutAlt className="mr-3 text-lg" />
-                <span className="text-md">Logout</span>
-              </div>
-            )}
+            
           </div>
         )}
       </nav>

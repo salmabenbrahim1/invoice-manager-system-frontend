@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { fetchClients, deleteClient } from "../services/manageClientsService";
-import CompanyLayout from "../components/CompanyLayout";
+import { fetchClients, deleteClient } from "../../services/manageClientsService";
+import CompanyLayout from "../../components/company/CompanyLayout";
 
 const ManageClientsPage = () => {
     const [loading, setLoading] = useState(false);
