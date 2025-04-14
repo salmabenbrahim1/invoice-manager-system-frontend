@@ -22,30 +22,27 @@ const isTokenExpired = (token) => {
 
 // Checking the token in localStorage
 const checkToken = () => {
-    const token = localStorage.getItem('authToken');
-  
-    if (token && !isTokenExpired(token)) {
+  const token = localStorage.getItem('authToken');
+  if (token && !isTokenExpired(token)) {
       const decoded = jwtDecode(token);
-  
       let name = '';
       if (decoded.role === 'COMPANY') {
-        name = decoded.companyName;
+          name = decoded.companyName;
       } else if (decoded.firstName && decoded.lastName) {
-        name = `${decoded.firstName} ${decoded.lastName}`;
+          name = `${decoded.firstName} ${decoded.lastName}`;
       } else {
-        name = decoded.email;
+          name = decoded.email;
       }
-  
+
       setUser({
-        email: decoded.email,
-        role: decoded.role,
-        name: name
+          email: decoded.email,
+          role: decoded.role,
+          name: name
       });
-    } else {
+  } else {
       setUser(null);
-    }
-  };
-  
+  }
+};
 
 // Login function
 const login = (email, role, token) => {
@@ -75,24 +72,24 @@ const login = (email, role, token) => {
   };
 
   const updateUser = (updatedUser) => {
-    setUser(updatedUser);  // Update user in the context
-
-    // You can also save updated info in localStorage if you need
+    setUser(updatedUser);  // Met à jour le state `user`
+  
+    // update `localStorage`
     localStorage.setItem('email', updatedUser.email);
     localStorage.setItem('role', updatedUser.role);
-
-    // Optionally, you could also update the token if needed.
+    localStorage.setItem('authToken', updatedUser.token);
+  
   };
-
   useEffect(() => {
     checkToken();
   }, []);
-
+  
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
+  
 };
 
 // Custom hook to access the AuthContext

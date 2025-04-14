@@ -1,67 +1,88 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { useAuth } from '../context/AuthContext'; 
-import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { getUserProfile, updateUserProfile } from '../services/userService';
+import { toast } from 'react-toastify';
 
 const EditProfileForm = ({ show, onHide, onSave }) => {
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
-    password: '',
     companyName: '',
     cin: '',
     gender: '',
     firstName: '',
-    lastName: ''
+    lastName: '',
+    newPassword: ''
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('authToken'); // Récupère le token d'authentification
-        const res = await axios.get('http://localhost:9090/api/users/me', {
-          headers: {
-            Authorization: `Bearer ${token}` // Ajoute le token dans l'en-tête de la requête
-          }
-        });
-
-        const data = res.data; // Données récupérées du backend
-        setFormData({
-          email: data.email || '',
-          phone: data.phone || '',
-          password: data.password || '',
-          companyName: data.companyName || '',
-          cin: data.cin || '',
-          gender: data.gender || '',
-          firstName: data.firstName || '',
-          lastName: data.lastName || ''
-        });
-      } catch (error) {
-        console.error('Erreur de chargement des données utilisateur :', error);
-      }
-    };
-
     if (user) {
-      fetchData(); 
+      const fetchData = async () => {
+        try {
+          const data = await getUserProfile();
+          setFormData((prev) => ({
+            ...prev,
+            email: data.email || '',
+            phone: data.phone || '',
+            companyName: data.companyName || '',
+            cin: data.cin || '',
+            gender: data.gender || '',
+            firstName: data.firstName || '',
+            lastName: data.lastName || '',
+            newPassword: ''
+          }));
+        } catch (error) {
+          console.error('Error loading profile: ', error);
+          toast.error('Failed to load profile.');
+        }
+      };
+
+      fetchData();
     }
   }, [user]);
 
   const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const {
+      email,
+      phone,
+      companyName,
+      firstName,
+      lastName,
+      cin,
+      gender,
+      newPassword
+    } = formData;
+
+    const dataToSend = { email, phone };
+
+    if (user.role === 'COMPANY') {
+      dataToSend.companyName = companyName;
+    } else {
+      dataToSend.firstName = firstName;
+      dataToSend.lastName = lastName;
+      dataToSend.cin = cin;
+      dataToSend.gender = gender;
+    }
+
+    if (newPassword && newPassword.trim() !== '') {
+      dataToSend.password = newPassword;
+    }
+
     try {
-      const token = localStorage.getItem('authToken'); // Récupère le token d'authentification
-      await axios.put('http://localhost:9090/api/users/me', formData, {
-        headers: {
-          Authorization: `Bearer ${token}` // Ajoute le token dans l'en-tête de la requête
-        }
-      });
-      onSave(formData); 
+      await updateUserProfile(dataToSend);
+      toast.success('Profile updated successfully!');
+      if (onSave) onSave();
     } catch (error) {
-      console.error('Erreur lors de la mise à jour du profil :', error);
+      console.error('Error updating profile:', error);
+      toast.error('Error updating profile.');
     }
   };
 
@@ -73,10 +94,11 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
         <Modal.Title>Edit Profile</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+        <Form onSubmit={handleSubmit}>
           <Form.Group controlId="email">
             <Form.Label>Email</Form.Label>
             <Form.Control
+              type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -86,19 +108,21 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
           <Form.Group controlId="phone">
             <Form.Label>Phone</Form.Label>
             <Form.Control
+              type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
             />
           </Form.Group>
 
-          <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
+          <Form.Group controlId="newPassword">
+            <Form.Label>New Password</Form.Label>
             <Form.Control
               type="password"
-              name="password"
-              value={formData.password}
+              name="newPassword"
+              value={formData.newPassword}
               onChange={handleChange}
+              placeholder="Leave blank to keep unchanged"
             />
           </Form.Group>
 
@@ -132,7 +156,7 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group controlId="cin">
-                <Form.Label>CIN</Form.Label>
+                <Form.Label>ID Number (CIN)</Form.Label>
                 <Form.Control
                   name="cin"
                   value={formData.cin}
@@ -148,19 +172,18 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
                   value={formData.gender}
                   onChange={handleChange}
                 >
-                  <option value="">Select Gender</option>
+                  <option value="">Select</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
                 </Form.Control>
               </Form.Group>
             </>
           )}
+          <Button variant="primary" type="submit" className="mt-3">
+            Save
+          </Button>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit}>Save Changes</Button>
-      </Modal.Footer>
     </Modal>
   );
 };
