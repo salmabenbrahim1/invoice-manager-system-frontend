@@ -64,9 +64,11 @@ const NavBar = () => {
                       <small>({user.role})</small>
                     </div>
                     <hr />
-                    <div className="menu-item" onClick={() => { closeMenu(); setShowModal(true); }}>
-                      Edit Profile
-                    </div>
+                    {user.role !== 'ADMIN' && ( // Exclude ADMIN
+                      <div className="menu-item" onClick={() => { closeMenu(); setShowModal(true); }}>
+                        Edit Profile
+                      </div>
+                    )}
                     <div className="menu-item logout" onClick={() => { logout(); closeMenu(); }}>
                       Logout
                     </div>

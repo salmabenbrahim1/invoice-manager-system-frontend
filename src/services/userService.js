@@ -2,6 +2,8 @@ import axios from 'axios';
 
 const API_URL = "http://localhost:9090/api/users";
 const APIDash_URL = "http://localhost:9090/api/users/dashboard";
+const API_URL_Profile = 'http://localhost:9090/api/users/me';
+
 
 // Fetch dashboard stats
 export const fetchUserStats = async () => {
@@ -51,4 +53,20 @@ export const deleteUser = async (userId) => {
   } catch (error) {
     throw new Error('Failed to delete user');
   }
+};
+
+export const getUserProfile = async () => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.get(API_URL_Profile, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
+
+export const updateUserProfile = async (data) => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.put(API_URL_Profile, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
 };
