@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { fetchUsers, deleteUser, createUser,updateUser } from "../services/userService";
+import { fetchUsers, deleteUser, createUser, updateUser, toggleUserActivation } from "../services/userService";
 import { toast } from "react-toastify";
 
 export const UserContext = createContext();
@@ -34,7 +34,7 @@ export const UserProvider = ({ children }) => {
   const handleDeleteUser = async (userId) => {
     try {
       await deleteUser(userId);
-      setUsers((prev) => prev.filter(user => user._id !== userId));
+      setUsers((prev) => prev.filter(user => user.id !== userId));
       toast.success("User deleted successfully!");
     } catch (error) {
       console.error("Error deleting user:", error);
@@ -47,13 +47,12 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       if (userId) {
-        await updateUser(userId, userData); 
-        await fetchUsersData();
+        await updateUser(userId, userData);
+        await fetchUsersData(); // Fetch users after updating
         toast.success("User updated successfully!");
       } else {
         const newUser = await createUser(userData);
-        // add the new user to UI
-        setUsers((prev) => [...prev, newUser]); 
+        await fetchUsersData(); // Re-fetch the users after adding
         toast.success("User added successfully!");
         setTimeout(() => toast.info("Email sent successfully!"), 500);
       }
@@ -64,7 +63,21 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
+  const handleDeactivateUser = async (userId, shouldActivate) => {
+    try {
+      const updatedUser = await toggleUserActivation(userId);
+      setUsers(users.map(user => 
+        user.id === userId ? { ...user, active: shouldActivate } : user
+      ));
+      toast.success(
+        shouldActivate 
+          ? "User activated successfully" 
+          : "User deactivated successfully"
+      );
+    } catch (error) {
+      toast.error("Failed to update user status");
+    }
+  };
 
   return (
     <UserContext.Provider
@@ -74,12 +87,13 @@ export const UserProvider = ({ children }) => {
         error,
         handleDeleteUser,
         handleSaveUser,
+        handleDeactivateUser,
         fetchUsersData,
+
       }}
     >
       {children}
     </UserContext.Provider>
   );
 };
-
 

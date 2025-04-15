@@ -4,12 +4,15 @@ import { motion } from 'framer-motion';
 import imagesWebsite from '../assets/images/imagesWebsite.png';
 import { validateEmail, loginService } from '../services/authService';
 import { useAuth } from '../context/AuthContext';
+import InfoModal from "../components/InfoModel";
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Manage the state of the modal
+  const [modalMessage, setModalMessage] = useState(''); // The message to display in the modal
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -57,6 +60,10 @@ const Login = () => {
       }
     } catch (error) {
       setError(error.message);
+      if (error.message === 'Your account has been deactivated by the admin.') {
+        setModalMessage('Your account has been deactivated by the admin. Please contact the admin for further details.');
+        setIsModalOpen(true); // Open the modal
+      }
     } finally {
       setLoading(false);
     }
@@ -128,6 +135,14 @@ const Login = () => {
           </form>
         </div>
       </motion.div>
+
+        {/* Information modal */}
+      <InfoModal
+        show={isModalOpen}
+        onHide={() => setIsModalOpen(false)}
+        title="Account Status"
+        message={modalMessage}
+      />
     </div>
   );
 };
