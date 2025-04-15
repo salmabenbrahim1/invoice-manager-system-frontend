@@ -55,6 +55,7 @@ export const deleteUser = async (userId) => {
   }
 };
 
+//update profil connecte
 export const getUserProfile = async () => {
   const token = localStorage.getItem('authToken');
   const response = await axios.get(API_URL_Profile, {
@@ -68,5 +69,9 @@ export const updateUserProfile = async (data) => {
   const response = await axios.put(API_URL_Profile, data, {
     headers: { Authorization: `Bearer ${token}` },
   });
+  return response.data;
+};
+export const toggleUserActivation = async (userId) => {
+  const response = await axios.put(`http://localhost:9090/api/users/${userId}/toggle-active`);
   return response.data;
 };
