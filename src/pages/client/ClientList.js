@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SideBar from '../../components/SideBar';
+import SideBar from '../../components/Sidebar';
 import AddClientForm from '../../components/client/AddClientForm';
 import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
 import { useClient } from '../../context/ClientContext';

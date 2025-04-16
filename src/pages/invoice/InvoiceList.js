@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useInvoice } from '../../context/InvoiceContext';
-import Sidebar from '../../components/SideBar';
+import Sidebar from '../../components/Sidebar';
 import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';

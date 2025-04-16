@@ -44,18 +44,6 @@ export const updateUser = async (userId, userData) => {
     throw new Error('Failed to update user');
   }
 };
-
-// Delete a user
-export const deleteUser = async (userId) => {
-  try {
-    const response = await axios.delete(`${API_URL}/${userId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to delete user');
-  }
-};
-
-//update profil connecte
 export const getUserProfile = async () => {
   const token = localStorage.getItem('authToken');
   const response = await axios.get(API_URL_Profile, {
@@ -64,6 +52,7 @@ export const getUserProfile = async () => {
   return response.data;
 };
 
+//update profil connected user
 export const updateUserProfile = async (data) => {
   const token = localStorage.getItem('authToken');
   const response = await axios.put(API_URL_Profile, data, {
