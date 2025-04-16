@@ -44,7 +44,7 @@ const Archive = () => {
           {filteredArchivedFolders.length > 0 ? (
             filteredArchivedFolders.map((folder) => (
               <li
-                key={folder._id}
+                key={folder.id}
                 className="flex items-center justify-between p-4 border-b border-gray-300 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300"
               >
                 <div className="flex items-center">

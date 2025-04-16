@@ -5,6 +5,9 @@ import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditProfileForm from './EditProfileForm';
 import '../styles/navbar.css'; 
+import invoiceLogo from '../assets/images/invox-logo.png'
+
+
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -36,14 +39,13 @@ const Navbar = () => {
   return (
     <nav className="navbar-container ">
       <div>
-        <Link to="/home" className="navbar-brand">
-          Invoice Manager
+        <Link to="/home" >
+        <img  className="navbar-logo" src={invoiceLogo} alt="Invoice Logo" />
         </Link>
 
         <button className="d-md-none btn" onClick={toggleMobileMenu}>
           {menuOpen ? <FaTimes /> : <FaBars />}
-        </button>
-
+        </button> 
         <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex '}  nav-links-container`} >
           <Link to="/home" className="nav-link">
             Home

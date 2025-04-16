@@ -32,7 +32,7 @@ const ClientList = () => {
 
   const deleteClient = async () => {
     if (clientToDelete) {
-      await handleDeleteClient(clientToDelete._id);
+      await handleDeleteClient(clientToDelete.id);
       toast.success("Client deleted successfully.");
     } else {
       toast.info("Client deletion canceled.");
@@ -99,7 +99,7 @@ const ClientList = () => {
             </thead>
             <tbody>
               {filteredClients.map((client) => (
-                <tr key={client._id} className="hover:bg-gray-50">
+                <tr key={client.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-800 flex items-center">
                     <FaUser className="text-blue-500 mr-2" />
                     {client.name}

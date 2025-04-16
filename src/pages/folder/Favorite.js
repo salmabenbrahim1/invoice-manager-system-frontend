@@ -25,7 +25,7 @@ const Favorite = () => {
 
     // using localStorage:
     //updating the local state and localStorage after the change
-    const updatedFavorites = favoriteFolders.filter((folder) => folder._id !== folderId);
+    const updatedFavorites = favoriteFolders.filter((folder) => folder.id !== folderId);
     setFavoriteFoldersState(updatedFavorites);
 
     // saving the updated favorites in localStorage
@@ -60,7 +60,7 @@ const Favorite = () => {
         <ul className="list-unstyled">
           {filteredFavoriteFolders.length > 0 ? (
             filteredFavoriteFolders.map((folder) => (
-              <li key={folder._id} className="d-flex justify-content-between align-items-center p-3 mb-3 border rounded bg-white shadow-sm">
+              <li key={folder.id} className="d-flex justify-content-between align-items-center p-3 mb-3 border rounded bg-white shadow-sm">
                 <div className="d-flex align-items-center">
                   <FaFolder size={30} className="me-3 text-primary" />
                   <div>
@@ -72,7 +72,7 @@ const Favorite = () => {
                 </div>
                 <div className="d-flex align-items-center">
                   <FaStar className="text-warning me-2" />
-                  <Button variant="danger" size="sm" onClick={() => handleRemoveFavorite(folder._id)}>
+                  <Button variant="danger" size="sm" onClick={() => handleRemoveFavorite(folder.id)}>
                     Remove
                   </Button>
                 </div>

@@ -1,11 +1,17 @@
 /* navbar.css */
 .navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000; /* Make sure it's above other content */
   background-color: white;
   padding: 1rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
-  justify-content: center; /* Center the navbar content */
+  justify-content: center;
 }
+
 
 .navbar-container > div {
   width: 100%;
@@ -116,13 +122,17 @@
 .user-info {
   pointer-events: none;
 }
+.navbar-logo {
+  height: 48px; /* adjust as needed */
+  object-fit: contain;
+  display: block;
+}
+
 
 /* Mobile styles */
 @media (max-width: 768px) {
-  .navbar-container {
-    flex-direction: column;
-    padding: 1rem;
-  }
+  
+  
   
   .navbar-container > div {
     flex-direction: column;

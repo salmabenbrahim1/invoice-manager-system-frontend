@@ -30,13 +30,13 @@ const InvoiceList = () => {
     )
     .map((invoice) => ({
       ...invoice,
-      reactKey: invoice._id,
+      reactKey: invoice.id,
     }));
 
   const confirmDelete = async () => {
     if (invoiceToDelete) {
       try {
-        await handleDeleteInvoice(invoiceToDelete._id);
+        await handleDeleteInvoice(invoiceToDelete.id);
 
         toast.success('Invoice deleted successfully');
 

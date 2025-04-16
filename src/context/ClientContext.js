@@ -35,7 +35,7 @@ export const ClientProvider = ({ children }) => {
   const handleDeleteClient = async (clientId) => {
     try {
       await deleteClient(clientId);
-      setClients(clients.filter((client) => client._id !== clientId));
+      setClients(clients.filter((client) => client.id !== clientId));
     } catch (error) {
       console.error("Failed to delete client:", error);
     }
@@ -44,7 +44,7 @@ export const ClientProvider = ({ children }) => {
   const handleUpdateClient = async (clientId, client) => {
     try {
       const updatedClient = await updateClient(clientId, client);
-      setClients(clients.map((client) => (client._id === clientId ? updatedClient : client)));
+      setClients(clients.map((client) => (client.id === clientId ? updatedClient : client)));
     } catch (error) {
       console.error("Failed to update client:", error);
     }

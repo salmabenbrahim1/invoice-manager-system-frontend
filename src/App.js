@@ -10,7 +10,7 @@ import FolderList from './pages/folder/FolderList';
 import UsersPage from "./pages/admin/UsersPage";
 import Home from './pages/Home';
 import CompanyDashboard from './pages/company/CompanyDashboard';
-import NavBar from './components/Navbar';
+import Navbar from './components/Navbar';
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageClientsPage from './pages/company/ManageClientsPage';
 import ClientList from './pages/client/ClientList';
@@ -18,6 +18,7 @@ import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import InvoiceList from './pages/invoice/InvoiceList';
 import { ToastContainer } from 'react-toastify';
+
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
           <FolderProvider>
             <InvoiceProvider>
               <ToastContainer />
-              <NavBar />
+              <Navbar />
+              <div className="main-content">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
@@ -46,6 +48,8 @@ function App() {
                 <Route path="/favorites" element={<Favorite />} />
                 <Route path="/archive" element={<Archive />} />
               </Routes>
+              </div>
+              
             </InvoiceProvider>
           </FolderProvider>
         </ClientProvider>

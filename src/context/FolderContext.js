@@ -34,7 +34,7 @@ export const FolderProvider = ({ children }) => {
   const handleDeleteFolder = async (folderId) => {
     try {
       await deleteFolder(folderId);
-      setFolders((prevFolders) => prevFolders.filter(folder => folder._id !== folderId));
+      setFolders((prevFolders) => prevFolders.filter(folder => folder.id !== folderId));
     } catch (error) {
       console.error('Failed to delete folder:', error);
       toast.error('Failed to delete folder. Please try again.');
@@ -61,7 +61,7 @@ export const FolderProvider = ({ children }) => {
           // Default to first folder if no folderId in URL
           setCurrentFolder(folders[0]);
         } else {
-          const folderToSet = folders.find((folder) => folder._id === folderId);
+          const folderToSet = folders.find((folder) => folder.id === folderId);
           if (folderToSet) {
             setCurrentFolder(folderToSet);
           } else {
@@ -79,7 +79,7 @@ export const FolderProvider = ({ children }) => {
       const updatedFolder = await updateFolder(folderId, updatedData);
       setFolders((prevFolders) =>
         prevFolders.map((folder) =>
-          folder._id === folderId ? { ...folder, ...updatedFolder } : folder
+          folder.id === folderId ? { ...folder, ...updatedFolder } : folder
         )
       );
     } catch (error) {
@@ -90,21 +90,21 @@ export const FolderProvider = ({ children }) => {
 
   // Archive folders
   const archiveFolder = (folderId) => {
-    const folderToArchive = folders.find((folder) => folder._id === folderId);
+    const folderToArchive = folders.find((folder) => folder.id === folderId);
     if (!folderToArchive) return;
 
     setArchivedFolders((prevArchived) => [...prevArchived, folderToArchive]);
-    setFolders((prevFolders) => prevFolders.filter((folder) => folder._id !== folderId));
+    setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== folderId));
   };
 
   // Favorite folders
   const toggleFavorite = (folderId) => {
     setFavoriteFolders((prevFavorites) => {
-      const isFavorite = prevFavorites.some((fav) => fav._id === folderId);
+      const isFavorite = prevFavorites.some((fav) => fav.id === folderId);
       if (isFavorite) {
-        return prevFavorites.filter((fav) => fav._id !== folderId);
+        return prevFavorites.filter((fav) => fav.id !== folderId);
       } else {
-        const folderToAdd = folders.find((f) => f._id === folderId);
+        const folderToAdd = folders.find((f) => f.id === folderId);
         return [...prevFavorites, folderToAdd];
       }
     });
@@ -112,7 +112,7 @@ export const FolderProvider = ({ children }) => {
 
   // Ensuring `currentFolder` is always updated when folder is switched 
   const handleFolderSwitch = (folderId) => {
-    const folderToSet = folders.find((folder) => folder._id === folderId);
+    const folderToSet = folders.find((folder) => folder.id === folderId);
     if (folderToSet) {
       setCurrentFolder(folderToSet);
     } else {

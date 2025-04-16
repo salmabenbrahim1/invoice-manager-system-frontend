@@ -13,7 +13,7 @@ import { FaFolder, FaStar, FaSearch} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const FolderList = () => {
-  const { folders, handleAddFolder, handleDeleteFolder, archiveFolder, toggleFavorite } = useFolder();
+  const { folders, handleDeleteFolder, archiveFolder, toggleFavorite } = useFolder();
   
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -75,7 +75,7 @@ const FolderList = () => {
   });
 
   const handleAction = (action, folderId) => {
-    const folder = folders.find((f) => f._id === folderId);
+    const folder = folders.find((f) => f.id === folderId);
     if (!folder) return;
 
     switch (action) {
@@ -88,8 +88,8 @@ const FolderList = () => {
         break;
       case 'favorite':
         toggleFavorite(folderId);
-        const updatedFavorites = favoriteFolders.some(fav => fav._id === folderId)
-          ? favoriteFolders.filter(fav => fav._id !== folderId)
+        const updatedFavorites = favoriteFolders.some(fav => fav.id === folderId)
+          ? favoriteFolders.filter(fav => fav.id !== folderId)
           : [...favoriteFolders, folder];
         setFavoriteFolders(updatedFavorites);
         break;
@@ -147,14 +147,14 @@ const FolderList = () => {
             </Col>
           ) : (
             filteredFolders.map((folder) => {
-              const isFavorite = favoriteFolders.some((fav) => fav._id === folder._id);
+              const isFavorite = favoriteFolders.some((fav) => fav.id === folder.id);
               return (
-                <Col xs={12} md={6} lg={4} key={folder._id}>
+                <Col xs={12} md={6} lg={4} key={folder.id}>
                   <ContextMenu>
                     <ContextMenuTrigger>
                       <div
                         className={`folder-item ${selectedFolder === folder ? "selected" : ""}`}
-                        onClick={() => handleFolderClick(folder._id)} 
+                        onClick={() => handleFolderClick(folder.id)} 
                       >
                         <Card
                           className={`p-3 shadow-sm ${selectedFolder === folder ? "border-secondary" : ""}`}
@@ -183,7 +183,7 @@ const FolderList = () => {
 
                     {/* Folder Context Menu */}
                     <FolderContextMenu
-                      folderId={folder._id}
+                      folderId={folder.id}
                       onAction={handleAction}
                     />
                   </ContextMenu>

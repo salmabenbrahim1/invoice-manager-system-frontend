@@ -64,7 +64,7 @@ export const InvoiceProvider = ({ children }) => {
 
      //newInvoice is defined
       if (newInvoice) {
-        setInvoices(prev => prev.filter(invoice => invoice._id !== newInvoice._id));
+        setInvoices(prev => prev.filter(invoice => invoice.id !== newInvoice.id));
       }
       toast.error('Failed to add an invoice');
       throw error;
@@ -79,8 +79,8 @@ export const InvoiceProvider = ({ children }) => {
   try {
     setIsLoading(true);
 
-    await deleteInvoice(currentFolder._id, invoiceId);
-    setInvoices(prev => prev.filter(i => i._id !== invoiceId));
+    await deleteInvoice(currentFolder.id, invoiceId);
+    setInvoices(prev => prev.filter(i => i.id !== invoiceId));
 
   } catch (error) {
     toast.error('Failed to delete invoice');
@@ -100,7 +100,7 @@ export const InvoiceProvider = ({ children }) => {
         isLoading,
         setIsLoading,
         error,
-        currentFolderId: currentFolder?._id,
+        currentFolderId: currentFolder?.id,
         fetchInvoices,
         handleAddInvoice, 
         handleDeleteInvoice,
