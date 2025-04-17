@@ -72,7 +72,7 @@ const login = (email, role, token) => {
   };
 
   const updateUser = (updatedUser) => {
-    setUser(updatedUser);  // Met à jour le state `user`
+    setUser(updatedUser); // update user state
   
     // update `localStorage`
     localStorage.setItem('email', updatedUser.email);

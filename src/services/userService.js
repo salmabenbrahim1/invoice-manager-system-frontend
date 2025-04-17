@@ -34,17 +34,6 @@ export const createUser = async (userData) => {
     throw new Error('Failed to create user');
   }
 };
-
-// Update a user
-export const updateUser = async (userId, userData) => {
-  try {
-    const response = await axios.put(`${API_URL}/${userId}`, userData);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to update user');
-  }
-};
-
 // Delete a user
 export const deleteUser = async (userId) => {
   try {
@@ -55,7 +44,15 @@ export const deleteUser = async (userId) => {
   }
 };
 
-//update profil connecte
+// Update a user
+export const updateUser = async (userId, userData) => {
+  try {
+    const response = await axios.put(`${API_URL}/${userId}`, userData);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to update user');
+  }
+};
 export const getUserProfile = async () => {
   const token = localStorage.getItem('authToken');
   const response = await axios.get(API_URL_Profile, {
@@ -64,6 +61,7 @@ export const getUserProfile = async () => {
   return response.data;
 };
 
+//update profil connected user
 export const updateUserProfile = async (data) => {
   const token = localStorage.getItem('authToken');
   const response = await axios.put(API_URL_Profile, data, {

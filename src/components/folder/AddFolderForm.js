@@ -77,7 +77,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
         }
         //indicate a new client
         const addedClient = await handleAddClient(newClient);
-        clientData = { id: addedClient._id };
+        clientData = { id: addedClient.id };
         clientName = newClient.name;
       } else {
         // For an existing client, validate the selected client ID
@@ -88,7 +88,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
 
         clientData = { id: selectedClientId };
 
-        const selectedClient = clients.find((client) => client._id === selectedClientId);
+        const selectedClient = clients.find((client) => client.id === selectedClientId);
         clientName = selectedClient ? selectedClient.name : '';
       }
 
@@ -103,10 +103,10 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
       const createdFolder = await handleAddFolder(folderData);
 
       if (clientType === 'new') {
-        createdFolder.client = { _id: createdFolder.clientId, name: newClient.name };
+        createdFolder.client = { id: createdFolder.clientId, name: newClient.name };
       } else {
         const selectedClient = clients.find(
-          (client) => client._id === selectedClientId
+          (client) => client.id === selectedClientId
         );
         createdFolder.client = selectedClient;
       }
@@ -159,7 +159,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                   >
                     <option value="">Select a client</option>
                     {clients.map((client) => (
-                      <option key={client._id} value={client._id}>
+                      <option key={client.id} value={client.id}>
                         {client.name}
                       </option>
                     ))}

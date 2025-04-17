@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
-import { FaUserPlus, FaEdit, FaTrash, FaUser, FaBuilding, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaUserPlus, FaEdit, FaUser, FaBuilding, FaToggleOn, FaToggleOff,FaTrash } from "react-icons/fa";
 import UserModal from "../../components/admin/UserModal";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../context/UserContext";
@@ -11,7 +11,7 @@ const UsersPage = () => {
     users,
     handleDeleteUser,
     handleSaveUser,
-    handleDeactivateUser,
+    handleDesactivateUser,
   } = useUser();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,8 +25,8 @@ const UsersPage = () => {
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
-  const [userToDeactivate, setUserToDeactivate] = useState(null);
+  const [showDesactivateModal, setShowDesactivateModal] = useState(false);
+  const [userToDesactivate, setUserToDesactivate] = useState(null);
 
   const handleEdit = (user) => {
     setSelectedUser(user);
@@ -65,17 +65,19 @@ const UsersPage = () => {
     }
   };
 
-  const handleDeactivateConfirmation = (user) => {
-    setUserToDeactivate(user);
-    setShowDeactivateModal(true);
+
+
+  const handleDesactivateConfirmation = (user) => {
+    setUserToDesactivate(user);
+    setShowDesactivateModal(true);
   };
 
-  const handleDeactivateUserConfirmed = () => {
-    if (userToDeactivate) {
-      const newActiveState = !userToDeactivate.active;
-      handleDeactivateUser(userToDeactivate.id, newActiveState);
-      setShowDeactivateModal(false);
-      setUserToDeactivate(null);
+  const handleDesactivateUserConfirmed = () => {
+    if (userToDesactivate) {
+      const newActiveState = !userToDesactivate.active;
+      handleDesactivateUser(userToDesactivate.id, newActiveState);
+      setShowDesactivateModal(false);
+      setUserToDesactivate(null);
     }
   };
 
@@ -190,15 +192,15 @@ const UsersPage = () => {
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <FaEdit />
-                    </button>
-                    <button
+                    </button> <button
                       onClick={() => handleDeleteConfirmation(user)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <FaTrash />
                     </button>
+
                     <button
-                      onClick={() => handleDeactivateConfirmation(user)}
+                      onClick={() => handleDesactivateConfirmation(user)}
                       className="hover:text-gray-700"
                     >
                       {user.active ? (
@@ -236,22 +238,24 @@ const UsersPage = () => {
         }
         isDeactivation={false}
       />
-        <ConfirmModal
-        show={showDeactivateModal}
-        onHide={() => setShowDeactivateModal(false)}
-        onConfirm={handleDeactivateUserConfirmed}
+
+
+      <ConfirmModal
+        show={showDesactivateModal}
+        onHide={() => setShowDesactivateModal(false)}
+        onConfirm={handleDesactivateUserConfirmed}
         title={
-          userToDeactivate?.active
-            ? "Confirm Deactivation"
+          userToDesactivate?.active
+            ? "Confirm Desactivation"
             : "Confirm Activation"
         }
         message={
-          userToDeactivate?.active ? (
+          userToDesactivate?.active ? (
             <>
               <p>
                 <span style={{ fontWeight: "bold", color: "orange" }}>Warning:</span>{" "}
-                You are about to <strong>deactivate</strong> the user with the
-                email <strong>{userToDeactivate?.email}</strong>.
+                You are about to <strong>desactivate</strong> the user with the
+                email <strong>{userToDesactivate?.email}</strong>.
               </p>
               <p>
                 This will{" "}
@@ -264,7 +268,7 @@ const UsersPage = () => {
               <p>
                 <span style={{ fontWeight: "bold", color: "green" }}>Info:</span>{" "}
                 You are about to <strong>activate</strong> the user with the
-                email <strong>{userToDeactivate?.email}</strong>.
+                email <strong>{userToDesactivate?.email}</strong>.
               </p>
               <p>
                 This will{" "}
@@ -274,8 +278,8 @@ const UsersPage = () => {
             </>
           )
         }
-        isDeactivation={true}
-        isActive={userToDeactivate?.active}
+        isDesactivation={true}
+        isActive={userToDesactivate?.active}
       />
     </AdminLayout>
   );

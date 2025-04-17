@@ -42,7 +42,7 @@ const UpdateClientForm = ({ show, onHide, clientData }) => {
          }
 
     try {
-      await handleUpdateClient(clientData._id, formData); 
+      await handleUpdateClient(clientData.id, formData); 
       toast.success('Client updated successfully!');
       onHide(); // Close the modal
     } catch (error) {

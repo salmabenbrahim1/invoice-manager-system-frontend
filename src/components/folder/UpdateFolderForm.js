@@ -30,7 +30,7 @@ const UpdateFolderForm = ({ show, onHide, folderData }) => {
     
 
     try {
-      await handleUpdateFolder(folderData._id, formData); 
+      await handleUpdateFolder(folderData.id, formData); 
       toast.success('folder updated successfully!');
       onHide(); // Close the modal
     } catch (error) {

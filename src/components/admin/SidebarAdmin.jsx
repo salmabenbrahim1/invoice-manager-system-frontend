@@ -1,54 +1,41 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import { FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../../styles/sideBar.css'; 
+import '../../styles/sidebar.css';
+import { useAuth } from '../../context/AuthContext'; // Adjust the import path as necessary
 
 const SidebarAdmin = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  // Logout function
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    window.location.href = "/login";
-  };
+  const { logout } = useAuth(); 
 
   return (
     <div className="sidebar-container">
       <hr className="sidebar-divider" />
 
-      <nav className="flex flex-column space-y-4">
-        {/* Admin Section */}
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className="sidebar-toggle"
+      <nav className="flex flex-column sidebar-submenu">
+       
+
+        <NavLink
+          to="/admin"
+          className="sidebar-link"
         >
-          {isOpen ? <ChevronDown className="text-xl" /> : <ChevronRight className="text-xl" />}
-          <span className="sidebar-toggle-text">Admin</span>
-        </div>
+          <FaChartBar className="mr-3 text-lg" />
+          <span>Dashboard</span>
+        </NavLink>
+        <NavLink
+          to="/users"
+          className="sidebar-link"
+        >
+          <FaUsers className="mr-3 text-lg" />
+          <span>Users</span>
+        </NavLink>
 
-        {isOpen && (
-          <div className="sidebar-submenu">
-            <NavLink
-              to="/users"
-              className="sidebar-link"
-            >
-              <FaUsers className="mr-3 text-lg" />
-              <span className="text-md">Users</span>
-            </NavLink>
-            <NavLink
-              to="/admin"
-              className="sidebar-link"
-            >
-              <FaChartBar className="mr-3 text-lg" />
-              <span className="text-md">Dashboard</span>
-            </NavLink>
-
-           
-          </div>
-        )}
+        {/* Logout Button */}
+        <button onClick={logout} className="sidebar-link">
+          <FaSignOutAlt className="mr-3 text-lg" />
+          <span className="text-md">Logout</span>
+        </button>
       </nav>
+
       <hr />
     </div>
   );

@@ -1,56 +1,75 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Navbar, Nav, Container } from 'react-bootstrap';
-import { FaUserCircle, FaBuilding } from 'react-icons/fa';
+import { FaUserCircle, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import EditProfileForm from './EditProfileForm'; 
-import '../styles/navBar.css';
+import EditProfileForm from './EditProfileForm';
+import '../styles/navbar.css'; 
+import invoiceLogo from '../assets/images/invox-logo.png'
 
-const NavBar = () => {
+
+
+const Navbar = () => {
   const { user, logout } = useAuth();
+  console.log("Navbar user:", user);
+
+
   const [menuOpen, setMenuOpen] = useState(false);
-  const [showModal, setShowModal] = useState(false); 
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const menuRef = useRef(null);
+  const userIconRef = useRef(null);
   const UserIcon = user?.role === 'COMPANY' ? FaBuilding : FaUserCircle;
 
-  const toggleMenu = () => setMenuOpen(!menuOpen);
-  const closeMenu = () => setMenuOpen(false);
+  const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
+  const toggleMobileMenu = () => setMenuOpen(!menuOpen);
 
-  // Handle outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        closeMenu();
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target) &&
+        userIconRef.current &&
+        !userIconRef.current.contains(event.target)
+      ) {
+        setUserMenuOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
-    <Navbar bg="light" expand="lg" className="navbar-container">
-      <Container>
-        <Navbar.Brand href="/home" className="flex-grow-1 text-center">
-          Invoice Manager
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
-          <Nav className="me-auto">
-            <Nav.Link as={Link} to="/home">Home</Nav.Link>
-            <Nav.Link as={Link} to="/manage-invoices">Manage Invoices</Nav.Link>
-            <Nav.Link as={Link} to="/contact-us">Contact Us</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
+    <nav className="navbar-container ">
+      <div>
+        <Link to="/home" >
+        <img  className="navbar-logo" src={invoiceLogo} alt="Invoice Logo" />
+        </Link>
+
+        <button className="d-md-none btn" onClick={toggleMobileMenu}>
+          {menuOpen ? <FaTimes /> : <FaBars />}
+        </button> 
+        <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex '}  nav-links-container`} >
+          <Link to="/home" className="nav-link">
+            Home
+          </Link>
+          <Link to="/manage-invoices" className="nav-link">
+            Manage Invoices
+          </Link>
+          <Link to="/contact-us" className="nav-link">
+            Contact Us
+          </Link>
+        </div>
 
         <div className="user-section" ref={menuRef}>
           {user ? (
-            <div className="user-icon-wrapper">
-              <UserIcon className="user-icon" onClick={toggleMenu} style={{ cursor: 'pointer' }} />
+            <div className="user-profile">
+              <div className="user-icon-wrapper" onClick={toggleUserMenu} ref={userIconRef}>
+                <UserIcon className="user-icon" />
+              </div>
 
               <AnimatePresence>
-                {menuOpen && (
+                {userMenuOpen && (
                   <motion.div
                     className="custom-user-menu"
                     initial={{ opacity: 0, y: -10 }}
@@ -58,18 +77,30 @@ const NavBar = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <div className="menu-item user-info" onClick={closeMenu}>
-                      <strong>{user.name || user.email}</strong>
-                      <br />
+                    <div className="user-info">
+                      <div className="user-name">{user.name || user.email}</div>
                       <small>({user.role})</small>
                     </div>
-                    <hr />
-                    {user.role !== 'ADMIN' && ( // Exclude ADMIN
-                      <div className="menu-item" onClick={() => { closeMenu(); setShowModal(true); }}>
+
+                    {user.role !== 'ADMIN' && (
+                      <div
+                        className="menu-item"
+                        onClick={() => {
+                          setUserMenuOpen(false);
+                          setShowModal(true);
+                        }}
+                      >
                         Edit Profile
                       </div>
                     )}
-                    <div className="menu-item logout" onClick={() => { logout(); closeMenu(); }}>
+                    <div
+                      className="menu-item logout"
+                      onClick={() => {
+                        logout();
+                        setUserMenuOpen(false);
+
+                      }}
+                    >
                       Logout
                     </div>
                   </motion.div>
@@ -82,18 +113,18 @@ const NavBar = () => {
             </Link>
           )}
         </div>
-      </Container>
+      </div>
 
       <EditProfileForm
-        show={showModal} 
+        show={showModal}
         onHide={() => setShowModal(false)}
         onSave={(updatedUser) => {
-          console.log(updatedUser); 
-          setShowModal(false); 
+          console.log(updatedUser);
+          setShowModal(false);
         }}
       />
-    </Navbar>
+    </nav>
   );
 };
 
-export default NavBar;
+export default Navbar;
