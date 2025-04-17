@@ -34,6 +34,15 @@ export const createUser = async (userData) => {
     throw new Error('Failed to create user');
   }
 };
+// Delete a user
+export const deleteUser = async (userId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${userId}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to delete user');
+  }
+};
 
 // Update a user
 export const updateUser = async (userId, userData) => {

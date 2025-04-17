@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
-import { FaUserPlus, FaEdit,  FaUser, FaBuilding, FaToggleOn, FaToggleOff } from "react-icons/fa";
+import { FaUserPlus, FaEdit, FaUser, FaBuilding, FaToggleOn, FaToggleOff,FaTrash } from "react-icons/fa";
 import UserModal from "../../components/admin/UserModal";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../context/UserContext";
@@ -9,6 +9,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 const UsersPage = () => {
   const {
     users,
+    handleDeleteUser,
     handleSaveUser,
     handleDesactivateUser,
   } = useUser();
@@ -22,6 +23,8 @@ const UsersPage = () => {
 
   const usersPerPage = 6;
 
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
   const [showDesactivateModal, setShowDesactivateModal] = useState(false);
   const [userToDesactivate, setUserToDesactivate] = useState(null);
 
@@ -48,6 +51,20 @@ const UsersPage = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
   };
+
+  const handleDeleteConfirmation = (user) => {
+    setUserToDelete(user);
+    setShowConfirmModal(true);
+  };
+
+  const handleDeleteUserConfirmed = () => {
+    if (userToDelete) {
+      handleDeleteUser(userToDelete.id);
+      setShowConfirmModal(false);
+      setUserToDelete(null);
+    }
+  };
+
 
 
   const handleDesactivateConfirmation = (user) => {
@@ -175,8 +192,13 @@ const UsersPage = () => {
                       className="text-blue-500 hover:text-blue-700"
                     >
                       <FaEdit />
+                    </button> <button
+                      onClick={() => handleDeleteConfirmation(user)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <FaTrash />
                     </button>
-                   
+
                     <button
                       onClick={() => handleDesactivateConfirmation(user)}
                       className="hover:text-gray-700"
@@ -202,8 +224,23 @@ const UsersPage = () => {
         onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
       />
 
-      
-        <ConfirmModal
+      <ConfirmModal
+        show={showConfirmModal}
+        onHide={() => setShowConfirmModal(false)}
+        onConfirm={handleDeleteUserConfirmed}
+        title="Confirm Deletion"
+        message={
+          <p>
+            You are about to permanently delete the user with email{" "}
+            <strong>{userToDelete?.email}</strong>.
+            This action cannot be undone.
+          </p>
+        }
+        isDeactivation={false}
+      />
+
+
+      <ConfirmModal
         show={showDesactivateModal}
         onHide={() => setShowDesactivateModal(false)}
         onConfirm={handleDesactivateUserConfirmed}

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import SideBar from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import AddClientForm from '../../components/client/AddClientForm';
 import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
 import { useClient } from '../../context/ClientContext';
 import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/ConfirmModal';
+import Pagination from '../../components/Pagination';
 
 const ClientList = () => {
   const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
@@ -14,17 +15,17 @@ const ClientList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [clientToEdit, setClientToEdit] = useState(null);
-
-  // Confirmation modal state
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
   const [clientToDelete, setClientToDelete] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const clientsPerPage = 10;
 
   const addClient = async (newClient) => {
     await handleAddClient(newClient);
     setShowAddModal(false);
   };
 
-  // Show confirmation modal before deleting a client
   const requestDeleteClient = (client) => {
     setClientToDelete(client);
     setShowConfirmModal(true);
@@ -41,49 +42,50 @@ const ClientList = () => {
     setShowConfirmModal(false);
   };
 
-  // Open edit modal with selected client
   const openEditModal = (client) => {
     setClientToEdit(client);
     setShowEditModal(true);
   };
-  // update a client
+
   const updateClient = async (clientId, updatedClient) => {
     await handleUpdateClient(clientId, updatedClient);
     setShowEditModal(false);
   };
-  //Search for aclient by his name or email
+
   const filteredClients = clients.filter((client) =>
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
+  const currentClients = filteredClients.slice(
+    (currentPage - 1) * clientsPerPage,
+    currentPage * clientsPerPage
+  );
+
   return (
     <div className="flex h-screen">
-      <SideBar />
-
+      <Sidebar />
       <div className="flex flex-col flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">My Clients</h2>
           <div className="flex space-x-4">
-
             <div className="relative">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search folders..."
+                placeholder="Search clients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg  shadow-md"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-md"
               />
             </div>
-            <div>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-              >
-                <FaUserPlus className="mr-2" /> Add Client
-              </button>
-            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              <FaUserPlus className="mr-2" /> Add Client
+            </button>
           </div>
         </div>
 
@@ -98,7 +100,7 @@ const ClientList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredClients.map((client) => (
+              {currentClients.map((client) => (
                 <tr key={client.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 text-sm text-gray-800 flex items-center">
                     <FaUser className="text-blue-500 mr-2" />
@@ -109,7 +111,8 @@ const ClientList = () => {
                   <td className="px-6 py-4 text-sm text-gray-600">
                     <button
                       onClick={() => openEditModal(client)}
-                      className="text-blue-500 hover:text-blue-700 mr-2">
+                      className="text-blue-500 hover:text-blue-700 mr-2"
+                    >
                       <FaEdit />
                     </button>
                     <button
@@ -124,6 +127,15 @@ const ClientList = () => {
             </tbody>
           </table>
         </div>
+
+        {/*  Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          />
+        
       </div>
 
       {/* Add Client Modal */}

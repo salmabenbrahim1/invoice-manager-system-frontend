@@ -11,6 +11,9 @@ import invoiceLogo from '../assets/images/invox-logo.png'
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  console.log("Navbar user:", user);
+
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -95,6 +98,7 @@ const Navbar = () => {
                       onClick={() => {
                         logout();
                         setUserMenuOpen(false);
+
                       }}
                     >
                       Logout

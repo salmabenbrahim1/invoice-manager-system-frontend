@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { fetchUsers, createUser, updateUser, toggleUserActivation } from "../services/userService";
+import { fetchUsers, createUser,deleteUser, updateUser, toggleUserActivation } from "../services/userService";
 import { toast } from "react-toastify";
 
 export const UserContext = createContext();
@@ -52,6 +52,17 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  // Delete a user
+  const handleDeleteUser = async (userId) => {
+    try {
+      await deleteUser(userId);
+      setUsers((prev) => prev.filter(user => user.id !== userId));
+      toast.success("User deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      toast.error("Error deleting the user.");
+    }
+  };
   const handleDesactivateUser = async (userId, shouldActivate) => {
     try {
      await toggleUserActivation(userId);
@@ -74,6 +85,7 @@ export const UserProvider = ({ children }) => {
         users,
         loading,
         error,
+        handleDeleteUser,
         handleSaveUser,
         handleDesactivateUser,
         fetchUsersData,
