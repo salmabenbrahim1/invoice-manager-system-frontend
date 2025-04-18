@@ -1,46 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../../styles/sidebar.css'; 
+import '../../styles/sidebar.css';
+import { useAuth } from '../../context/AuthContext';
 
 const SideBarCompany = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-
-  // Logout function
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    window.location.href = "/login";
-  };
+  const { logout } = useAuth(); 
 
   return (
     <div className="sidebar-container">
-      <nav className="flex flex-col space-y-4">
-        <div onClick={() => setIsOpen(!isOpen)} className="sidebar-toggle">
-          {isOpen ? <ChevronDown className="text-xl" /> : <ChevronRight className="text-xl" />}
-          <span className="sidebar-toggle-text">Company</span>
-        </div>
+      <hr className="sidebar-divider" />
 
-        {isOpen && (
-          <div className="sidebar-submenu">
-            <NavLink to="/clients" className="sidebar-link">
-              <FaBuilding className="mr-3 text-lg" />
-              <span className="text-md">Manage Internal Accountants</span>
-            </NavLink>
-            <NavLink to="/manage_clients" className="sidebar-link">
-              <FaUsers className="mr-3 text-lg" />
-              <span className="text-md">Manage Clients</span>
-            </NavLink>
-            <NavLink to="/company" className="sidebar-link">
-              <FaChartBar className="mr-3 text-lg" />
-              <span className="text-md">Dashboard</span>
-            </NavLink>
+      <nav className="flex flex-column sidebar-submenu">
+        <NavLink
+          to="/company"
+          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
+        >
+          <FaChartBar className="mr-3 text-lg" />
+          <span>Dashboard</span>
+        </NavLink>
 
-            
-          </div>
-        )}
+        <NavLink
+          to="/internal-accountants"
+          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
+        >
+          <FaBuilding className="mr-3 text-lg" />
+          <span>Manage Internal Accountants</span>
+        </NavLink>
+
+        <NavLink
+          to="/manage_clients"
+          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
+        >
+          <FaUsers className="mr-3 text-lg" />
+          <span>Manage Clients</span>
+        </NavLink>
+
+        {/* Logout Button */}
+        <button onClick={logout} type="button" className="sidebar-link logout-btn">
+          <FaSignOutAlt className="mr-3 text-lg" />
+          <span>Logout</span>
+        </button>
       </nav>
+
+      <hr />
     </div>
   );
 };
