@@ -18,6 +18,7 @@ import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import InvoiceList from './pages/invoice/InvoiceList';
 import { ToastContainer } from 'react-toastify';
+import AccountantDashboard from './pages/accountant/AccountantDashboard';
 
 
 function App() {
@@ -37,9 +38,11 @@ function App() {
 
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/users" element={<UsersPage />} />
-                <Route path='/company' element={<CompanyDashboard />} />
 
+                <Route path='/company' element={<CompanyDashboard />} />
                 <Route path='/manage_clients' element={<ManageClientsPage />} />
+
+                <Route path='/accountant' element={<AccountantDashboard />} />
                 <Route path="/my-folders" element={<FolderList />} />
                 <Route path="/manage-invoices" element={<FolderList />} />
 

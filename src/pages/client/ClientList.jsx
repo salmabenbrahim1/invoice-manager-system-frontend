@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
+import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import AddClientForm from '../../components/client/AddClientForm';
 import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
 import { useClient } from '../../context/ClientContext';
 import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
-import ConfirmModal from '../../components/ConfirmModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
 import Pagination from '../../components/Pagination';
 
 const ClientList = () => {
@@ -65,7 +65,7 @@ const ClientList = () => {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
+      <SidebarAccountant />
       <div className="flex flex-col flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">My Clients</h2>

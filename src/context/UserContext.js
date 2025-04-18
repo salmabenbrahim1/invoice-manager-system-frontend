@@ -63,7 +63,7 @@ export const UserProvider = ({ children }) => {
       toast.error("Error deleting the user.");
     }
   };
-  const handleDesactivateUser = async (userId, shouldActivate) => {
+  const handleDeactivateUser = async (userId, shouldActivate) => {
     try {
      await toggleUserActivation(userId);
       setUsers(users.map(user => 
@@ -71,8 +71,8 @@ export const UserProvider = ({ children }) => {
       ));
       toast.success(
         shouldActivate 
-          ? "User successfully activated " 
-          : "User successfully desactivated "
+          ? "User has been successfully activated" 
+          : "User has been successfully deactivated"
       );
     } catch (error) {
       toast.error("Failed to update user status");
@@ -87,7 +87,7 @@ export const UserProvider = ({ children }) => {
         error,
         handleDeleteUser,
         handleSaveUser,
-        handleDesactivateUser,
+        handleDeactivateUser,
         fetchUsersData,
 
       }}

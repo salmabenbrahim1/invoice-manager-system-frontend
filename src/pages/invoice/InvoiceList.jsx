@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useInvoice } from '../../context/InvoiceContext';
-import Sidebar from '../../components/Sidebar';
+import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';
@@ -49,7 +49,7 @@ const InvoiceList = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar />
+      <SidebarAccountant />
       <div className="flex flex-col flex-grow p-6 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Manage invoices</h1>

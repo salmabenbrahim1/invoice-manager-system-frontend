@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { useAuth } from '../context/AuthContext';
-import { getUserProfile, updateUserProfile } from '../services/userService';
+import { useAuth } from '../../context/AuthContext';
+import { getUserProfile, updateUserProfile } from '../../services/userService';
 import { toast } from 'react-toastify';
 
 const EditProfileForm = ({ show, onHide, onSave }) => {
