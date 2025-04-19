@@ -1,96 +1,92 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);  // Nouveau état pour gérer le chargement
   const navigate = useNavigate();
 
-// Function to check if the JWT token is expired
-const isTokenExpired = (token) => {
+  const isTokenExpired = (token) => {
     try {
       const decoded = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       return decoded.exp < currentTime;
     } catch (error) {
-      return true; // If the token is invalid, we consider it as expired
-
+      return true;
     }
   };
 
-// Checking the token in localStorage
-const checkToken = () => {
-  const token = localStorage.getItem('authToken');
-  if (token && !isTokenExpired(token)) {
+  const checkToken = () => {
+    const token = localStorage.getItem('authToken');
+    if (token && !isTokenExpired(token)) {
       const decoded = jwtDecode(token);
       let name = '';
+
       if (decoded.role === 'COMPANY') {
-          name = decoded.companyName;
+        name = decoded.companyName;
       } else if (decoded.firstName && decoded.lastName) {
-          name = `${decoded.firstName} ${decoded.lastName}`;
+        name = `${decoded.firstName} ${decoded.lastName}`;
       } else {
-          name = decoded.email;
+        name = decoded.email;
       }
 
       setUser({
-          email: decoded.email,
-          role: decoded.role,
-          name: name
+        email: decoded.email,
+        role: decoded.role,
+        name: name,
       });
-  } else {
+    } else {
       setUser(null);
-  }
-};
+    }
+    setLoading(false);  // Une fois que le token a été vérifié, on marque le chargement comme terminé
+  };
 
-// Login function
-const login = (email, role, token) => {
+  const login = (email, role, token) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('email', email);
     localStorage.setItem('role', role);
 
-    const decodedToken = jwtDecode(token); // Decode the token to extract the information
-
+    const decodedToken = jwtDecode(token);
     const { firstName, lastName, companyName } = decodedToken;
+    let name = '';
 
     if (role === 'COMPANY') {
-      setUser({ email, role, name: companyName });  // For a company, we display the company name
-
-    } else if (role === 'INDEPENDENT_ACCOUNTANT') {
-      setUser({ email, role, name: `${firstName} ${lastName}` });  
+      name = companyName;
+    } else if (firstName && lastName) {
+      name = `${firstName} ${lastName}`;
     } else {
-      setUser({ email, role });  
+      name = email;
     }
+
+    setUser({ email, role, name });
   };
 
-// Logout function
-    const logout = () => {
-    localStorage.clear(); 
-    setUser(null); 
-    navigate('/login'); 
+  const logout = () => {
+    localStorage.clear();
+    setUser(null);
+    navigate('/login');
   };
 
   const updateUser = (updatedUser) => {
-    setUser(updatedUser); // update user state
-  
-    // update `localStorage`
+    setUser(updatedUser);
+
     localStorage.setItem('email', updatedUser.email);
     localStorage.setItem('role', updatedUser.role);
     localStorage.setItem('authToken', updatedUser.token);
-  
   };
+
   useEffect(() => {
     checkToken();
-  }, []);
-  
+  }, []);  // Se lance uniquement au montage du composant
+
   return (
     <AuthContext.Provider value={{ user, login, logout, updateUser }}>
-      {children}
+      {!loading && children}  {/* Si l'état utilisateur est chargé, afficher les enfants */}
     </AuthContext.Provider>
   );
-  
 };
 
-// Custom hook to access the AuthContext
 export const useAuth = () => useContext(AuthContext);

@@ -5,6 +5,7 @@ import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie } from 'react-
 
 import '../../styles/sidebar.css';
 
+
 const SidebarCompany = () => {
     const { logout } = useAuth(); 
   
@@ -43,6 +44,7 @@ const SidebarCompany = () => {
                   <span className="text-md">Logout</span>
                 </button>
       </nav>
+
 
     </div>
   );
