@@ -1,88 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash } from "react-icons/fa";
-import AddInternalAccountantForm from "../../components/company/AddInternalAccountantForm"; 
+import AddInternalAccountantForm from "../../components/company/AddInternalAccountantForm";
 import Pagination from "../../components/Pagination";
-import { useUser } from "../../context/UserContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import CompanyLayout from "../../components/company/CompanyLayout";
+import axios from "axios";
 
 const InternalAccountantsPage = () => {
-  const {
-    users,
-    handleDeleteUser,
-    handleSaveUser,
-    handleDesactivateUser,
-  } = useUser();
-
+  const [accountants, setAccountants] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedAccountant, setSelectedAccountant] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
+  const [accountantToDelete, setAccountantToDelete] = useState(null);
   const [showDesactivateModal, setShowDesactivateModal] = useState(false);
-  const [userToDesactivate, setUserToDesactivate] = useState(null);
+  const [accountantToDesactivate, setAccountantToDesactivate] = useState(null);
 
-  const accountants = users.filter(
-    (user) =>
-      user.role === "INTERNAL ACCOUNTANT" &&
-      (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.lastName?.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Fetch the list of internal accountants
+  useEffect(() => {
+    const fetchAccountants = async () => {
+      try {
+        const response = await axios.get("/api/internal-accountants");
+        setAccountants(response.data);
+      } catch (error) {
+        console.error("Error fetching accountants:", error);
+      }
+    };
+
+    fetchAccountants();
+  }, []);
 
   const accountantsPerPage = 6;
   const totalPages = Math.ceil(accountants.length / accountantsPerPage);
-  const currentUsers = accountants.slice(
+  const currentAccountants = accountants.slice(
     (currentPage - 1) * accountantsPerPage,
     currentPage * accountantsPerPage
   );
 
-  const handleEdit = (user) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = {
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      firstName: e.target.firstName.value,
-      lastName: e.target.lastName.value,
-      role: "INTERNAL ACCOUNTANT",
-    };
-
-    await handleSaveUser(formData, selectedUser?.id);
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  const handleDeleteConfirmation = (user) => {
-    setUserToDelete(user);
+  const handleDeleteConfirmation = (accountant) => {
+    setAccountantToDelete(accountant);
     setShowConfirmModal(true);
   };
 
-  const handleDeleteUserConfirmed = () => {
-    if (userToDelete) {
-      handleDeleteUser(userToDelete.id);
-      setShowConfirmModal(false);
-      setUserToDelete(null);
+  const handleDeleteAccountantConfirmed = async () => {
+    if (accountantToDelete) {
+      try {
+        await axios.delete(`/api/internal-accountants/${accountantToDelete.id}`);
+        setAccountants(accountants.filter((accountant) => accountant.id !== accountantToDelete.id));
+        setShowConfirmModal(false);
+      } catch (error) {
+        console.error("Error deleting accountant:", error);
+      }
+      setAccountantToDelete(null);
     }
   };
 
-  const handleDesactivateConfirmation = (user) => {
-    setUserToDesactivate(user);
+  const handleDesactivateConfirmation = (accountant) => {
+    setAccountantToDesactivate(accountant);
     setShowDesactivateModal(true);
   };
 
-  const handleDesactivateUserConfirmed = () => {
-    if (userToDesactivate) {
-      const newActiveState = !userToDesactivate.active;
-      handleDesactivateUser(userToDesactivate.id, newActiveState);
-      setShowDesactivateModal(false);
-      setUserToDesactivate(null);
+  const handleDesactivateAccountantConfirmed = async () => {
+    if (accountantToDesactivate) {
+      try {
+        const newActiveState = !accountantToDesactivate.active;
+        await axios.patch(`/api/internal-accountants/${accountantToDesactivate.id}`, {
+          active: newActiveState,
+        });
+        setAccountants(
+          accountants.map((accountant) =>
+            accountant.id === accountantToDesactivate.id
+              ? { ...accountant, active: newActiveState }
+              : accountant
+          )
+        );
+        setShowDesactivateModal(false);
+      } catch (error) {
+        console.error("Error updating active state:", error);
+      }
+      setAccountantToDesactivate(null);
     }
   };
 
@@ -97,10 +94,7 @@ const InternalAccountantsPage = () => {
           className="px-4 py-2 border rounded-lg"
         />
         <button
-          onClick={() => {
-            setSelectedUser(null);
-            setIsModalOpen(true);
-          }}
+          onClick={() => setIsModalOpen(true)}
           className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
         >
           <FaUserPlus className="mr-2" />
@@ -108,13 +102,10 @@ const InternalAccountantsPage = () => {
         </button>
       </div>
 
-{/* Modal to add an internal accountant */}
+      {/* Modal to add an internal accountant */}
       <AddInternalAccountantForm
         show={isModalOpen}
-        onHide={() => {
-          setIsModalOpen(false);
-          setSelectedUser(null);
-        }}
+        onHide={() => setIsModalOpen(false)}
       />
 
       <div className="overflow-x-auto">
@@ -128,25 +119,18 @@ const InternalAccountantsPage = () => {
             </tr>
           </thead>
           <tbody>
-            {currentUsers.map((user) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4 border-b">{user.email}</td>
-                <td className="px-6 py-4 border-b">{user.phone}</td>
-                <td className="px-6 py-4 border-b">{user.firstName} {user.lastName}</td>
+            {currentAccountants.map((accountant) => (
+              <tr key={accountant.id}>
+                <td className="px-6 py-4 border-b">{accountant.email}</td>
+                <td className="px-6 py-4 border-b">{accountant.phone}</td>
+                <td className="px-6 py-4 border-b">{accountant.firstName} {accountant.lastName}</td>
                 <td className="px-6 py-4 border-b">
                   <div className="flex space-x-4 items-center">
-                    <button onClick={() => handleEdit(user)} className="text-blue-500">
-                      <FaEdit />
-                    </button>
-                    <button onClick={() => handleDeleteConfirmation(user)} className="text-red-500">
+                    <button onClick={() => handleDeleteConfirmation(accountant)} className="text-red-500">
                       <FaTrash />
                     </button>
-                    <button onClick={() => handleDesactivateConfirmation(user)}>
-                      {user.active ? (
-                        <FaToggleOn className="text-green-500" />
-                      ) : (
-                        <FaToggleOff className="text-gray-500" />
-                      )}
+                    <button onClick={() => handleDesactivateConfirmation(accountant)} className="text-green-500">
+                      {accountant.active ? <FaToggleOn /> : <FaToggleOff />}
                     </button>
                   </div>
                 </td>
@@ -159,48 +143,24 @@ const InternalAccountantsPage = () => {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-        onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        onNext={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
+        onPrevious={() => setCurrentPage((page) => Math.max(page - 1, 1))}
       />
 
+      {/* Confirm delete modal */}
       <ConfirmModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
-        onConfirm={handleDeleteUserConfirmed}
-        title="Confirm Deletion"
-        message={
-          <p>
-            Are you sure you want to delete the internal accountant with email{" "}
-            <strong>{userToDelete?.email}</strong>?
-          </p>
-        }
-        isDeactivation={false}
+        onConfirm={handleDeleteAccountantConfirmed}
+        message="Are you sure you want to delete this accountant?"
       />
 
+      {/* Confirm desactivation modal */}
       <ConfirmModal
         show={showDesactivateModal}
         onHide={() => setShowDesactivateModal(false)}
-        onConfirm={handleDesactivateUserConfirmed}
-        title={
-          userToDesactivate?.active
-            ? "Confirm Deactivation"
-            : "Confirm Activation"
-        }
-        message={
-          userToDesactivate?.active ? (
-            <p>
-              You are about to <strong>deactivate</strong> the user{" "}
-              <strong>{userToDesactivate?.email}</strong>.
-            </p>
-          ) : (
-            <p>
-              You are about to <strong>activate</strong> the user{" "}
-              <strong>{userToDesactivate?.email}</strong>.
-            </p>
-          )
-        }
-        isDesactivation={true}
-        isActive={userToDesactivate?.active}
+        onConfirm={handleDesactivateAccountantConfirmed}
+        message="Are you sure you want to deactivate/activate this accountant?"
       />
     </CompanyLayout>
   );

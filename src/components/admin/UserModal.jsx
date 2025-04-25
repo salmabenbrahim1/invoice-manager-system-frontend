@@ -5,7 +5,17 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={onClose}>
-            <div className="bg-white p-8 rounded-lg w-96" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-white p-8 rounded-lg w-96 relative" onClick={(e) => e.stopPropagation()}>
+                {/* Close button top-right */}
+                <button
+                 onClick={onClose}
+                 className="absolute top-2 right-2 text-gray-500 hover:text-red-600 transition-colors duration-200 text-2xl font-bold"
+                 aria-label="Close modal"
+                          >
+                         &times;
+                </button>
+
+
                 <h2 className="text-3xl font-bold mb-6 text-gray-900">{user ? "Edit User" : "Sign Up"}</h2>
 
                 <div className="flex justify-center mb-6">

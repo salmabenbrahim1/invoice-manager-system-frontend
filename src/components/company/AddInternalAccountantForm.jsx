@@ -1,24 +1,20 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Modal, Form, Button } from "react-bootstrap";
-import { useUser } from "../../context/UserContext"; 
 import axios from "axios";
 
 const AddInternalAccountantForm = ({ show, onHide }) => {
-  const { handleAddInternalAccountant } = useUser(); // Function to add the internal accountant
-
   const [newAccountant, setNewAccountant] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phoneNumber: "",
     cin: "", // CIN
-    password: "", // Password will be fetched from the backend
+    gender: "", // Gender field
   });
 
-  // Handle form submission
   const handleSave = async () => {
-    if (!newAccountant.firstName || !newAccountant.lastName || !newAccountant.email || !newAccountant.phoneNumber || !newAccountant.cin) {
+    if (!newAccountant.firstName || !newAccountant.lastName || !newAccountant.email || !newAccountant.phoneNumber || !newAccountant.cin || !newAccountant.gender) {
       toast.warn("Please fill in all details.");
       return;
     }
@@ -46,13 +42,18 @@ const AddInternalAccountantForm = ({ show, onHide }) => {
 
     try {
       // Send the request to create the internal accountant
-      const response = await axios.post("/api/internal-accountants/add", newAccountant);
+      const response = await axios.post("/api/internal-accountants", newAccountant);
       toast.success("Internal Accountant added successfully!");
 
-      // Store the password in the state to show in the form
-      setNewAccountant({ ...newAccountant, password: response.data.password });
-
-      setNewAccountant({ firstName: "", lastName: "", email: "", phoneNumber: "", cin: "", password: "" }); // Reset form
+      // Reset form
+      setNewAccountant({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        cin: "",
+        gender: "",
+      });
       onHide(); // Close modal
     } catch (error) {
       toast.error("Failed to add internal accountant.");
@@ -111,8 +112,21 @@ const AddInternalAccountantForm = ({ show, onHide }) => {
               onChange={(e) => setNewAccountant({ ...newAccountant, cin: e.target.value })}
             />
           </Form.Group>
-          <div className="text-sm text-gray-700">Password will be auto-generated.</div>
 
+          {/* Gender Field */}
+          <Form.Group className="mb-3">
+            <Form.Label>Gender <span className="text-red-500">*</span></Form.Label>
+            <Form.Control
+              as="select"
+              value={newAccountant.gender}
+              onChange={(e) => setNewAccountant({ ...newAccountant, gender: e.target.value })}
+            >
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </Form.Control>
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
