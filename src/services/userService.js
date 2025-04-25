@@ -1,75 +1,97 @@
 import axios from 'axios';
 
-const API_URL = "http://localhost:9090/api/users";
-const APIDash_URL = "http://localhost:9090/api/users/dashboard";
-const API_URL_Profile = 'http://localhost:9090/api/users/me';
+
+const API_URL = 'http://localhost:9090/api/users';
 
 
-// Fetch dashboard stats
-export const fetchUserStats = async () => {
-  try {
-    const response = await axios.get(APIDash_URL);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to fetch user statistics');
+export const userService = {
+  // Create a new user
+  createUser: async (userData) => {
+    try {
+      const response = await axios.post(API_URL, userData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to create user');
+    }
+  },
+
+  // Get all users
+  getAllUsers: async () => {
+    try {
+      const response = await axios.get(API_URL);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch users');
+    }
+  },
+
+  // Get user by ID
+  getUserById: async (id) => {
+    try {
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'User not found');
+    }
+  },
+
+  // Update user
+  updateUser: async (id, userData) => {
+    try {
+      const response = await axios.put(`${API_URL}/${id}`, userData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to update user');
+    }
+  },
+
+  // Delete user
+  deleteUser: async (id) => {
+    try {
+      await axios.delete(`${API_URL}/${id}`);
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to delete user');
+    }
+  },
+
+  // Toggle user activation
+  toggleUserActivation: async (id) => {
+    try {
+      await axios.patch(`${API_URL}/${id}/toggle-activation`);
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to toggle activation');
+    }
+  },
+
+  // Get user statistics (admin only)
+  getUserStats: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/dashboard`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch stats');
+    }
+  },
+
+  // Get current user profile
+  getCurrentUserProfile: async () => {
+    try {
+      const response = await axios.get(`${API_URL}/me`);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch profile');
+    }
+  },
+
+  // Helper function to check permissions (mirrors backend logic)
+  canManage: (currentUser) => {
+    return currentUser?.role === 'ADMIN' || currentUser?.role === 'COMPANY';
+  },
+
+  // Helper function to check view permissions
+  canView: (currentUser, targetUser) => {
+    if (currentUser?.role === 'ADMIN') return true;
+    return targetUser?.createdBy === currentUser?.id;
   }
 };
 
-// Fetch all users
-export const fetchUsers = async () => {
-  try {
-    const response = await axios.get(API_URL);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to fetch users');
-  }
-};
-
-// Create a user
-export const createUser = async (userData) => {
-  try {
-    const response = await axios.post(API_URL, userData);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to create user');
-  }
-};
-// Delete a user
-export const deleteUser = async (userId) => {
-  try {
-    const response = await axios.delete(`${API_URL}/${userId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to delete user');
-  }
-};
-
-// Update a user
-export const updateUser = async (userId, userData) => {
-  try {
-    const response = await axios.put(`${API_URL}/${userId}`, userData);
-    return response.data;
-  } catch (error) {
-    throw new Error('Failed to update user');
-  }
-};
-export const getUserProfile = async () => {
-  const token = localStorage.getItem('authToken');
-  const response = await axios.get(API_URL_Profile, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
-
-//update profil connected user
-export const updateUserProfile = async (data) => {
-  const token = localStorage.getItem('authToken');
-  const response = await axios.put(API_URL_Profile, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
-export const toggleUserActivation = async (userId) => {
-  const response = await axios.put(`http://localhost:9090/api/users/${userId}/toggle-active`);
-  return response.data;
-};

@@ -20,7 +20,7 @@ const SidebarAdmin = () => {
 
 
         <NavLink
-          to="/admin"
+          to="/admin/dashboard"
           className="sidebar-link"
         >
           <FaChartBar className="mr-3 text-lg" />

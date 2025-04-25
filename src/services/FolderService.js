@@ -5,6 +5,13 @@ const api = axios.create({
   baseURL: 'http://localhost:9090/api'
 });
 
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 //fetching all folders from the backend
 export const getFolders = async () => {
   try {

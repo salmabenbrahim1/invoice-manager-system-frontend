@@ -1,92 +1,128 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { useAuth } from '../../context/AuthContext';
-import { getUserProfile, updateUserProfile } from '../../services/userService';
+import { useUser } from '../../context/UserContext';
 import { toast } from 'react-toastify';
+import LoadingSpinner from '../LoadingSpinner';
 
 const EditProfileForm = ({ show, onHide, onSave }) => {
-  const { user } = useAuth();
+  const { currentUser, loading, error, saveUser } = useUser();
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
-    companyName: '',
-    cin: '',
-    gender: '',
     firstName: '',
     lastName: '',
+    gender: '',
+    companyName: '',
+    cin: '',
     newPassword: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Populate form with currentUser data when it changes
   useEffect(() => {
-    if (user) {
-      const fetchData = async () => {
-        try {
-          const data = await getUserProfile();
-          setFormData((prev) => ({
-            ...prev,
-            email: data.email || '',
-            phone: data.phone || '',
-            companyName: data.companyName || '',
-            cin: data.cin || '',
-            gender: data.gender || '',
-            firstName: data.firstName || '',
-            lastName: data.lastName || '',
-            newPassword: ''
-          }));
-        } catch (error) {
-          console.error('Error loading profile: ', error);
-          toast.error('Failed to load profile.');
-        }
-      };
-
-      fetchData();
+    if (currentUser) {
+      setFormData({
+        email: currentUser.email || '',
+        phone: currentUser.phone || '',
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        gender: currentUser.gender || '',
+        companyName: currentUser.companyName || '',
+        cin: currentUser.cin || '',
+        newPassword: ''
+      });
     }
-  }, [user]);
+  }, [currentUser, show]); // Added show to reset when reopening modal
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    // Common validations for all users
+    if (!formData.email) {
+      toast.warn('Email is required');
+      return false;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast.warn('Please enter a valid email address');
+      return false;
+    }
+
+    // Phone validation
+    if (formData.phone && !/^\+?[\d\s-]{8,15}$/.test(formData.phone)) {
+      toast.warn('Please enter a valid phone number (8-15 digits)');
+      return false;
+    }
+
+    // Role-specific validations
+    if (currentUser.role === 'COMPANY') {
+      if (!formData.companyName) {
+        toast.warn('Company name is required');
+        return false;
+      }
+    } else {
+      if (!formData.firstName || !formData.lastName) {
+        toast.warn('First and last names are required');
+        return false;
+      }
+      
+      if (formData.cin && !/^[0-9]{8}$/.test(formData.cin)) {
+        toast.warn('CIN must be 8 digits');
+        return false;
+      }
+    }
+
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const {
-      email,
-      phone,
-      companyName,
-      firstName,
-      lastName,
-      cin,
-      gender,
-      newPassword
-    } = formData;
-
-    const dataToSend = { email, phone };
-
-    if (user.role === 'COMPANY') {
-      dataToSend.companyName = companyName;
-    } else {
-      dataToSend.firstName = firstName;
-      dataToSend.lastName = lastName;
-      dataToSend.cin = cin;
-      dataToSend.gender = gender;
-    }
-
-    if (newPassword && newPassword.trim() !== '') {
-      dataToSend.password = newPassword;
-    }
-
+    
+    if (!validateForm()) return;
+    
+    setIsSubmitting(true);
+    
     try {
-      await updateUserProfile(dataToSend);
+      const updatedData = { ...formData };
+      
+      // Remove password field if empty
+      if (!updatedData.newPassword) {
+        delete updatedData.newPassword;
+      } else if (updatedData.newPassword.length < 8) {
+        toast.warn('Password must be at least 8 characters');
+        return;
+      }
+
+      await saveUser(updatedData, currentUser.id);
       toast.success('Profile updated successfully!');
+      onHide();
       if (onSave) onSave();
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Error updating profile.');
+      toast.error(error.message || 'Failed to update profile');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (!user) return null;
+  if (loading) return (
+    <div className="p-8 flex justify-center items-center h-screen">
+      <LoadingSpinner size="lg" color="primary" />
+    </div>
+  );
+
+  if (error) return (
+    <div className="alert alert-danger">
+      Error loading profile: {error.message || error}
+    </div>
+  );
+
+  if (!currentUser) return null;
 
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -95,93 +131,112 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="email">
-            <Form.Label>Email</Form.Label>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email *</Form.Label>
             <Form.Control
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
+              required
             />
           </Form.Group>
 
-          <Form.Group controlId="phone">
-            <Form.Label>Phone</Form.Label>
+          <Form.Group className="mb-3" controlId="phone">
+            <Form.Label>Phone Number</Form.Label>
             <Form.Control
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
+              placeholder="+1234567890"
             />
           </Form.Group>
 
-          <Form.Group controlId="newPassword">
+          <Form.Group className="mb-3" controlId="newPassword">
             <Form.Label>New Password</Form.Label>
             <Form.Control
               type="password"
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
-              placeholder="Leave blank to keep unchanged"
+              placeholder="Leave blank to keep current password"
+              minLength={8}
             />
+            <Form.Text className="text-muted">
+              Minimum 8 characters
+            </Form.Text>
           </Form.Group>
 
-          {user.role === 'COMPANY' ? (
-            <Form.Group controlId="companyName">
-              <Form.Label>Company Name</Form.Label>
+          {currentUser.role === 'COMPANY' ? (
+            <Form.Group className="mb-3" controlId="companyName">
+              <Form.Label>Company Name *</Form.Label>
               <Form.Control
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
+                required
               />
             </Form.Group>
           ) : (
             <>
-              <Form.Group controlId="firstName">
-                <Form.Label>First Name</Form.Label>
+              <Form.Group className="mb-3" controlId="firstName">
+                <Form.Label>First Name *</Form.Label>
                 <Form.Control
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
+                  required
                 />
               </Form.Group>
 
-              <Form.Group controlId="lastName">
-                <Form.Label>Last Name</Form.Label>
+              <Form.Group className="mb-3" controlId="lastName">
+                <Form.Label>Last Name *</Form.Label>
                 <Form.Control
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
+                  required
                 />
               </Form.Group>
 
-              <Form.Group controlId="cin">
+              <Form.Group className="mb-3" controlId="cin">
                 <Form.Label>ID Number (CIN)</Form.Label>
                 <Form.Control
                   name="cin"
                   value={formData.cin}
                   onChange={handleChange}
+                  maxLength={8}
                 />
               </Form.Group>
 
-              <Form.Group controlId="gender">
+              <Form.Group className="mb-3" controlId="gender">
                 <Form.Label>Gender</Form.Label>
-                <Form.Control
-                  as="select"
+                <Form.Select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
                 >
-                  <option value="">Select</option>
+                  <option value="">Select gender</option>
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                </Form.Control>
+                </Form.Select>
               </Form.Group>
             </>
           )}
-          <Button variant="primary" type="submit" className="mt-3">
-            Save
-          </Button>
+
+          <div className="d-flex justify-content-end mt-4">
+            <Button variant="secondary" onClick={onHide} className="me-2">
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </Button>
+          </div>
         </Form>
       </Modal.Body>
     </Modal>

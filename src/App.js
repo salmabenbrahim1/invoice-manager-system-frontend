@@ -1,19 +1,16 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './pages/Login';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 
 import { ClientProvider } from './context/ClientContext';
 import { FolderProvider } from './context/FolderContext';
-import { UserProvider } from "./context/UserContext";
 import { InvoiceProvider } from './context/InvoiceContext';
 import FolderList from './pages/folder/FolderList';
-import UsersPage from "./pages/admin/UsersPage";
+import UsersPage from './pages/admin/UsersPage';
 import Home from './pages/Home';
 import CompanyDashboard from './pages/company/CompanyDashboard';
 import Navbar from './components/Navbar';
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import ManageClientsPage from './pages/company/ManageClientsPage';
-import ClientList from './pages/client/ClientList';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import InvoiceList from './pages/invoice/InvoiceList';
@@ -22,11 +19,19 @@ import AccountantDashboard from './pages/accountant/AccountantDashboard';
 import Unauthorized from './pages/Unauthorized';
 import PrivateRoute from './components/PrivateRoute';
 import InternalAccountantsPage from './pages/company/InternalAccountantsPage';
+import CompanyClientsPage from './pages/client/CompanyClientsPage';
+import AccountantClientsPage from './pages/client/AccountantClientsPage';
+import { UserProvider } from './context/UserContext';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
     <div>
+      <AuthProvider> 
+              
+            
       <UserProvider>
+
         <ClientProvider>
           <FolderProvider>
             <InvoiceProvider>
@@ -39,37 +44,20 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/unauthorized" element={<Unauthorized />} />
 
+                  {/* Admin Dashboard */}
                   <Route
-                    path="/accountant"
-                    element={
-                      <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT']}>
-                        <AccountantDashboard />                      
-                      </PrivateRoute>
-                    }
-                  />
-
-
-                  {/* Admin-only routes */}
-                  <Route
-                    path="/admin"
+                    path="/admin/dashboard"
                     element={
                       <PrivateRoute allowedRoles={['ADMIN']}>
                         <AdminDashboard />
                       </PrivateRoute>
                     }
                   />
-                  <Route
-                    path="/users"
-                    element={
-                      <PrivateRoute allowedRoles={['ADMIN']}>
-                        <UsersPage />
-                      </PrivateRoute>
-                    }
-                  />
+                  <Route path="/users" element={<UsersPage />} />
 
                   {/* Company-only routes */}
                   <Route
-                    path="/company"
+                    path="/company/dashboard"
                     element={
                       <PrivateRoute allowedRoles={['COMPANY']}>
                         <CompanyDashboard />
@@ -77,18 +65,28 @@ function App() {
                     }
                   />
                   <Route
-                    path="/manage_clients"
+                    path="/manage-clients"
                     element={
                       <PrivateRoute allowedRoles={['COMPANY']}>
-                        <ManageClientsPage />
+                        <CompanyClientsPage />
                       </PrivateRoute>
                     }
                   />
                   <Route
-                    path="/internal-accountants"
+                    path="/my-accountants"
                     element={
                       <PrivateRoute allowedRoles={['COMPANY']}>
                         <InternalAccountantsPage />
+                      </PrivateRoute>
+                    }
+                  />
+
+                  {/* Independent Accountant routes */}
+                  <Route
+                    path="/accountant/dashboard"
+                    element={
+                      <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT']}>
+                        <AccountantDashboard />
                       </PrivateRoute>
                     }
                   />
@@ -96,7 +94,7 @@ function App() {
                     path="/my-clients"
                     element={
                       <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT']}>
-                        <ClientList />
+                        <AccountantClientsPage />
                       </PrivateRoute>
                     }
                   />
@@ -147,6 +145,8 @@ function App() {
           </FolderProvider>
         </ClientProvider>
       </UserProvider>
+      </AuthProvider>
+
     </div>
   );
 }

@@ -1,17 +1,23 @@
-import React, { useState } from "react";
-import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
 import AddInternalAccountantForm from "../../components/company/AddInternalAccountantForm"; 
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../context/UserContext";
 import ConfirmModal from "../../components/ConfirmModal";
 import CompanyLayout from "../../components/company/CompanyLayout";
+import { toast } from "react-toastify";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const InternalAccountantsPage = () => {
   const {
     users,
-    handleDeleteUser,
-    handleSaveUser,
-    handleDesactivateUser,
+    currentUser,
+    loading,
+    error,
+    deleteUser,
+    toggleActivation,
+    refreshUsers,
+    saveUser
   } = useUser();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,188 +26,270 @@ const InternalAccountantsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
-  const [showDesactivateModal, setShowDesactivateModal] = useState(false);
-  const [userToDesactivate, setUserToDesactivate] = useState(null);
+  const [showToggleModal, setShowToggleModal] = useState(false);
+  const [userToToggle, setUserToToggle] = useState(null);
 
+  // Filter internal accountants
   const accountants = users.filter(
     (user) =>
       user.role === "INTERNAL ACCOUNTANT" &&
       (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.lastName?.toLowerCase().includes(searchQuery.toLowerCase()))
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  // Pagination
   const accountantsPerPage = 6;
   const totalPages = Math.ceil(accountants.length / accountantsPerPage);
-  const currentUsers = accountants.slice(
+  const currentAccountants = accountants.slice(
     (currentPage - 1) * accountantsPerPage,
     currentPage * accountantsPerPage
   );
 
-  const handleEdit = (user) => {
-    setSelectedUser(user);
-    setIsModalOpen(true);
-  };
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = {
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      firstName: e.target.firstName.value,
-      lastName: e.target.lastName.value,
-      role: "INTERNAL ACCOUNTANT",
-    };
-
-    await handleSaveUser(formData, selectedUser?.id);
-    setIsModalOpen(false);
-    setSelectedUser(null);
-  };
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleDeleteConfirmation = (user) => {
     setUserToDelete(user);
     setShowConfirmModal(true);
   };
 
-  const handleDeleteUserConfirmed = () => {
-    if (userToDelete) {
-      handleDeleteUser(userToDelete.id);
+  const handleDeleteUserConfirmed = async () => {
+    try {
+      await deleteUser(userToDelete.id);
+      toast.success("Accountant deleted successfully");
+      refreshUsers();
+    } catch (err) {
+      toast.error(err.message || "Failed to delete accountant");
+    } finally {
       setShowConfirmModal(false);
       setUserToDelete(null);
     }
   };
 
-  const handleDesactivateConfirmation = (user) => {
-    setUserToDesactivate(user);
-    setShowDesactivateModal(true);
+  const handleToggleConfirmation = (user) => {
+    setUserToToggle(user);
+    setShowToggleModal(true);
   };
 
-  const handleDesactivateUserConfirmed = () => {
-    if (userToDesactivate) {
-      const newActiveState = !userToDesactivate.active;
-      handleDesactivateUser(userToDesactivate.id, newActiveState);
-      setShowDesactivateModal(false);
-      setUserToDesactivate(null);
+  const handleToggleConfirmed = async () => {
+    try {
+      const updatedUser = await toggleActivation(userToToggle.id);
+      toast.success(
+        `Accountant ${updatedUser.active ? "activated" : "deactivated"} successfully`
+      );
+      refreshUsers();
+    } catch (err) {
+      toast.error(err.message || "Failed to toggle activation");
+    } finally {
+      setShowToggleModal(false);
+      setUserToToggle(null);
     }
+  };
+
+  const handleSaveAccountant = async (accountantData) => {
+    try {
+      const dataToSave = selectedUser 
+        ? { ...accountantData, id: selectedUser.id } 
+        : { ...accountantData, active: true };
+
+      await saveUser(dataToSave);
+      toast.success(
+        `Accountant ${selectedUser ? 'updated' : 'created'} successfully`
+      );
+      refreshUsers();
+      setIsModalOpen(false);
+      setSelectedUser(null);
+    } catch (error) {
+      toast.error(error.message || "Failed to save accountant");
+    }
+  };
+
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
   };
 
   return (
     <CompanyLayout>
-      <div className="flex justify-between mb-4">
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
-        />
-        <button
-          onClick={() => {
+      <div className="container mx-auto px-4 py-8">
+        {/* Search and Add Button */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <div className="relative w-full md:w-1/2">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FaSearch className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search accountants by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          
+          <button
+            onClick={() => {
+              setSelectedUser(null);
+              setIsModalOpen(true);
+            }}
+            className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 w-full md:w-auto"
+            disabled={loading}
+          >
+            <FaUserPlus className="mr-2" />
+            Add Internal Accountant
+          </button>
+        </div>
+
+        {/* Add/Edit Accountant Form */}
+        <AddInternalAccountantForm
+          show={isModalOpen}
+          onHide={() => {
+            setIsModalOpen(false);
             setSelectedUser(null);
-            setIsModalOpen(true);
           }}
-          className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          <FaUserPlus className="mr-2" />
-          Add Internal Accountant
-        </button>
-      </div>
+          userToEdit={selectedUser}
+          onSave={handleSaveAccountant}
+          loading={loading}
+        />
 
-{/* Modal to add an internal accountant */}
-      <AddInternalAccountantForm
-        show={isModalOpen}
-        onHide={() => {
-          setIsModalOpen(false);
-          setSelectedUser(null);
-        }}
-      />
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 border-b text-left text-sm text-gray-700">Email</th>
-              <th className="px-6 py-3 border-b text-left text-sm text-gray-700">Phone</th>
-              <th className="px-6 py-3 border-b text-left text-sm text-gray-700">Full Name</th>
-              <th className="px-6 py-3 border-b text-left text-sm text-gray-700">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentUsers.map((user) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4 border-b">{user.email}</td>
-                <td className="px-6 py-4 border-b">{user.phone}</td>
-                <td className="px-6 py-4 border-b">{user.firstName} {user.lastName}</td>
-                <td className="px-6 py-4 border-b">
-                  <div className="flex space-x-4 items-center">
-                    <button onClick={() => handleEdit(user)} className="text-blue-500">
-                      <FaEdit />
-                    </button>
-                    <button onClick={() => handleDeleteConfirmation(user)} className="text-red-500">
-                      <FaTrash />
-                    </button>
-                    <button onClick={() => handleDesactivateConfirmation(user)}>
-                      {user.active ? (
-                        <FaToggleOn className="text-green-500" />
-                      ) : (
-                        <FaToggleOff className="text-gray-500" />
-                      )}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-        onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-      />
-
-      <ConfirmModal
-        show={showConfirmModal}
-        onHide={() => setShowConfirmModal(false)}
-        onConfirm={handleDeleteUserConfirmed}
-        title="Confirm Deletion"
-        message={
-          <p>
-            Are you sure you want to delete the internal accountant with email{" "}
-            <strong>{userToDelete?.email}</strong>?
-          </p>
-        }
-        isDeactivation={false}
-      />
-
-      <ConfirmModal
-        show={showDesactivateModal}
-        onHide={() => setShowDesactivateModal(false)}
-        onConfirm={handleDesactivateUserConfirmed}
-        title={
-          userToDesactivate?.active
-            ? "Confirm Deactivation"
-            : "Confirm Activation"
-        }
-        message={
-          userToDesactivate?.active ? (
-            <p>
-              You are about to <strong>deactivate</strong> the user{" "}
-              <strong>{userToDesactivate?.email}</strong>.
-            </p>
+        {/* Accountants Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          {loading && !accountants.length ? (
+            <div className="p-8 text-center">
+              <LoadingSpinner size="lg" />
+            </div>
+          ) : currentAccountants.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              {searchQuery ? "No matching accountants found" : "No internal accountants available"}
+            </div>
           ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {currentAccountants.map((user) => (
+                    <tr key={user.id}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-gray-900">
+                          {user.firstName} {user.lastName}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {user.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {user.phone || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          user.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {user.active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-3">
+                          <button
+                            onClick={() => handleEditClick(user)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="Edit"
+                            disabled={loading}
+                          >
+                            <FaEdit />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteConfirmation(user)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Delete"
+                            disabled={loading}
+                          >
+                            <FaTrash />
+                          </button>
+                          <button
+                            onClick={() => handleToggleConfirmation(user)}
+                            className={user.active ? "text-yellow-600 hover:text-yellow-900" : "text-green-600 hover:text-green-900"}
+                            title={user.active ? "Deactivate" : "Activate"}
+                            disabled={loading}
+                          >
+                            {user.active ? <FaToggleOn /> : <FaToggleOff />}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-6 flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </div>
+        )}
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          show={showConfirmModal}
+          onHide={() => setShowConfirmModal(false)}
+          onConfirm={handleDeleteUserConfirmed}
+          title="Confirm Deletion"
+          message={
             <p>
-              You are about to <strong>activate</strong> the user{" "}
-              <strong>{userToDesactivate?.email}</strong>.
+              Are you sure you want to permanently delete accountant <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>?
+              <br />
+              <span className="text-red-600">This action cannot be undone.</span>
             </p>
-          )
-        }
-        isDesactivation={true}
-        isActive={userToDesactivate?.active}
-      />
+          }
+          isDeactivation={false}
+        />
+
+        {/* Activation/Deactivation Confirmation Modal */}
+        <ConfirmModal
+          show={showToggleModal}
+          onHide={() => setShowToggleModal(false)}
+          onConfirm={handleToggleConfirmed}
+          title={userToToggle?.active ? "Confirm Deactivation" : "Confirm Activation"}
+          message={
+            <p>
+              Are you sure you want to {userToToggle?.active ? 'deactivate' : 'activate'} accountant{' '}
+              <strong>{userToToggle?.firstName} {userToToggle?.lastName}</strong>?
+              <br />
+              {userToToggle?.active ? (
+                <span className="text-yellow-600">This accountant will lose system access.</span>
+              ) : (
+                <span className="text-green-600">This accountant will regain system access.</span>
+              )}
+            </p>
+          }
+          isDeactivation={true}
+          isActive={userToToggle?.active}
+        />
+      </div>
     </CompanyLayout>
   );
 };

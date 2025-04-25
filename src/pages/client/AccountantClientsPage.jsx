@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import Pagination from '../../components/Pagination';
 
-const ClientList = () => {
+const AccountantClientsPage = () => {
   const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -169,4 +169,4 @@ const ClientList = () => {
   );
 };
 
-export default ClientList;
+export default AccountantClientsPage;

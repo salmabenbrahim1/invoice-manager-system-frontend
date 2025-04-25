@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import imagesWebsite from '../assets/images/imagesWebsite.png';
-import { validateEmail, loginService } from '../services/authService';
+
 import { useAuth } from '../context/AuthContext';
-import InfoModal from "../components/modals/InfoModal";
+import InfoModal from '../components/modals/InfoModal';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -17,67 +17,32 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    const trimmedEmail = email.trim();
-
-    if (!validateEmail(trimmedEmail)) {
-      setError('Please enter a valid email address.');
-      setLoading(false);
-      return;
-    }
-
-    if (!password) {
-      setError('Please enter your password.');
-      setLoading(false);
-      return;
-    }
-
+  const handleLogin = async () => {
     try {
-      const userData = await loginService(trimmedEmail, password);
+      await login(email, password);
 
-      if (!userData?.token) {
-        setError('Incorrect email or password.');
-        return;
-      }
+      
+      const role = localStorage.getItem('role'); 
 
-      // Save user session
-      login(userData.email, userData.role, userData.token);
-
-      // Navigate based on role
-      const roleRouteMap = {
-        ADMIN: '/admin',
-        COMPANY: '/company',
-        'INDEPENDENT ACCOUNTANT': '/accountant',
-        CLIENT: '/client',
-      };
-
-      const route = roleRouteMap[userData.role];
-
-      if (route) {
-        navigate(route);
+      // Redirect user based on their role
+      if (role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else if (role === 'COMPANY') {
+        navigate('/company/dashboard');
+      } else if (role === 'ACCOUNTANT') {
+        navigate('/accountant/dashboard');
       } else {
-        setError('Unrecognized role.');
+        navigate('/'); 
       }
-
-    } catch (err) {
-      const message = err.message || 'An unexpected error occurred.';
-
-      if (message.includes('desactivated')) {
-        setModalMessage(
-          'Your account has been deactivated by the admin. Please contact support for more info.'
-        );
-        setIsModalOpen(true);
-      } else {
-        setError(message);
-      }
-
-    } finally {
-      setLoading(false);
+    } catch (error) {
+      setError('Incorrect email or password');
     }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    handleLogin().finally(() => setLoading(false));
   };
 
   const handleModalClose = () => {
@@ -110,14 +75,16 @@ const Login = () => {
       >
         <div className="w-full max-w-md">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Login</h2>
-          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600 dark:text-gray-700">
+          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600 dark:text-gray-400">
             Welcome! Please enter your details.
           </p>
 
           <form onSubmit={handleSubmit}>
             {/* Email Input */}
             <div className="mb-5">
-              <label htmlFor="email" className="block text-base font-medium mb-2">Email Address</label>
+              <label htmlFor="email" className="block text-base font-medium mb-2">
+                Email Address
+              </label>
               <input
                 type="email"
                 id="email"
@@ -132,7 +99,9 @@ const Login = () => {
 
             {/* Password Input */}
             <div className="mb-5">
-              <label htmlFor="password" className="block text-base font-medium mb-2">Password</label>
+              <label htmlFor="password" className="block text-base font-medium mb-2">
+                Password
+              </label>
               <input
                 type="password"
                 id="password"
@@ -147,7 +116,9 @@ const Login = () => {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-4 text-red-500 text-sm sm:text-base">{error}</div>
+              <div className="mb-4 text-red-500 text-sm sm:text-base">
+                {error}
+              </div>
             )}
 
             {/* Submit Button */}
@@ -164,7 +135,7 @@ const Login = () => {
         </div>
       </motion.div>
 
-      {/* Modal for Info */}
+      {/* Info Modal */}
       <InfoModal
         show={isModalOpen}
         onHide={handleModalClose}
