@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useFolder } from "../../context/FolderContext";
 import { Container } from "react-bootstrap";
 import { FaFolder,FaSearch } from "react-icons/fa";
-import Sidebar from "../../components/Sidebar";
-
+import SidebarAccountant from "../../components/accountant/SidebarAccountant";
 const Archive = () => {
   const { archivedFolders } = useFolder();
   const [archivedFoldersState, setArchivedFoldersState] = useState([]);
@@ -22,7 +21,7 @@ const Archive = () => {
 
   return (
     <Container fluid className="d-flex vh-100 p-0">
-      <Sidebar />
+      <SidebarAccountant />
       <div className="d-flex flex-column flex-grow-1 p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-semibold">Archived Folders</h2>

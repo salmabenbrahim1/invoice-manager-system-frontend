@@ -1,51 +1,52 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../../styles/sidebar.css';
 import { useAuth } from '../../context/AuthContext';
+import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie } from 'react-icons/fa';
+import '../../styles/sideBar.css';
 
-const SideBarCompany = () => {
-  const { logout } = useAuth(); 
 
+const SidebarCompany = () => {
+    const { logout } = useAuth(); 
+  
   return (
     <div className="sidebar-container">
       <hr className="sidebar-divider" />
 
-      <nav className="flex flex-column sidebar-submenu">
-        <NavLink
-          to="/company"
-          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
-        >
-          <FaChartBar className="mr-3 text-lg" />
-          <span>Dashboard</span>
-        </NavLink>
+      <nav className="flex-column sidebar-submenu">
 
-        <NavLink
-          to="/internal-accountants"
-          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
-        >
+        <div className="sidebar-toggle">
+
           <FaBuilding className="mr-3 text-lg" />
-          <span>Manage Internal Accountants</span>
-        </NavLink>
+          <span className="sidebar-toggle-text">Company</span>
+        </div>
+        <hr className="sidebar-divider" />
 
-        <NavLink
-          to="/manage_clients"
-          className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
-        >
+
+        <NavLink to="/company/dashboard" className="sidebar-link">
+          <FaChartBar className="mr-3 text-lg" />
+          <span className="text-md">Dashboard</span>
+        </NavLink>
+        <NavLink to="/my-accountants" className="sidebar-link">
+          <FaUserTie className="mr-3 text-lg" />
+
+          <span className="text-md">My Accountants</span>
+        </NavLink>
+        <NavLink to="/manage-clients" className="sidebar-link">
           <FaUsers className="mr-3 text-lg" />
-          <span>Manage Clients</span>
+          <span className="text-md">My Clients</span>
         </NavLink>
+        <hr />
 
-        {/* Logout Button */}
-        <button onClick={logout} type="button" className="sidebar-link logout-btn">
-          <FaSignOutAlt className="mr-3 text-lg" />
-          <span>Logout</span>
-        </button>
+          {/* Logout Button */}
+                <button onClick={logout} className="sidebar-link">
+                  <FaSignOutAlt className="mr-3 text-lg" />
+                  <span className="text-md">Logout</span>
+                </button>
       </nav>
 
-      <hr />
+
     </div>
   );
 };
 
-export default SideBarCompany;
+export default SidebarCompany;

@@ -7,14 +7,14 @@ const ConfirmModal = ({
   onConfirm, 
   title, 
   message, 
-  isDesactivation, 
+  isDeactivation, 
   isActive 
 }) => {
   const getButtonConfig = () => {
-    if (!isDesactivation) return { label: "Delete", variant: "danger" };
+    if (!isDeactivation) return { label: "Delete", variant: "danger" };
     
     return isActive 
-      ? { label: "Desactivate", variant: "warning" }
+      ? { label: "Deactivate", variant: "warning" }
       : { label: "Activate", variant: "success" };
   };
 

@@ -1,21 +1,26 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaUsers, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
-import '../../styles/sidebar.css';
-import { useAuth } from '../../context/AuthContext'; // Adjust the import path as necessary
+import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield } from 'react-icons/fa';
+import '../../styles/sideBar.css';
+import { useAuth } from '../../context/AuthContext';
 
 const SidebarAdmin = () => {
-  const { logout } = useAuth(); 
+  const { logout } = useAuth();
 
   return (
     <div className="sidebar-container">
       <hr className="sidebar-divider" />
 
       <nav className="flex flex-column sidebar-submenu">
-       
+        <div className="sidebar-toggle">
+          <FaUserShield className="mr-3 text-lg" />
+          <span className="sidebar-toggle-text">Admin</span>
+        </div>
+        <hr className="sidebar-divider" />
+
 
         <NavLink
-          to="/admin"
+          to="/admin/dashboard"
           className="sidebar-link"
         >
           <FaChartBar className="mr-3 text-lg" />
@@ -28,6 +33,8 @@ const SidebarAdmin = () => {
           <FaUsers className="mr-3 text-lg" />
           <span>Users</span>
         </NavLink>
+        <hr />
+
 
         {/* Logout Button */}
         <button onClick={logout} className="sidebar-link">
@@ -36,7 +43,6 @@ const SidebarAdmin = () => {
         </button>
       </nav>
 
-      <hr />
     </div>
   );
 };

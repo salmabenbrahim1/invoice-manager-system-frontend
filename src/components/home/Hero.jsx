@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import imagesWebsite from "../assets/images/imagesWebsite.png";
+import imagesWebsite from "../../assets/images/imagesWebsite.png";
 import { FaClock } from 'react-icons/fa';
 import { FaShieldAlt } from 'react-icons/fa';
 

@@ -3,7 +3,7 @@ import { FaUserCircle, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import EditProfileForm from './EditProfileForm';
+import EditProfileModal from './modals/EditProfileModal';
 import '../styles/navbar.css'; 
 import invoiceLogo from '../assets/images/invox-logo.png'
 
@@ -115,7 +115,7 @@ const Navbar = () => {
         </div>
       </div>
 
-      <EditProfileForm
+      <EditProfileModal
         show={showModal}
         onHide={() => setShowModal(false)}
         onSave={(updatedUser) => {
