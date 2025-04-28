@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { userService } from '../services/userService';
-import { useAuth } from './AuthContext'; // Import your auth context
+// Import your auth context
+import { useAuth } from './AuthContext'; 
+import { toast } from 'react-toastify'; 
 
 const UserContext = createContext();
 
@@ -9,7 +11,9 @@ export const UserProvider = ({ children }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { user: currentUser } = useAuth(); // Get current user from auth context
+
+  // Get current user from auth context
+  const { user: currentUser } = useAuth(); 
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -21,6 +25,15 @@ export const UserProvider = ({ children }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+  const checkEmailExists = async (email) => {
+    try {
+      const response = await userService.checkEmailExists(email);
+      return response; // true/false from server
+    } catch (error) {
+      console.error('Email check failed:', error);
+      throw error;
     }
   };
 
@@ -42,14 +55,36 @@ export const UserProvider = ({ children }) => {
     try {
       let user;
       if (id) {
-        user = await userService.updateUser(id, userData);
+        const userToUpdate = users.find(u => u.id === id);
+        if (!userToUpdate) throw new Error('User not found');
+  
+        const updateData = {
+          ...userData,
+          id: id,
+          role: userToUpdate.role, 
+          active: userToUpdate.active // Maintain current active status
+        };
+  
+        // Add role-specific fields
+        if (userToUpdate.role === 'COMPANY') {
+          updateData.companyName = userData.companyName;
+        } else {
+          updateData.firstName = userData.firstName;
+          updateData.lastName = userData.lastName;
+          updateData.gender = userData.gender;
+          updateData.cin = userData.cin;
+        }
+  
+        user = await userService.updateUser(id, updateData);
         setUsers(prev => prev.map(u => u.id === id ? user : u));
       } else {
+        // For create, use the existing logic
         user = await userService.createUser(userData);
         setUsers(prev => [...prev, user]);
       }
       return user;
     } catch (err) {
+      console.error('Error saving user:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -71,20 +106,33 @@ export const UserProvider = ({ children }) => {
   const toggleActivation = async (id) => {
     setLoading(true);
     try {
-      await userService.toggleUserActivation(id);
+      // Wait for the response from the backend
+      const updatedUser = await userService.toggleUserActivation(id);
+
+      // Update the local state with the updated user's status
       setUsers(prev => prev.map(u => 
-        u.id === id ? { ...u, active: !u.active } : u
+        u.id === id ? updatedUser : u
       ));
+
+      // Show the correct toast based on the user's new active status
+      if (updatedUser?.active) {
+        toast.success("User account has been activated successfully");
+      } else {
+        toast.success("User account has been deactivated successfully");
+      }
     } catch (err) {
-      throw err;
+      console.error('Toggle Activation Error:', err);
+      toast.error(err.message || "Failed to toggle activation");
     } finally {
       setLoading(false);
     }
   };
 
+
   // Initial data loading
   useEffect(() => {
-    if (currentUser) { // Only fetch if authenticated
+    if (currentUser) { 
+      // Only fetch if authenticated
       fetchUsers();
       fetchStats();
     }
@@ -102,6 +150,7 @@ export const UserProvider = ({ children }) => {
       toggleActivation,
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
+      checkEmailExists
     }}>
       {children}
     </UserContext.Provider>

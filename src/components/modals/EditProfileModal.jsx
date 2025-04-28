@@ -3,8 +3,9 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useUser } from '../../context/UserContext';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../LoadingSpinner';
+import AdminLayout from '../admin/AdminLayout';
 
-const EditProfileForm = ({ show, onHide, onSave }) => {
+const EditProfileModal = ({ show, onHide, onSave }) => {
   const { currentUser, loading, error, saveUser } = useUser();
   const [formData, setFormData] = useState({
     email: '',
@@ -32,7 +33,7 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
         newPassword: ''
       });
     }
-  }, [currentUser, show]); // Added show to reset when reopening modal
+  }, [currentUser, show]); 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,41 +81,31 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsSubmitting(true);
-    
+  const handleSubmit = async (formData) => {
     try {
-      const updatedData = { ...formData };
-      
-      // Remove password field if empty
-      if (!updatedData.newPassword) {
-        delete updatedData.newPassword;
-      } else if (updatedData.newPassword.length < 8) {
-        toast.warn('Password must be at least 8 characters');
-        return;
-      }
-
-      await saveUser(updatedData, currentUser.id);
-      toast.success('Profile updated successfully!');
-      onHide();
-      if (onSave) onSave();
+      // Include all necessary fields based on user type
+      const updateData = {
+        email: formData.email,
+        phone: formData.phone,
+        // Include role-specific fields
+        ...(currentUser.role === 'COMPANY' ? { 
+          companyName: formData.companyName 
+        } : {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          gender: formData.gender,
+          cin: formData.cin
+        })
+      };
+  
+      await saveUser(updateData, currentUser?.id);
+      // Handle success
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error(error.message || 'Failed to update profile');
-    } finally {
-      setIsSubmitting(false);
+      // Handle error
     }
   };
 
-  if (loading) return (
-    <div className="p-8 flex justify-center items-center h-screen">
-      <LoadingSpinner size="lg" color="primary" />
-    </div>
-  );
+ 
 
   if (error) return (
     <div className="alert alert-danger">
@@ -243,4 +234,4 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
   );
 };
 
-export default EditProfileForm;
+export default EditProfileModal;

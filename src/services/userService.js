@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const API_URL = 'http://localhost:9090/api/users';
 
 
@@ -38,10 +37,23 @@ export const userService = {
   // Update user
   updateUser: async (id, userData) => {
     try {
-      const response = await axios.put(`${API_URL}/${id}`, userData);
+      // Add authorization header
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      };
+
+      const response = await axios.put(`${API_URL}/${id}`, userData, config);
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to update user');
+      // Enhanced error handling
+      const errorMessage = error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to update user';
+      throw new Error(errorMessage);
     }
   },
 
@@ -54,16 +66,30 @@ export const userService = {
     }
   },
 
-  // Toggle user activation
   toggleUserActivation: async (id) => {
     try {
-      await axios.patch(`${API_URL}/${id}/toggle-activation`);
+      const response = await axios.patch(`${API_URL}/${id}/toggle-activation`);
+      console.log('Updated user:', response.data); // Log the response data
+      const updatedUser = response.data;
+      return updatedUser;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to toggle activation');
     }
   },
+  // Check if email exists (for registration)
+  checkEmailExists: async (email) => {
+    try {
+      const response = await axios.get(`${API_URL}/check-email`, {
+        params: { email }
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to check email');
+    }
+  },
 
-  // Get user statistics (admin only)
+
+  // Get user statistics 
   getUserStats: async () => {
     try {
       const response = await axios.get(`${API_URL}/dashboard`);
@@ -83,12 +109,12 @@ export const userService = {
     }
   },
 
-  // Helper function to check permissions (mirrors backend logic)
+ // check permissions (mirrors backend logic)
   canManage: (currentUser) => {
     return currentUser?.role === 'ADMIN' || currentUser?.role === 'COMPANY';
   },
 
-  // Helper function to check view permissions
+  // check view permissions
   canView: (currentUser, targetUser) => {
     if (currentUser?.role === 'ADMIN') return true;
     return targetUser?.createdBy === currentUser?.id;

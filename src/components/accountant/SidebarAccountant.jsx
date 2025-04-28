@@ -16,10 +16,10 @@ const SidebarAccountant = () => {
       <nav className="flex-column sidebar-submenu">
         <div className="sidebar-toggle">
           <FaUserTie className="mr-3 text-lg" />
-          <span className="sidebar-toggle-text">Independent Accountant</span>
+          <span className="sidebar-toggle-text">Accountant</span>
         </div>
         <hr className="sidebar-divider" />
-        <NavLink to="/accountant" className="sidebar-link">
+        <NavLink to="/accountant/dashboard" className="sidebar-link">
           <FaChartBar className="mr-3 text-lg" />
           <span className="text-md">Dashboard</span>
         </NavLink>

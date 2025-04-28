@@ -1,19 +1,22 @@
 import axios from "axios";
+
 const API_URL = "http://localhost:9090/api/auth";
 
-//  token validation
-export const validateToken = async () => {
-  const token = localStorage.getItem("authToken");
-  if (!token) return null;
-
+export const validateToken = async (token) => {
   try {
     const response = await axios.get(`${API_URL}/validate`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     return response.data;
   } catch (error) {
+    if (error.response?.status === 401) {
+      // Unauthorized (token expired)
+      const newToken = await refreshToken();
+      if (newToken) {
+        return await validateToken(newToken); // Retry validation with new token
+      }
+    }
     console.error("Token validation failed:", error);
-    logout(); // Clear invalid token
     return null;
   }
 };
@@ -21,10 +24,10 @@ export const validateToken = async () => {
 export const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_URL}/login`, { email, password });
-    const { token, role, email: userEmail } = response.data;
+    const { token, refreshToken, role, email: userEmail } = response.data;
 
-    // Store authentication data
     localStorage.setItem("authToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
     localStorage.setItem("role", role);
     localStorage.setItem("email", userEmail);
 
@@ -32,6 +35,7 @@ export const login = async (email, password) => {
 
     return {
       token,
+      refreshToken,
       role,
       email: userEmail,
       ...response.data 
@@ -42,12 +46,34 @@ export const login = async (email, password) => {
   }
 };
 
+export const refreshToken = async () => {
+  const refresh = localStorage.getItem("refreshToken");
+  if (!refresh) return null;
+
+  try {
+    const response = await axios.post(`${API_URL}/refresh-token`, null, {
+      headers: {
+        Authorization: `Bearer ${refresh}`,
+      },
+    });
+    const { token: newAccessToken } = response.data;
+
+    localStorage.setItem("authToken", newAccessToken);
+    axios.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+
+    return newAccessToken;
+  } catch (error) {
+    console.error("Refresh token failed:", error);
+    logout();
+    return null;
+  }
+};
+
+
 export const logout = () => {
-  // Clear all authentication data
   localStorage.removeItem("authToken");
+  localStorage.removeItem("refreshToken");
   localStorage.removeItem("role");
   localStorage.removeItem("email");
-  
-  // Remove axios authorization header
   delete axios.defaults.headers.common['Authorization'];
 };

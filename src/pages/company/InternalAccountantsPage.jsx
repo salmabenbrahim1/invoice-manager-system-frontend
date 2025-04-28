@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState} from "react";
 import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
-import AddInternalAccountantForm from "../../components/company/AddInternalAccountantForm"; 
+import InternalAccountantForm from "../../components/company/InternalAccountantForm";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../context/UserContext";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -11,13 +11,11 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 const InternalAccountantsPage = () => {
   const {
     users,
-    currentUser,
-    loading,
-    error,
+    loading: contextLoading,
     deleteUser,
     toggleActivation,
-    refreshUsers,
-    saveUser
+    refreshUsers
+   
   } = useUser();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,28 +32,33 @@ const InternalAccountantsPage = () => {
     (user) =>
       user.role === "INTERNAL ACCOUNTANT" &&
       (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // Pagination
-  const accountantsPerPage = 6;
+  const accountantsPerPage = 7;
   const totalPages = Math.ceil(accountants.length / accountantsPerPage);
   const currentAccountants = accountants.slice(
     (currentPage - 1) * accountantsPerPage,
     currentPage * accountantsPerPage
   );
 
-  // Reset to page 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
-
-  // Handle errors
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
+  // Handle loading state
+  if (contextLoading) {
+    return (
+      <CompanyLayout>
+        <LoadingSpinner
+          size="lg"
+          color="primary"
+          position="fixed"
+          fullScreen={true}
+          overlay={true}
+          blur={true}
+          text="Loading Accountants"
+        />
+      </CompanyLayout>
+    );
+  }
 
   const handleDeleteConfirmation = (user) => {
     setUserToDelete(user);
@@ -76,18 +79,26 @@ const InternalAccountantsPage = () => {
   };
 
   const handleToggleConfirmation = (user) => {
+    if (!user) {
+      toast.error("Invalid user selected for activation.");
+      return;
+    }
     setUserToToggle(user);
     setShowToggleModal(true);
   };
 
   const handleToggleConfirmed = async () => {
+    if (!userToToggle || userToToggle === null) {
+      toast.error("No user selected for toggling.");
+      return;
+    }
+
     try {
-      const updatedUser = await toggleActivation(userToToggle.id);
-      toast.success(
-        `Accountant ${updatedUser.active ? "activated" : "deactivated"} successfully`
-      );
+      await toggleActivation(userToToggle?.id);
+
       refreshUsers();
     } catch (err) {
+      console.error('Toggle Activation Error:', err);
       toast.error(err.message || "Failed to toggle activation");
     } finally {
       setShowToggleModal(false);
@@ -95,24 +106,7 @@ const InternalAccountantsPage = () => {
     }
   };
 
-  const handleSaveAccountant = async (accountantData) => {
-    try {
-      const dataToSave = selectedUser 
-        ? { ...accountantData, id: selectedUser.id } 
-        : { ...accountantData, active: true };
-
-      await saveUser(dataToSave);
-      toast.success(
-        `Accountant ${selectedUser ? 'updated' : 'created'} successfully`
-      );
-      refreshUsers();
-      setIsModalOpen(false);
-      setSelectedUser(null);
-    } catch (error) {
-      toast.error(error.message || "Failed to save accountant");
-    }
-  };
-
+ 
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setIsModalOpen(true);
@@ -135,14 +129,13 @@ const InternalAccountantsPage = () => {
               className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
-          
+
           <button
             onClick={() => {
               setSelectedUser(null);
               setIsModalOpen(true);
             }}
             className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 w-full md:w-auto"
-            disabled={loading}
           >
             <FaUserPlus className="mr-2" />
             Add Internal Accountant
@@ -150,22 +143,20 @@ const InternalAccountantsPage = () => {
         </div>
 
         {/* Add/Edit Accountant Form */}
-        <AddInternalAccountantForm
+        <InternalAccountantForm
           show={isModalOpen}
           onHide={() => {
             setIsModalOpen(false);
             setSelectedUser(null);
           }}
           userToEdit={selectedUser}
-          onSave={handleSaveAccountant}
-          loading={loading}
         />
 
         {/* Accountants Table */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {loading && !accountants.length ? (
-            <div className="p-8 text-center">
-              <LoadingSpinner size="lg" />
+          {accountants.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              {searchQuery ? "No accountants added yet" : "No internal accountants available"}
             </div>
           ) : currentAccountants.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
@@ -198,9 +189,7 @@ const InternalAccountantsPage = () => {
                         {user.phone || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                           {user.active ? 'Active' : 'Inactive'}
                         </span>
                       </td>
@@ -210,7 +199,6 @@ const InternalAccountantsPage = () => {
                             onClick={() => handleEditClick(user)}
                             className="text-blue-600 hover:text-blue-900"
                             title="Edit"
-                            disabled={loading}
                           >
                             <FaEdit />
                           </button>
@@ -218,15 +206,13 @@ const InternalAccountantsPage = () => {
                             onClick={() => handleDeleteConfirmation(user)}
                             className="text-red-600 hover:text-red-900"
                             title="Delete"
-                            disabled={loading}
                           >
                             <FaTrash />
                           </button>
                           <button
                             onClick={() => handleToggleConfirmation(user)}
-                            className={user.active ? "text-yellow-600 hover:text-yellow-900" : "text-green-600 hover:text-green-900"}
+                            className={user?.active ? "text-yellow-600 hover:text-yellow-900" : "text-green-600 hover:text-green-900"}
                             title={user.active ? "Deactivate" : "Activate"}
-                            disabled={loading}
                           >
                             {user.active ? <FaToggleOn /> : <FaToggleOff />}
                           </button>
@@ -242,7 +228,7 @@ const InternalAccountantsPage = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 ">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
