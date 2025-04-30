@@ -13,22 +13,34 @@ const AuthProvider = ({ children }) => {
   const checkAuth = useCallback(async () => {
     try {
       setLoading(true);
-      const userData = await validateToken();
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        setUser(null);
+        return;
+      }
+  
+      const userData = await validateToken(token);
       
       if (userData) {
         setUser({
-          token: localStorage.getItem("authToken"),
+          token,
           role: localStorage.getItem("role"),
           email: localStorage.getItem("email"),
-          ...userData
+          ...userData,
         });
+      } else {
+        authLogout(); // just logout without redirect
+        setUser(null);
       }
     } catch (error) {
+      console.error('Auth check error:', error);
       authLogout();
+      setUser(null);
     } finally {
       setLoading(false);
     }
   }, []);
+  
 
   useEffect(() => {
     checkAuth();

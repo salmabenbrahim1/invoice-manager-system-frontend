@@ -4,7 +4,7 @@ import ZoomableImage from '../ZoomableImage'; // Import the ZoomableImage compon
 const ImageInvoiceModal = ({ imgUrl, onClose, onScan }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center pt-8 pb-4">
-    <div className="bg-white rounded-lg p-6 max-w-6xl w-full max-h-[calc(103vh-12rem)] overflow-auto shadow-xl">
+    <div className="bg-white rounded-lg p-6 max-w-6xl w-full max-h-[calc(101vh-11rem)]  shadow-xl">
       <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-medium flex items-center">
             Invoice Preview

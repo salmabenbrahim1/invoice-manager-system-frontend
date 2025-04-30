@@ -4,8 +4,8 @@ import { useUser } from '../../context/UserContext';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../LoadingSpinner';
 
-const EditProfileForm = ({ show, onHide, onSave }) => {
-  const { currentUser, loading, error, saveUser } = useUser();
+const EditProfileModal = ({ show, onHide, onSave }) => {
+  const { currentUser, loading, error, updateProfile } = useUser();
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -32,7 +32,7 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
         newPassword: ''
       });
     }
-  }, [currentUser, show]); // Added show to reset when reopening modal
+  }, [currentUser, show]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,7 +70,7 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
         toast.warn('First and last names are required');
         return false;
       }
-      
+
       if (formData.cin && !/^[0-9]{8}$/.test(formData.cin)) {
         toast.warn('CIN must be 8 digits');
         return false;
@@ -79,42 +79,39 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
 
     return true;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
+  
     setIsSubmitting(true);
-    
     try {
-      const updatedData = { ...formData };
-      
-      // Remove password field if empty
-      if (!updatedData.newPassword) {
-        delete updatedData.newPassword;
-      } else if (updatedData.newPassword.length < 8) {
-        toast.warn('Password must be at least 8 characters');
-        return;
-      }
-
-      await saveUser(updatedData, currentUser.id);
-      toast.success('Profile updated successfully!');
+      const updateData = {
+        email: formData.email,
+        phone: formData.phone,
+        ...(currentUser.role === 'COMPANY'
+          ? { companyName: formData.companyName }
+          : {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              gender: formData.gender,
+              cin: formData.cin
+            }),
+        newPassword: formData.newPassword // Facultatif
+      };
+  
+      console.log('Updating profile with data:', updateData);  // Ajoutez un log pour vérifier les données envoyées.
+      await updateProfile(updateData);
+      toast.success('Profile successfully updated');
+      onSave();
       onHide();
-      if (onSave) onSave();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      toast.error(error.message || 'Failed to update profile');
+      console.error('Error updating profile :', error);
+      toast.error("Error updating profile");
     } finally {
       setIsSubmitting(false);
     }
-  };
+};
 
-  if (loading) return (
-    <div className="p-8 flex justify-center items-center h-screen">
-      <LoadingSpinner size="lg" color="primary" />
-    </div>
-  );
 
   if (error) return (
     <div className="alert alert-danger">
@@ -211,17 +208,18 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="gender">
-                <Form.Label>Gender</Form.Label>
-                <Form.Select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </Form.Select>
-              </Form.Group>
+              <Form.Label>Gender</Form.Label>
+             <Form.Select
+             name="gender"
+                value={formData.gender}
+              onChange={handleChange}
+                  >
+                <option value="">Select...</option>
+                <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                     </Form.Select>
+                  </Form.Group>
+
             </>
           )}
 
@@ -243,4 +241,4 @@ const EditProfileForm = ({ show, onHide, onSave }) => {
   );
 };
 
-export default EditProfileForm;
+export default EditProfileModal;

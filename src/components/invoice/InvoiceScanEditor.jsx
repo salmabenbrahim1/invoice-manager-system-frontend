@@ -10,14 +10,14 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
   const fieldGroups = [
     {
-      title: "Informations Client",
+      title: "Customer Information",
       fields: [
         { name: 'client_name', label: 'Client Name' },
         { name: 'siret_number', label: 'SIRET Number' }
       ]
     },
     {
-      title: "Détails Facture",
+      title: "Invoice Details",
       fields: [
         { name: 'invoice_number', label: 'Invoice Number' },
         { name: 'invoice_date', label: 'Invoice Date' },
@@ -25,7 +25,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       ]
     },
     {
-      title: "Montants",
+      title: "Amounts",
       fields: [
         { name: 'HT', label: 'HT' },
         { name: 'TVA', label: 'TVA' },
@@ -96,7 +96,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center pt-8 pb-4">
-      <div className="bg-white rounded-lg p-6 max-w-6xl w-full max-h-[calc(100vh-10rem)] overflow-auto shadow-xl">
+      <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[calc(100vh-10rem)]  shadow-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold text-gray-800">Invoice Editor</h2>
           <button 

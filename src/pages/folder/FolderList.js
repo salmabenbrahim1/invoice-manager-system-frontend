@@ -9,7 +9,7 @@ import FolderContextMenu from '../../components/folder/FolderContextMenu';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { toast } from 'react-toastify';
 import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
-import { FaFolder, FaStar, FaSearch} from 'react-icons/fa';
+import { FaFolder, FaStar, FaSearch,FaRegCalendarAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const FolderList = () => {
@@ -47,8 +47,14 @@ const FolderList = () => {
   
 
   const formatDate = (date) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(date).toLocaleDateString(undefined, options);
+    const options = { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(date).toLocaleDateString('en-US', options);
   };
 
   const requestDeleteFolder = (folderId, folderName) => {
@@ -172,9 +178,15 @@ const FolderList = () => {
                               <div className="folder-client text-muted">
                                 {folder.client?.name || "No Client"}
                               </div>
-                              <div className="folder-date text-muted small">
-                                {formatDate(folder.createdAt)}
-                              </div>
+                              <div className="d-flex align-items-center text-muted small mt-2">
+                              <span className="me-4 d-flex align-items-center">
+  <FaRegCalendarAlt className="me-1" />
+  {formatDate(folder.createdAt)}
+</span>
+                              <span className="me-2">•</span>
+                            <span>Invoices: {folder.invoiceCount || 0}</span>
+                                </div>
+
                             </div>
                           </div>
                         </Card>

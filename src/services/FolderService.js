@@ -16,14 +16,17 @@ axios.interceptors.request.use(config => {
 export const getFolders = async () => {
   try {
     const response = await api.get('/folders');
-    return response.data.map(folder => ({ ...folder,
-      clientName: folder.client ? folder.client.name : '', 
+    return response.data.map(folder => ({
+      ...folder,
+      clientName: folder.client ? folder.client.name : '',
+      invoiceCount: folder.invoiceCount ?? 0 
     }));
   } catch (error) {
     console.error("Error fetching folders:", error);
     throw error;
   }
 };
+
 
 //adding a new folder to the backend
 export const addFolder = async (folder) => {
