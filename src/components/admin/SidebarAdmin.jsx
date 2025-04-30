@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield } from 'react-icons/fa';
-import '../../styles/sidebar.css';
+import '../../styles/sideBar.css';
 import { useAuth } from '../../context/AuthContext';
 
 const SidebarAdmin = () => {

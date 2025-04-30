@@ -29,7 +29,7 @@ const UsersPage = () => {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [userToDeactivate, setUserToDeactivate] = useState(null);
 
-  const usersPerPage = 7;
+  const usersPerPage = 6;
 
   if (contextLoading) {
     return (
@@ -304,7 +304,7 @@ const UsersPage = () => {
           )}
         </div>
 
-        {filteredUsers.length > 1 && (
+        {filteredUsers.length >= 6 && (
           <div className="mt-6">
             <Pagination
               currentPage={currentPage}

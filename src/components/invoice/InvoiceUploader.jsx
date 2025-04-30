@@ -107,7 +107,7 @@ const InvoiceUploader = ({ onClose, onUploadSuccess }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500"
               value={invoiceName}
               onChange={(e) => setInvoiceName(e.target.value)}
-              placeholder="e.g., January 2023 Invoice"
+              placeholder="Upload new Invoice"
               required
             />
           </div>

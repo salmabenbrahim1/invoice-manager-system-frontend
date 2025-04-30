@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { userService } from '../services/userService';
-// Import your auth context
 import { useAuth } from './AuthContext'; 
 import { toast } from 'react-toastify'; 
 
@@ -49,7 +48,22 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
+  const updateProfile = async (profileData) => {
+    setLoading(true);
+    try {
+      const updatedUser = await userService.updateCurrentUserProfile(profileData);
+      setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+      toast.success("Profile successfully updated!");
+      return updatedUser;
+    } catch (err) {
+      toast.error(err.message || "Profile update failed");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
   const saveUser = async (userData, id) => {
     setLoading(true);
     try {
@@ -150,7 +164,8 @@ export const UserProvider = ({ children }) => {
       toggleActivation,
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
-      checkEmailExists
+      checkEmailExists,
+      updateProfile
     }}>
       {children}
     </UserContext.Provider>

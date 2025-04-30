@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie } from 'react-icons/fa';
-import '../../styles/sidebar.css';
+import '../../styles/sideBar.css';
 
 
 const SidebarCompany = () => {

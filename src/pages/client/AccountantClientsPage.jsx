@@ -129,12 +129,17 @@ const AccountantClientsPage = () => {
         </div>
 
         {/*  Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          />
+        {filteredClients.length > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </div>
+        )}
+
         
       </div>
 

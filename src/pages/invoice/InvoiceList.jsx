@@ -7,6 +7,8 @@ import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';
 import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
+import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
+import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 
 const InvoiceList = () => {
   const { folderId } = useParams();
@@ -15,6 +17,8 @@ const InvoiceList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [viewMode, setViewMode] = useState(null); 
 
   useEffect(() => {
     if (folderId) {
@@ -37,14 +41,26 @@ const InvoiceList = () => {
     if (invoiceToDelete) {
       try {
         await handleDeleteInvoice(invoiceToDelete.id);
-
         toast.success('Invoice deleted successfully');
-
       } catch (error) {
         toast.error('Failed to delete invoice');
       }
     }
     setInvoiceToDelete(null);
+  };
+
+  const handleShowInvoice = (invoice) => {
+    setSelectedInvoice(invoice);
+    setViewMode('image'); 
+  };
+
+  const handleScanInvoice = () => {
+    setViewMode('full'); 
+  };
+
+  const handleCloseViewer = () => {
+    setViewMode(null);
+    setSelectedInvoice(null);
   };
 
   return (
@@ -100,7 +116,7 @@ const InvoiceList = () => {
                         <div className="flex items-center">
                           {invoice.img && (
                             <img
-                            src={`http://localhost:9090${invoice.img}`}
+                              src={`http://localhost:9090${invoice.img}`}
                               alt="Invoice"
                               className="w-10 h-10 object-cover rounded mr-3"
                             />
@@ -114,7 +130,7 @@ const InvoiceList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${invoice.status === 'processed'
+                            ${invoice.status === 'processed'
                               ? 'bg-green-100 text-green-800'
                               : invoice.status === 'pending'
                                 ? 'bg-yellow-100 text-yellow-800'
@@ -123,14 +139,11 @@ const InvoiceList = () => {
                         >
                           {invoice.status}
                         </span>
-
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button
-                            onClick={() => {
-                              // Adding View logic
-                            }}
+                            onClick={() => handleShowInvoice(invoice)}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                             title="View"
                           >
@@ -159,13 +172,13 @@ const InvoiceList = () => {
           </div>
         </div>
 
+        {/* Uploader Modal */}
         {showUploader && (
           <InvoiceUploader
             onClose={(success) => {
               setShowUploader(false);
               if (success && folderId) {
-                // Refresh invoices after upload
-                fetchInvoices(folderId); 
+                fetchInvoices(folderId);
               }
             }}
             folderId={folderId}
@@ -183,6 +196,7 @@ const InvoiceList = () => {
           />
         )}
 
+        {/* Delete Confirmation Modal */}
         {invoiceToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
@@ -207,6 +221,26 @@ const InvoiceList = () => {
             </div>
           </div>
         )}
+ 
+{/* Image Viewer Modal */}
+{selectedInvoice && viewMode === 'image' && (
+  <ImageInvoiceModal
+    imgUrl={`http://localhost:9090${selectedInvoice.img}`}  
+    onClose={handleCloseViewer}
+    onScan={handleScanInvoice}
+  />
+)}
+
+
+        {/* Full Viewer with Form */}
+        {selectedInvoice && viewMode === 'full' && (
+          <InvoiceViewer 
+            invoice={selectedInvoice} 
+            onClose={handleCloseViewer}
+          />
+        )}
+
+        
       </div>
     </div>
   );

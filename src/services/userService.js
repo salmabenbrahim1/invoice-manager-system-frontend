@@ -100,14 +100,23 @@ export const userService = {
   },
 
   // Get current user profile
-  getCurrentUserProfile: async () => {
+  updateCurrentUserProfile: async (profileData) => {
     try {
-      const response = await axios.get(`${API_URL}/me`);
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`${API_URL}/me`, profileData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch profile');
+      throw new Error(error.response?.data?.message || 'Failed to update profile');
     }
   },
+  
+  
+  
 
  // check permissions (mirrors backend logic)
   canManage: (currentUser) => {

@@ -6,6 +6,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
   const location = useLocation();
 
   if (loading) {
+
     // Still checking auth status
     return <div>Loading...</div>; 
   }
