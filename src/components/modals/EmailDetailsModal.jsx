@@ -10,10 +10,10 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-50 pt-16 pb-8">
       <div 
-        className="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[calc(100vh-10rem)] "
+        className="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[calc(101vh-9rem)] "
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-white p-3 border-b border-gray-200 flex justify-between items-center z-10">
+        <div className="sticky top-0 bg-white p-2 border-b border-gray-200 flex justify-between items-center z-10">
           <h3 className="text-xl font-bold text-gray-800">Email Details</h3>
           <button 
             onClick={onClose} 
@@ -86,7 +86,7 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
           )}
         </div>
 
-        <div className="sticky bottom-0 bg-white p-2 border-t border-gray-200 flex justify-end">
+        <div className="sticky bottom-0 bg-white p-2.5 border-t border-gray-200 flex justify-end">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm"

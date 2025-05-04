@@ -12,7 +12,7 @@ import { getEmailLogs, deleteEmail } from "../../services/emailService";
 const EmailHistoryPage = () => {
   const [emailLogs, setEmailLogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all"); // Ajout du filtre par statut
+  const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedEmail, setSelectedEmail] = useState(null);
@@ -48,7 +48,6 @@ const EmailHistoryPage = () => {
     setEmailToDelete(null);
   };
 
-  // Filtrage des emails basé sur la recherche et le statut
   const filteredEmails = emailLogs.filter((log) => {
     const matchesSearch =
       (log.recipient || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -96,12 +95,12 @@ const EmailHistoryPage = () => {
   return (
     <AdminLayout>
       <div className="px-4 sm:px-6 py-4">
-     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4" >
      <h1 className="text-2xl font-bold text-gray-800">Email History</h1>
                
                <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
                  <div className="relative flex-1 min-w-[200px]">
-                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none" >
                      <FaSearch className="text-gray-400" />
                    </div>
                       <input

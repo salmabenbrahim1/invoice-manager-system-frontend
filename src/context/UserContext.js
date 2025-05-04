@@ -52,6 +52,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+
   const saveUser = async (userData, id) => {
     setLoading(true);
     try {
@@ -59,7 +60,6 @@ export const UserProvider = ({ children }) => {
       let emailSent = false;
       let subject = "";   
       let body = "";
-  
       if (id) {
         const existingUser = users.find(u => u.id === id);
         if (!existingUser) throw new Error('User not found');
@@ -83,18 +83,16 @@ export const UserProvider = ({ children }) => {
         user = await userService.updateUser(id, updatedData);
         setUsers(prev => prev.map(u => u.id === id ? user : u));
       } else {
-        // For create, use the existing logic
-        const response = await userService.createUser(userData); // Response from backend
+        const response = await userService.createUser(userData);
         user = response.user;
-        emailSent = response.emailSent;  // Extract email sent status from the response
-        subject = response.subject || "No subject"; 
-        body=response.body || "No body";
-        setUsers(prev => [...prev, user]);
+  emailSent = response.emailSent;  // Extract email sent status from the response
+       subject = response.subject || "No subject"; 
+body=response.body || "No body";       
+   setUsers(prev => [...prev, user]);
       }
-  
-      return { user, emailSent, subject ,body};  // Return both user and emailSent status
 
-    } catch (err) {
+      return { user, emailSent, subject ,body}; 
+        } catch (err) {
       console.error('Error saving user:', err);
       toast.error(err.message || 'Failed to save user');
       throw err;
@@ -102,7 +100,6 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   };
-  
 
   const deleteUser = async (id) => {
     setLoading(true);

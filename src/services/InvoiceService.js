@@ -57,10 +57,10 @@ const invoiceService = {
     }
   },
 };
-const API_URL = 'http://localhost:5000/extract';
+const API_URL1 = 'http://localhost:5000/extract';
 export const extractInvoiceData = async (imagePath) => {
   try {
-    const response = await axios.post(API_URL, {
+    const response = await axios.post(API_URL1, {
       imageUrl: `http://localhost:9090${imagePath}`,
     });
 
