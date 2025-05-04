@@ -57,6 +57,35 @@ const invoiceService = {
     }
   },
 };
+const API_URL = 'http://localhost:5000/extract';
+export const extractInvoiceData = async (imagePath) => {
+  try {
+    const response = await axios.post(API_URL, {
+      imageUrl: `http://localhost:9090${imagePath}`,
+    });
 
+    const extracted = response.data || {};
 
+    const structuredData = {
+      siret_number: extracted.siret_number || 'N/A',
+      invoice_number: extracted.invoice_number || 'N/A',
+      TVA_Number: extracted['TVA Number'] || extracted.TVA_Number || 'N/A',
+      invoice_date: extracted.document_date || extracted.invoice_date || 'N/A',
+      TVA: extracted.TVA || 'N/A',
+      HT: extracted.HT || 'N/A',
+      TTC: extracted.TTC || 'N/A',
+      client_name: extracted.client_name || 'N/A',
+      currency: extracted.currency || 'N/A',
+    };
+
+    const isEmpty = Object.values(structuredData).every(val => val === 'N/A');
+    if (isEmpty) throw new Error('No usable data returned from extraction');
+
+    return structuredData;
+  } catch (error) {
+    console.error("Error in extractInvoiceData:", error);
+    throw error;
+  }
+};
 export default invoiceService;
+
