@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Define base URL of your backend (make sure to change the URL accordingly)
+
 const API_URL = 'http://localhost:9090/api/invoices'; 
 
 const invoiceService = {

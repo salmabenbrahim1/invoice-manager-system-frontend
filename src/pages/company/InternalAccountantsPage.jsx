@@ -1,10 +1,12 @@
+
 import React, { useState} from "react";
 import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
 import InternalAccountantForm from "../../components/company/InternalAccountantForm";
 import Pagination from "../../components/Pagination";
-import { useUser } from "../../context/UserContext";
-import ConfirmModal from "../../components/ConfirmModal";
+import ConfirmModal from "../../components/modals/ConfirmModal";
 import CompanyLayout from "../../components/company/CompanyLayout";
+import { useUser } from "../../context/UserContext";
+
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
@@ -23,6 +25,7 @@ const InternalAccountantsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
   const [userToDelete, setUserToDelete] = useState(null);
   const [showToggleModal, setShowToggleModal] = useState(false);
   const [userToToggle, setUserToToggle] = useState(null);
@@ -30,7 +33,7 @@ const InternalAccountantsPage = () => {
   // Filter internal accountants
   const accountants = users.filter(
     (user) =>
-      user.role === "INTERNAL ACCOUNTANT" &&
+      user.role === "INTERNAL_ACCOUNTANT" &&
       (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -42,6 +45,7 @@ const InternalAccountantsPage = () => {
     (currentPage - 1) * accountantsPerPage,
     currentPage * accountantsPerPage
   );
+
 
   // Handle loading state
   if (contextLoading) {
@@ -114,6 +118,7 @@ const InternalAccountantsPage = () => {
 
   return (
     <CompanyLayout>
+
       <div className="container mx-auto px-4 py-8">
         {/* Search and Add Button */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">

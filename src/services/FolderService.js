@@ -30,6 +30,7 @@ export const folderService = {
     }
   },
 
+
   // Get folders created by the authenticated user
   getMyFolders: async () => {
     try {

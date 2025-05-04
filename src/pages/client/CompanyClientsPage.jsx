@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CompanyLayout from "../../components/company/CompanyLayout";
 
 const CompanyClientsPage = () => {
-  const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
+  const { clients, handleAddClient, deleteClient, updateClient } = useClient();
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -37,9 +37,9 @@ const CompanyClientsPage = () => {
     setShowConfirmModal(true);
   };
 
-  const deleteClient = async () => {
+  const handleDeleteClient = async () => {
     if (clientToDelete) {
-      await handleDeleteClient(clientToDelete.id);
+      await deleteClient(clientToDelete.id);
       toast.success("Client deleted successfully.");
     } else {
       toast.info("Client deletion canceled.");
@@ -53,8 +53,8 @@ const CompanyClientsPage = () => {
     setShowEditModal(true);
   };
 
-  const updateClient = async (clientId, updatedClient) => {
-    await handleUpdateClient(clientId, updatedClient);
+  const handleUpdateClient = async (clientId, updatedClient) => {
+    await updateClient(clientId, updatedClient);
     setShowEditModal(false);
   };
 
@@ -165,7 +165,7 @@ const CompanyClientsPage = () => {
           <UpdateClientForm
             show={showEditModal}
             onHide={() => setShowEditModal(false)}
-            onSave={updateClient}
+            onSave={handleUpdateClient}
             clientData={clientToEdit}
           />
         )}
@@ -174,7 +174,7 @@ const CompanyClientsPage = () => {
         <ConfirmModal
           show={showConfirmModal}
           onHide={() => setShowConfirmModal(false)}
-          onConfirm={deleteClient}
+          onConfirm={handleDeleteClient}
           title="Delete Client"
           message={`Are you sure you want to delete the client "${clientToDelete?.name}"? This action cannot be undone.`}
         />

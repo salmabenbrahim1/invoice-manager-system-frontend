@@ -83,7 +83,6 @@ export const userService = {
     }
   },
 
-  // Check if email exists (no auth required)
   // Check if email exists (with authorization)
   checkEmailExists: async (email) => {
     try {
@@ -109,16 +108,21 @@ export const userService = {
     }
   },
 
+
   // Get current user's profile
   getCurrentUserProfile: async () => {
     try {
       const config = getAuthConfig();
       const response = await axios.get(`${API_URL}/me`, config);
+
       return response.data;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch profile');
+      throw new Error(error.response?.data?.message || 'Failed to update profile');
     }
   },
+  
+  
+  
 
   // Permission checks
   canManage: (currentUser) => {

@@ -304,7 +304,8 @@ const UsersPage = () => {
           )}
         </div>
 
-        {filteredUsers.length > 6 && (
+
+        {filteredUsers.length >= 6 && (
           <div className="mt-6">
             <Pagination
               currentPage={currentPage}

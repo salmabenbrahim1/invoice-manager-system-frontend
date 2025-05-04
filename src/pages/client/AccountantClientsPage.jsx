@@ -221,6 +221,7 @@ const handleRefresh = useCallback(async () => {
           </div>
         </div>
 
+
         {filteredClients.length > clientsPerPage && (
           <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-500">
@@ -238,6 +239,7 @@ const handleRefresh = useCallback(async () => {
             />
           </div>
         )}
+
 
         <AddClientForm
           show={showAddModal}

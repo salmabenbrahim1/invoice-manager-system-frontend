@@ -3,10 +3,9 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useUser } from '../../context/UserContext';
 import { toast } from 'react-toastify';
 import LoadingSpinner from '../LoadingSpinner';
-import AdminLayout from '../admin/AdminLayout';
 
 const EditProfileModal = ({ show, onHide, onSave }) => {
-  const { currentUser, loading, error, saveUser } = useUser();
+  const { currentUser, loading, error, updateProfile } = useUser();
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -33,7 +32,7 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
         newPassword: ''
       });
     }
-  }, [currentUser, show]); 
+  }, [currentUser, show]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +70,7 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
         toast.warn('First and last names are required');
         return false;
       }
-      
+
       if (formData.cin && !/^[0-9]{8}$/.test(formData.cin)) {
         toast.warn('CIN must be 8 digits');
         return false;
@@ -80,32 +79,39 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
 
     return true;
   };
-
-  const handleSubmit = async (formData) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+  
+    setIsSubmitting(true);
     try {
-      // Include all necessary fields based on user type
       const updateData = {
         email: formData.email,
         phone: formData.phone,
-        // Include role-specific fields
-        ...(currentUser.role === 'COMPANY' ? { 
-          companyName: formData.companyName 
-        } : {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          gender: formData.gender,
-          cin: formData.cin
-        })
+        ...(currentUser.role === 'COMPANY'
+          ? { companyName: formData.companyName }
+          : {
+              firstName: formData.firstName,
+              lastName: formData.lastName,
+              gender: formData.gender,
+              cin: formData.cin
+            }),
+        newPassword: formData.newPassword // Facultatif
       };
   
-      await saveUser(updateData, currentUser?.id);
-      // Handle success
+      console.log('Updating profile with data:', updateData);  // Ajoutez un log pour vérifier les données envoyées.
+      await updateProfile(updateData);
+      toast.success('Profile successfully updated');
+      onSave();
+      onHide();
     } catch (error) {
-      // Handle error
+      console.error('Error updating profile :', error);
+      toast.error("Error updating profile");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+};
 
- 
 
   if (error) return (
     <div className="alert alert-danger">
@@ -202,17 +208,18 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="gender">
-                <Form.Label>Gender</Form.Label>
-                <Form.Select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                >
-                  <option value="">Select gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </Form.Select>
-              </Form.Group>
+              <Form.Label>Gender</Form.Label>
+             <Form.Select
+             name="gender"
+                value={formData.gender}
+              onChange={handleChange}
+                  >
+                <option value="">Select...</option>
+                <option value="MALE">Male</option>
+                  <option value="FEMALE">Female</option>
+                     </Form.Select>
+                  </Form.Group>
+
             </>
           )}
 

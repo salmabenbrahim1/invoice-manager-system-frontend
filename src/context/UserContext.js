@@ -3,6 +3,7 @@ import { userService } from '../services/userService';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
 
+
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
@@ -41,6 +42,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+
   const checkEmailExists = async (email) => {
     try {
       return await userService.checkEmailExists(email); // Calls service with token header
@@ -49,6 +51,7 @@ export const UserProvider = ({ children }) => {
       throw error;
     }
   };
+
 
   const saveUser = async (userData, id) => {
     setLoading(true);
@@ -144,7 +147,8 @@ export const UserProvider = ({ children }) => {
       toggleActivation,
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
-      checkEmailExists
+      checkEmailExists,
+      
     }}>
       {children}
     </UserContext.Provider>
