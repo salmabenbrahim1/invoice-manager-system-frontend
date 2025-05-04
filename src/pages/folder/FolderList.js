@@ -9,12 +9,12 @@ import FolderContextMenu from '../../components/folder/FolderContextMenu';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { toast } from 'react-toastify';
 import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
-import { FaFolder, FaStar, FaSearch,FaRegCalendarAlt } from 'react-icons/fa';
+import { FaFolder, FaStar, FaSearch, FaRegCalendarAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const FolderList = () => {
-  const { folders, archiveFolder, toggleFavorite,fetchFolders, deleteFolder } = useFolder();
-  
+  const { folders, archiveFolder, toggleFavorite, fetchFolders, deleteFolder } = useFolder();
+
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -27,7 +27,7 @@ const FolderList = () => {
 
   const [favoriteFolders, setFavoriteFolders] = useState([]);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   // Fetch folders when the component mounts
   useEffect(() => {
@@ -40,7 +40,7 @@ const FolderList = () => {
     setFavoriteFolders(storedFavorites);
   }, []);
 
-  
+
 
   useEffect(() => {
     if (favoriteFolders.length > 0) {
@@ -48,18 +48,18 @@ const FolderList = () => {
     }
   }, [favoriteFolders]);
 
-  
+
   const handleSaveFolder = (createdFolder) => {
     setShowAddModal(false);
     toast.success(`Folder "${createdFolder.folderName}" created successfully.`);
   };
 
-  
+
 
   const formatDate = (date) => {
-    const options = { 
-      month: 'short', 
-      day: 'numeric', 
+    const options = {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -170,7 +170,7 @@ const FolderList = () => {
                     <ContextMenuTrigger>
                       <div
                         className={`folder-item ${selectedFolder === folder ? "selected" : ""}`}
-                        onClick={() => handleFolderClick(folder.id)} 
+                        onClick={() => handleFolderClick(folder.id)}
                       >
                         <Card
                           className={`p-3 shadow-sm ${selectedFolder === folder ? "border-secondary" : ""}`}
@@ -189,13 +189,13 @@ const FolderList = () => {
                                 {folder.client?.name || "No Client"}
                               </div>
                               <div className="d-flex align-items-center text-muted small mt-2">
-                              <span className="me-4 d-flex align-items-center">
-  <FaRegCalendarAlt className="me-1" />
-  {formatDate(folder.createdAt)}
-</span>
-                              <span className="me-2">•</span>
-                            <span>Invoices: {folder.invoiceCount || 0}</span>
-                                </div>
+                                <span className="me-4 d-flex align-items-center">
+                                  <FaRegCalendarAlt className="me-1" />
+                                  {formatDate(folder.createdAt)}
+                                </span>
+                                <span className="me-2">•</span>
+                                <span>Invoices: {folder.invoiceCount || 0}</span>
+                              </div>
 
                             </div>
                           </div>
@@ -232,7 +232,7 @@ const FolderList = () => {
         onConfirm={handleDeleteFolder}
 
       />
-      
+
       {/* Update Folder Form Modal */}
       {showEditModal && folderToEdit && (
         <UpdateFolderForm
