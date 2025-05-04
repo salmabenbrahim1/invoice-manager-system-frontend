@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
-import { login as authLogin, logout as authLogout, validateToken } from '../services/authService';
+import { login as authLogin, logout as authLogout, validateToken, refreshToken } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
@@ -18,7 +18,7 @@ const AuthProvider = ({ children }) => {
         setUser(null);
         return;
       }
-  
+
       const userData = await validateToken(token);
       
       if (userData) {
@@ -29,18 +29,38 @@ const AuthProvider = ({ children }) => {
           ...userData,
         });
       } else {
-        authLogout(); // just logout without redirect
-        setUser(null);
+        // Attempt to refresh the token if expired
+        const newToken = await refreshToken();
+        if (newToken) {
+          // Token refreshed, retry validating with new token
+          const refreshedUserData = await validateToken(newToken);
+          if (refreshedUserData) {
+            setUser({
+              token: newToken,
+              role: localStorage.getItem("role"),
+              email: localStorage.getItem("email"),
+              ...refreshedUserData,
+            });
+          } else {
+            authLogout(); // logout if refresh token is invalid or expired
+            setUser(null);
+            navigate('/login');
+          }
+        } else {
+          authLogout(); // logout if refresh failed
+          setUser(null);
+          navigate('/login');
+        }
       }
     } catch (error) {
       console.error('Auth check error:', error);
       authLogout();
       setUser(null);
+      navigate('/login');
     } finally {
       setLoading(false);
     }
-  }, []);
-  
+  }, [navigate]);
 
   useEffect(() => {
     checkAuth();
@@ -51,6 +71,7 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       const userData = await authLogin(email, password);
       setUser(userData);
+      navigate('/dashboard'); // Navigate to the dashboard or appropriate page
       return userData;
     } finally {
       setLoading(false);
@@ -58,9 +79,13 @@ const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    authLogout();
-    setUser(null);
-    navigate('/login');
+    try {
+      authLogout();  // Make sure this does not throw any errors
+      setUser(null);  // Clear user state
+      navigate('/login');  // Navigate to login page
+    } catch (error) {
+      console.error('Logout error:', error); // Handle any logout errors
+    }
   };
 
   const value = {

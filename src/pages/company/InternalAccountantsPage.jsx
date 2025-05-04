@@ -33,7 +33,7 @@ const InternalAccountantsPage = () => {
   // Filter internal accountants
   const accountants = users.filter(
     (user) =>
-      user.role === "INTERNAL ACCOUNTANT" &&
+      user.role === "INTERNAL_ACCOUNTANT" &&
       (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -122,7 +122,7 @@ const InternalAccountantsPage = () => {
       <div className="container mx-auto px-4 py-8">
         {/* Search and Add Button */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <div className="relative w-full md:w-1/2">
+          <div className="relative w-full md:w-1/4">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>

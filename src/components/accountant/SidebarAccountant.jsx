@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 
 import { FaUser, FaStar, FaFolder, FaSignOutAlt, FaUserTie, FaChartBar } from 'react-icons/fa';
 import { GoArchive } from 'react-icons/go';
-import '../../styles/sideBar.css';
+import '../../styles/sidebar.css';
 
 const SidebarAccountant = () => {
   const { logout } = useAuth();

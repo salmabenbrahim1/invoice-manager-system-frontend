@@ -4,12 +4,12 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import { useClient } from '../../context/ClientContext';
 
 const UpdateClientForm = ({ show, onHide, clientData }) => {
-  const { handleUpdateClient } = useClient(); 
+  const { updateClient } = useClient(); 
 
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phoneNumber: '',
+    phone: '',
   });
 
   // Set formData when clientData changes
@@ -18,13 +18,13 @@ const UpdateClientForm = ({ show, onHide, clientData }) => {
       setFormData({
         name: clientData.name || '',
         email: clientData.email || '',
-        phoneNumber: clientData.phoneNumber || '',
+        phone: clientData.phone || '',
       });
     }
   }, [clientData]);
 
   const handleSave = async () => {
-    if (!formData.name || !formData.email || !formData.phoneNumber) {
+    if (!formData.name || !formData.email || !formData.phone) {
       toast.warn('Please fill in all client details.');
       return;
     }
@@ -36,13 +36,13 @@ const UpdateClientForm = ({ show, onHide, clientData }) => {
       }
      // Phone number validation regex (supports international formats)
          const phoneRegex = /^\+?[0-9]{8,15}$/; 
-         if (!phoneRegex.test(formData.phoneNumber)) {
+         if (!phoneRegex.test(formData.phone)) {
            toast.warn('Please enter a valid phone number (8-15 digits, optional "+").');
            return;
          }
 
     try {
-      await handleUpdateClient(clientData.id, formData); 
+      await updateClient( clientData.id, formData); 
       toast.success('Client updated successfully!');
       onHide(); // Close the modal
     } catch (error) {
@@ -80,8 +80,8 @@ const UpdateClientForm = ({ show, onHide, clientData }) => {
             <Form.Control
               type="text"
               placeholder="Enter phone number"
-              value={formData.phoneNumber}
-              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             />
           </Form.Group>
           <Button variant="primary" onClick={handleSave}>

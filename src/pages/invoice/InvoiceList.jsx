@@ -12,7 +12,7 @@ import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, handleAddInvoice, handleDeleteInvoice } = useInvoice();
+  const { invoices, fetchInvoices, deleteInvoice } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
@@ -24,7 +24,7 @@ const InvoiceList = () => {
     if (folderId) {
       fetchInvoices(folderId);
     }
-  }, [folderId, fetchInvoices]);
+  }, [folderId]);
 
   const filteredInvoices = invoices
     .filter(
@@ -40,7 +40,8 @@ const InvoiceList = () => {
   const confirmDelete = async () => {
     if (invoiceToDelete) {
       try {
-        await handleDeleteInvoice(invoiceToDelete.id);
+        await deleteInvoice(invoiceToDelete.id);
+
         toast.success('Invoice deleted successfully');
       } catch (error) {
         toast.error('Failed to delete invoice');
@@ -175,22 +176,13 @@ const InvoiceList = () => {
         {/* Uploader Modal */}
         {showUploader && (
           <InvoiceUploader
-            onClose={(success) => {
-              setShowUploader(false);
-              if (success && folderId) {
-                fetchInvoices(folderId);
-              }
-            }}
+
             folderId={folderId}
-            onUploadSuccess={async (formData) => {
-              try {
-                formData.append('folderId', folderId);
-                await handleAddInvoice(folderId, formData);
-                return true;
-              } catch (error) {
-                console.error('Upload failed:', error);
-                toast.error(error.message || 'Failed to upload invoice');
-                return false;
+            onClose={(uploaded) => {
+              console.log("onClose called with uploaded:", uploaded); // Debug log
+              setShowUploader(false); // Close the modal
+              if (uploaded && folderId) {
+                fetchInvoices(folderId); // Fetch updated invoices
               }
             }}
           />

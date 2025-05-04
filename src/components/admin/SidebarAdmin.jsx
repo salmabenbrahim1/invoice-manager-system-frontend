@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield,  FaEnvelope } from 'react-icons/fa';
 import '../../styles/sideBar.css';
+
 import { useAuth } from '../../context/AuthContext';
 
 const SidebarAdmin = () => {

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { FaUserPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import React, { useState} from "react";
+import { FaUserPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { FaUser, FaSearch } from 'react-icons/fa';
 
 import AddClientForm from "../../components/client/AddClientForm";
@@ -14,7 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CompanyLayout from "../../components/company/CompanyLayout";
 
 const CompanyClientsPage = () => {
-  const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
+  const { clients, handleAddClient, deleteClient, updateClient } = useClient();
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -22,11 +22,10 @@ const CompanyClientsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [clientToDelete, setClientToDelete] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
 
-  const clientsPerPage = 10;
+
+  const clientsPerPage = 6;
 
   const addClient = async (newClient) => {
     await handleAddClient(newClient);
@@ -38,9 +37,9 @@ const CompanyClientsPage = () => {
     setShowConfirmModal(true);
   };
 
-  const deleteClient = async () => {
+  const handleDeleteClient = async () => {
     if (clientToDelete) {
-      await handleDeleteClient(clientToDelete.id);
+      await deleteClient(clientToDelete.id);
       toast.success("Client deleted successfully.");
     } else {
       toast.info("Client deletion canceled.");
@@ -54,8 +53,8 @@ const CompanyClientsPage = () => {
     setShowEditModal(true);
   };
 
-  const updateClient = async (clientId, updatedClient) => {
-    await handleUpdateClient(clientId, updatedClient);
+  const handleUpdateClient = async (clientId, updatedClient) => {
+    await updateClient(clientId, updatedClient);
     setShowEditModal(false);
   };
 
@@ -118,7 +117,7 @@ const CompanyClientsPage = () => {
                       {client.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{client.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{client.phoneNumber}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{client.phone}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <button
                         onClick={() => openEditModal(client)}
@@ -139,13 +138,16 @@ const CompanyClientsPage = () => {
             </table>
           </div>
 
-          {/*  Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          />
+          {filteredClients.length > 6 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </div>
+        )}
 
         </div>
 
@@ -163,7 +165,7 @@ const CompanyClientsPage = () => {
           <UpdateClientForm
             show={showEditModal}
             onHide={() => setShowEditModal(false)}
-            onSave={updateClient}
+            onSave={handleUpdateClient}
             clientData={clientToEdit}
           />
         )}
@@ -172,7 +174,7 @@ const CompanyClientsPage = () => {
         <ConfirmModal
           show={showConfirmModal}
           onHide={() => setShowConfirmModal(false)}
-          onConfirm={deleteClient}
+          onConfirm={handleDeleteClient}
           title="Delete Client"
           message={`Are you sure you want to delete the client "${clientToDelete?.name}"? This action cannot be undone.`}
         />

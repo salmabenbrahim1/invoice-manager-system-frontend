@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import AddClientForm from '../../components/client/AddClientForm';
-import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch } from 'react-icons/fa';
+import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch, FaSync } from 'react-icons/fa';
 import { useClient } from '../../context/ClientContext';
+import { useAuth } from '../../context/AuthContext'; // Import useAuth
 import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import Pagination from '../../components/Pagination';
+import LoadingSpinner from '../../components/LoadingSpinner';
 
 const AccountantClientsPage = () => {
-  const { clients, handleAddClient, handleDeleteClient, handleUpdateClient } = useClient();
-
+  const { clients, loading: contextLoading, fetchClients, addClient,updateClient,deleteClient } = useClient();
+  const { user } = useAuth(); // Get the user from AuthContext
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -18,12 +20,41 @@ const AccountantClientsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [clientToDelete, setClientToDelete] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [operationLoading, setOperationLoading] = useState(false);
 
   const clientsPerPage = 10;
+  
+ 
+const handleRefresh = useCallback(async () => {
+  try {
+    if (!user) throw new Error("User not authenticated");
 
-  const addClient = async (newClient) => {
-    await handleAddClient(newClient);
-    setShowAddModal(false);
+    setOperationLoading(true);
+    await fetchClients(user.id); 
+    toast.success('Clients refreshed successfully');
+  } catch (error) {
+    toast.error(error.message || 'Failed to refresh clients');
+  } finally {
+    setOperationLoading(false);
+  }
+}, [fetchClients, user]);
+
+
+  // Reset pagination when search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  const handleAddClient = async (newClient) => {
+    try {
+      setOperationLoading(true);
+      await addClient(newClient);
+      setShowAddModal(false);
+    } catch (error) {
+      // Error is already handled by the context
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
   const requestDeleteClient = (client) => {
@@ -31,15 +62,20 @@ const AccountantClientsPage = () => {
     setShowConfirmModal(true);
   };
 
-  const deleteClient = async () => {
-    if (clientToDelete) {
-      await handleDeleteClient(clientToDelete.id);
-      toast.success("Client deleted successfully.");
-    } else {
-      toast.info("Client deletion canceled.");
+  const handleDeleteClient = async () => {
+    if (!clientToDelete) return;
+    
+    try {
+      setOperationLoading(true);
+      await deleteClient(clientToDelete.id);
+      toast.success('Client deleted successfully');
+      setShowConfirmModal(false);
+      setClientToDelete(null);
+    } catch (error) {
+      // Error is already handled by the context
+    } finally {
+      setOperationLoading(false);
     }
-    setClientToDelete(null);
-    setShowConfirmModal(false);
   };
 
   const openEditModal = (client) => {
@@ -47,29 +83,52 @@ const AccountantClientsPage = () => {
     setShowEditModal(true);
   };
 
-  const updateClient = async (clientId, updatedClient) => {
-    await handleUpdateClient(clientId, updatedClient);
-    setShowEditModal(false);
+  const handleUpdateClient = async (clientId, updatedClient) => {
+    try {
+      setOperationLoading(true);
+      await updateClient(clientId, updatedClient);
+      setShowEditModal(false);
+    } catch (error) {
+      // Error is already handled by the context
+    } finally {
+      setOperationLoading(false);
+    }
   };
 
-  const filteredClients = clients.filter((client) =>
-    client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    client.email.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredClients = clients.filter(client => {
+    const query = searchQuery.toLowerCase();
+    return (
+      client.name.toLowerCase().includes(query) ||
+      client.email.toLowerCase().includes(query) ||
+      (client.phone && client.phone.replace(/\D/g, '').includes(searchQuery))
+    );
+  });
 
+  // Pagination calculations
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
-  const currentClients = filteredClients.slice(
+  const paginatedClients = filteredClients.slice(
     (currentPage - 1) * clientsPerPage,
     currentPage * clientsPerPage
   );
+
+  if (contextLoading && clients.length === 0) {
+    return (
+      <div className="flex h-screen">
+        <SidebarAccountant />
+        <div className="flex-grow flex items-center justify-center">
+          <LoadingSpinner size="large" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen">
       <SidebarAccountant />
       <div className="flex flex-col flex-grow p-6 overflow-auto">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-4">
           <h2 className="text-2xl font-semibold">My Clients</h2>
-          <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
               <input
@@ -77,99 +136,137 @@ const AccountantClientsPage = () => {
                 placeholder="Search clients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-md"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-md w-full"
               />
             </div>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex items-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-            >
-              <FaUserPlus className="mr-2" /> Add Client
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleRefresh}
+                className="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+                disabled={contextLoading || operationLoading}
+              >
+                <FaSync className="mr-2" /> Refresh
+              </button>
+              <button
+                onClick={() => setShowAddModal(true)}
+                className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 disabled:opacity-50"
+                disabled={contextLoading || operationLoading}
+              >
+                <FaUserPlus className="mr-2" /> Add Client
+              </button>
+            </div>
           </div>
         </div>
 
-        <div>
-          <table className="min-w-full table-auto bg-white shadow-lg rounded-lg">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm text-gray-700">Name</th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm text-gray-700">Email</th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm text-gray-700">Phone Number</th>
-                <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-sm text-gray-700">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentClients.map((client) => (
-                <tr key={client.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-800 flex items-center">
-                    <FaUser className="text-blue-500 mr-2" />
-                    {client.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{client.email}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{client.phoneNumber}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    <button
-                      onClick={() => openEditModal(client)}
-                      className="text-blue-500 hover:text-blue-700 mr-2"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => requestDeleteClient(client)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+        <div className="relative">
+          {(contextLoading || operationLoading) && (
+            <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center z-10">
+              <LoadingSpinner />
+            </div>
+          )}
+
+          <div className="overflow-hidden rounded-lg shadow">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {paginatedClients.length > 0 ? (
+                  paginatedClients.map((client) => (
+                    <tr key={client.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <FaUser className="flex-shrink-0 h-5 w-5 text-blue-500 mr-2" />
+                          <div className="text-sm font-medium text-gray-900">{client.name}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {client.email}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {client.phone || '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => openEditModal(client)}
+                          className="text-blue-600 hover:text-blue-900 mr-4 disabled:opacity-50"
+                          disabled={contextLoading || operationLoading}
+                        >
+                          <FaEdit className="inline mr-1" />
+                        </button>
+                        <button
+                          onClick={() => requestDeleteClient(client)}
+                          className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                          disabled={contextLoading || operationLoading}
+                        >
+                          <FaTrash className="inline mr-1" /> 
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                      {searchQuery ? "No matching clients found" : "No clients available"}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        {/*  Pagination */}
-        {filteredClients.length > 1 && (
-          <div className="mt-6">
+
+        {filteredClients.length > clientsPerPage && (
+          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-gray-500">
+              Showing {(currentPage - 1) * clientsPerPage + 1} to{' '}
+              {Math.min(currentPage * clientsPerPage, filteredClients.length)} of{' '}
+              {filteredClients.length} clients
+            </div>
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
-              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              onNext={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onPageSelect={(page) => setCurrentPage(page)}
+              disabled={contextLoading || operationLoading}
             />
           </div>
         )}
 
-        
-      </div>
 
-      {/* Add Client Modal */}
-      {showAddModal && (
         <AddClientForm
           show={showAddModal}
           onHide={() => setShowAddModal(false)}
-          onSave={addClient}
+          onSave={handleAddClient}
+          loading={operationLoading}
         />
-      )}
 
-      {/* Update Client Modal */}
-      {showEditModal && clientToEdit && (
-        <UpdateClientForm
-          show={showEditModal}
-          onHide={() => setShowEditModal(false)}
-          onSave={updateClient}
-          clientData={clientToEdit}
+        {clientToEdit && (
+          <UpdateClientForm
+            show={showEditModal}
+            onHide={() => setShowEditModal(false)}
+            onSave={handleUpdateClient}
+            clientData={clientToEdit}
+            loading={operationLoading}
+          />
+        )}
+
+        <ConfirmModal
+          show={showConfirmModal}
+          onHide={() => setShowConfirmModal(false)}
+          onConfirm={handleDeleteClient}
+          title="Delete Client"
+          message={`Are you sure you want to delete ${clientToDelete?.name}? This action cannot be undone.`}
+          loading={operationLoading}
         />
-      )}
-
-      {/* Delete Confirmation Modal */}
-      <ConfirmModal
-        show={showConfirmModal}
-        onHide={() => setShowConfirmModal(false)}
-        onConfirm={deleteClient}
-        title="Delete Client"
-        message={`Are you sure you want to delete the client "${clientToDelete?.name}"? This action cannot be undone.`}
-      />
+      </div>
     </div>
   );
 };

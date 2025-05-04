@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { userService } from '../services/userService';
-import { useAuth } from './AuthContext'; 
-import { toast } from 'react-toastify'; 
+import { useAuth } from './AuthContext';
+import { toast } from 'react-toastify';
+
 
 const UserContext = createContext();
 
@@ -11,8 +12,7 @@ export const UserProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Get current user from auth context
-  const { user: currentUser } = useAuth(); 
+  const { user: currentUser } = useAuth();
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -21,18 +21,10 @@ export const UserProvider = ({ children }) => {
       setUsers(data);
       setError(null);
     } catch (err) {
+      console.error('Fetch users error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
-    }
-  };
-  const checkEmailExists = async (email) => {
-    try {
-      const response = await userService.checkEmailExists(email);
-      return response; // true/false from server
-    } catch (error) {
-      console.error('Email check failed:', error);
-      throw error;
     }
   };
 
@@ -43,26 +35,23 @@ export const UserProvider = ({ children }) => {
       setStats(data);
       setError(null);
     } catch (err) {
+      console.error('Fetch stats error:', err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  const updateProfile = async (profileData) => {
-    setLoading(true);
+
+
+  const checkEmailExists = async (email) => {
     try {
-      const updatedUser = await userService.updateCurrentUserProfile(profileData);
-      setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
-      toast.success("Profile successfully updated!");
-      return updatedUser;
-    } catch (err) {
-      toast.error(err.message || "Profile update failed");
-      throw err;
-    } finally {
-      setLoading(false);
+      return await userService.checkEmailExists(email); // Calls service with token header
+    } catch (error) {
+      console.error('Email check failed:', error);
+      throw error;
     }
   };
-  
+
   const saveUser = async (userData, id) => {
     setLoading(true);
     try {
@@ -72,27 +61,26 @@ export const UserProvider = ({ children }) => {
       let body = "";
   
       if (id) {
-        const userToUpdate = users.find(u => u.id === id);
-        if (!userToUpdate) throw new Error('User not found');
-  
-        const updateData = {
+        const existingUser = users.find(u => u.id === id);
+        if (!existingUser) throw new Error('User not found');
+
+        const updatedData = {
           ...userData,
           id: id,
-          role: userToUpdate.role, 
-          active: userToUpdate.active // Maintain current active status
+          role: existingUser.role,
+          active: existingUser.active
         };
-  
-        // Add role-specific fields
-        if (userToUpdate.role === 'COMPANY') {
-          updateData.companyName = userData.companyName;
+
+        if (existingUser.role === 'COMPANY') {
+          updatedData.companyName = userData.companyName;
         } else {
-          updateData.firstName = userData.firstName;
-          updateData.lastName = userData.lastName;
-          updateData.gender = userData.gender;
-          updateData.cin = userData.cin;
+          updatedData.firstName = userData.firstName;
+          updatedData.lastName = userData.lastName;
+          updatedData.gender = userData.gender;
+          updatedData.cin = userData.cin;
         }
-  
-        user = await userService.updateUser(id, updateData);
+
+        user = await userService.updateUser(id, updatedData);
         setUsers(prev => prev.map(u => u.id === id ? user : u));
       } else {
         // For create, use the existing logic
@@ -105,9 +93,10 @@ export const UserProvider = ({ children }) => {
       }
   
       return { user, emailSent, subject ,body};  // Return both user and emailSent status
-  
+
     } catch (err) {
       console.error('Error saving user:', err);
+      toast.error(err.message || 'Failed to save user');
       throw err;
     } finally {
       setLoading(false);
@@ -120,7 +109,10 @@ export const UserProvider = ({ children }) => {
     try {
       await userService.deleteUser(id);
       setUsers(prev => prev.filter(u => u.id !== id));
+      toast.success("User deleted successfully");
     } catch (err) {
+      console.error('Delete user error:', err);
+      toast.error(err.message || 'Failed to delete user');
       throw err;
     } finally {
       setLoading(false);
@@ -130,15 +122,9 @@ export const UserProvider = ({ children }) => {
   const toggleActivation = async (id) => {
     setLoading(true);
     try {
-      // Wait for the response from the backend
       const updatedUser = await userService.toggleUserActivation(id);
+      setUsers(prev => prev.map(u => u.id === id ? updatedUser : u));
 
-      // Update the local state with the updated user's status
-      setUsers(prev => prev.map(u => 
-        u.id === id ? updatedUser : u
-      ));
-
-      // Show the correct toast based on the user's new active status
       if (updatedUser?.active) {
         toast.success("User account has been activated successfully");
       } else {
@@ -152,11 +138,8 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-
-  // Initial data loading
   useEffect(() => {
-    if (currentUser) { 
-      // Only fetch if authenticated
+    if (currentUser) {
       fetchUsers();
       fetchStats();
     }
@@ -175,7 +158,7 @@ export const UserProvider = ({ children }) => {
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
       checkEmailExists,
-      updateProfile
+      
     }}>
       {children}
     </UserContext.Provider>

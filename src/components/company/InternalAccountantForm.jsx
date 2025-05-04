@@ -95,7 +95,7 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
   };
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={onHide} size="md">
       <Modal.Header closeButton>
         <Modal.Title>{userToEdit ? "Edit" : "Add"} Internal Accountant</Modal.Title>
       </Modal.Header>

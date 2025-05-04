@@ -1,30 +1,69 @@
+// src/services/clientService.js
+
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:9090/api', 
-});
+const API_URL = 'http://localhost:9090/api/clients';
 
-export const getClients = async () => {
+// Helper to get token from localStorage (or sessionStorage if preferred)
+const getAuthHeader = (token) => {
+  const authToken = token || localStorage.getItem('token');
+  return {
+    Authorization: `Bearer ${authToken}`,
+    'Content-Type': 'application/json',
+  };
+};
+
+// Create a new client
+export const createClient = async (clientData, token) => {
   try {
-    const response = await api.get('/clients');
+    const response = await axios.post(API_URL, clientData, {
+      headers: getAuthHeader(token),
+    });
     return response.data;
   } catch (error) {
-    console.error("Error fetching clients:", error);
+    console.error('Error creating client:', error.response?.data || error.message);
+    throw error.response?.data?.message || 'Failed to create client';
+  }
+};
+
+// Get the list of clients created by the current user
+export const getMyClients = async (token) => {
+  try {
+    const response = await axios.get(API_URL, {
+      headers: getAuthHeader(token),
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching clients:', error.response?.data || error.message);
+    throw error.response?.data?.message || 'Failed to fetch clients';
+  }
+};
+//  Update a client
+export const updateClient = async (clientId, updatedData, token) => {
+  try {
+    const response = await axios.put(`${API_URL}/${clientId}`, updatedData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating client ${clientId}`, error);
     throw error;
   }
 };
 
-export const addClient = async (client) => {
-  const response = await api.post('/clients', client);
-  return response.data;
-};
-
-export const deleteClient = async (clientId) => {
-  const response = await api.delete(`/clients/${clientId}`);
-  return response.data;
-};
-
-export const updateClient = async (clientId, client) => {
-  const response = await api.put(`/clients/${clientId}`, client);
-  return response.data;
+//  Delete a client
+export const deleteClient = async (clientId, token) => {
+  try {
+    await axios.delete(`${API_URL}/${clientId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      }
+    });
+  } catch (error) {
+    console.error(`Error deleting client ${clientId}`, error);
+    throw error;
+  }
 };

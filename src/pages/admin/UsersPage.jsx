@@ -50,7 +50,7 @@ const UsersPage = () => {
   // Handle user edit
   const handleEdit = (user) => {
     setSelectedUser(user);
-    setIsPerson(user.role === "INDEPENDENT ACCOUNTANT");
+    setIsPerson(user.role === "INDEPENDENT_ACCOUNTANT");
     setIsModalOpen(true);
   };
 
@@ -66,7 +66,7 @@ const UsersPage = () => {
       firstName: isPerson ? e.target.firstName?.value : undefined,
       lastName: isPerson ? e.target.lastName?.value : undefined,
       companyName: !isPerson ? e.target.companyName?.value : undefined, 
-      role: isPerson ? "INDEPENDENT ACCOUNTANT" : "COMPANY",
+      role: isPerson ? "INDEPENDENT_ACCOUNTANT" : "COMPANY",
     };
     
     try {
@@ -174,7 +174,7 @@ const UsersPage = () => {
             >
               <option value="all">All Roles</option>
               <option value="COMPANY">Companies</option>
-              <option value="INDEPENDENT ACCOUNTANT">Accountants</option>
+              <option value="INDEPENDENT_ACCOUNTANT">Accountants</option>
             </select>
             
             <button
@@ -226,7 +226,7 @@ const UsersPage = () => {
                   {currentUsers.map((user) => (
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {user.role === "INDEPENDENT ACCOUNTANT" ? (
+                        {user.role === "INDEPENDENT_ACCOUNTANT" ? (
                           <FaUser className="text-blue-500" />
                         ) : (
                           <FaBuilding className="text-green-500" />
@@ -277,7 +277,7 @@ const UsersPage = () => {
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          {user.role === "INDEPENDENT ACCOUNTANT" ? (
+                          {user.role === "INDEPENDENT_ACCOUNTANT" ? (
                             <FaUser className="text-blue-500" />
                           ) : (
                             <FaBuilding className="text-green-500" />
@@ -322,6 +322,7 @@ const UsersPage = () => {
             </>
           )}
         </div>
+
 
         {filteredUsers.length >= 6 && (
           <div className="mt-6">

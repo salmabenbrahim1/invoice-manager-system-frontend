@@ -1,53 +1,61 @@
 import axios from 'axios';
 
-const api = axios.create({
-  //backend URL
-  baseURL: 'http://localhost:9090/api'
-});
 
-//Fetch invoices for each folder
-export const getInvoices = async (folderId) => {
-  try {
-    const response = await api.get(`/folders/${folderId}/invoices`);
-    return response.data || []; 
-  }catch (error) {
-    console.error("Error fetching invoices:", error);
-    throw error;
-  }
-};
+const API_URL = 'http://localhost:9090/api/invoices'; 
 
-//Add an invoice to the current folder
-export const createInvoice = async (folderId, formData) => {
-  try {
-    const response = await api.post(`/folders/${folderId}/invoices`, formData);
-    return response.data;
-  } catch (error) {
-    console.error("Error creating invoice - Details:", {
-    
-    });
-    throw error;
-  }
-};
+const invoiceService = {
+  // Create a new invoice
+  createInvoice: async (formData) => {
+    try {
+      const response = await axios.post(API_URL, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating invoice:', error);
+      throw error;
+    }
+  },
+  
 
-//Update an invoice in the current folder
-export const updateInvoice = async (folderId,invoiceId, updatedData) => {
-  try {
-    const response = await api.put(`folders/${folderId}/invoices/${invoiceId}`, updatedData);
-    return response.data;
-  } catch (error) {
-    console.error("Error updating invoice:", error);
-    throw error;
-  }
-};
+  // Get invoices by folder ID
+  getInvoicesByFolder: async (folderId) => {
+    try {
+      const response = await axios.get(`${API_URL}/folder/${folderId}`);
+      return response.data; // Return the list of invoices
+    } catch (error) {
+      console.error('Error fetching invoices:', error);
+      throw error;
+    }
+  },
 
-// Delete an invoice in the current folder
-export const deleteInvoice = async (folderId,invoiceId) => {
-  try {
-    await api.delete(`folders/${folderId}/invoices/${invoiceId}`);
-  } catch (error) {
-    console.error("Error deleting invoice:", error);
-    throw error;
-  }
+  // Update an existing invoice
+  updateInvoice: async (invoiceId, updatedData) => {
+    try {
+      const response = await axios.put(`${API_URL}/${invoiceId}`, updatedData, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating invoice:', error);
+      throw error;
+    }
+  },
+
+  // Delete an invoice by ID
+  deleteInvoice: async (invoiceId) => {
+    try {
+      const response = await axios.delete(`${API_URL}/${invoiceId}`);
+      return response.data; // Return a success message or status
+    } catch (error) {
+      console.error('Error deleting invoice:', error);
+      throw error;
+    }
+  },
 };
 const API_URL = 'http://localhost:5000/extract';
 export const extractInvoiceData = async (imagePath) => {
@@ -79,3 +87,5 @@ export const extractInvoiceData = async (imagePath) => {
     throw error;
   }
 };
+export default invoiceService;
+
