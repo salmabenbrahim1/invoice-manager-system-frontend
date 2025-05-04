@@ -10,7 +10,7 @@ import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, handleAddInvoice, handleDeleteInvoice } = useInvoice();
+  const { invoices, fetchInvoices, deleteInvoice } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
@@ -20,7 +20,7 @@ const InvoiceList = () => {
     if (folderId) {
       fetchInvoices(folderId);
     }
-  }, [folderId, fetchInvoices]);
+  }, [folderId]);
 
   const filteredInvoices = invoices
     .filter(
@@ -36,10 +36,8 @@ const InvoiceList = () => {
   const confirmDelete = async () => {
     if (invoiceToDelete) {
       try {
-        await handleDeleteInvoice(invoiceToDelete.id);
-
+        await deleteInvoice(invoiceToDelete.id);
         toast.success('Invoice deleted successfully');
-
       } catch (error) {
         toast.error('Failed to delete invoice');
       }
@@ -100,7 +98,7 @@ const InvoiceList = () => {
                         <div className="flex items-center">
                           {invoice.img && (
                             <img
-                            src={`http://localhost:9090${invoice.img}`}
+                              src={`http://localhost:9090${invoice.img}`}
                               alt="Invoice"
                               className="w-10 h-10 object-cover rounded mr-3"
                             />
@@ -123,7 +121,6 @@ const InvoiceList = () => {
                         >
                           {invoice.status}
                         </span>
-
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
@@ -161,23 +158,12 @@ const InvoiceList = () => {
 
         {showUploader && (
           <InvoiceUploader
-            onClose={(success) => {
-              setShowUploader(false);
-              if (success && folderId) {
-                // Refresh invoices after upload
-                fetchInvoices(folderId); 
-              }
-            }}
             folderId={folderId}
-            onUploadSuccess={async (formData) => {
-              try {
-                formData.append('folderId', folderId);
-                await handleAddInvoice(folderId, formData);
-                return true;
-              } catch (error) {
-                console.error('Upload failed:', error);
-                toast.error(error.message || 'Failed to upload invoice');
-                return false;
+            onClose={(uploaded) => {
+              console.log("onClose called with uploaded:", uploaded); // Debug log
+              setShowUploader(false); // Close the modal
+              if (uploaded && folderId) {
+                fetchInvoices(folderId); // Fetch updated invoices
               }
             }}
           />

@@ -29,7 +29,7 @@ const Login = () => {
         navigate('/admin/dashboard');
       } else if (role === 'COMPANY') {
         navigate('/company/dashboard');
-      } else if (role === 'INDEPENDENT ACCOUNTANT' || role === 'INTERNAL ACCOUNTANT')  {
+      } else if (role === 'INDEPENDENT_ACCOUNTANT' || role === 'INTERNAL_ACCOUNTANT')  {
         navigate('/accountant/dashboard');
       } else {
         navigate('/'); 

@@ -13,7 +13,7 @@ import { FaFolder, FaStar, FaSearch} from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 const FolderList = () => {
-  const { folders, handleDeleteFolder, archiveFolder, toggleFavorite } = useFolder();
+  const { folders, archiveFolder, toggleFavorite,fetchFolders, deleteFolder } = useFolder();
   
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,10 +29,18 @@ const FolderList = () => {
 
   const navigate = useNavigate(); 
 
+  // Fetch folders when the component mounts
+  useEffect(() => {
+    fetchFolders();
+  }, []);
+
+  // Save favorite folders to localStorage
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favoriteFolders")) || [];
     setFavoriteFolders(storedFavorites);
   }, []);
+
+  
 
   useEffect(() => {
     if (favoriteFolders.length > 0) {
@@ -40,10 +48,12 @@ const FolderList = () => {
     }
   }, [favoriteFolders]);
 
+  
   const handleSaveFolder = (createdFolder) => {
     setShowAddModal(false);
     toast.success(`Folder "${createdFolder.folderName}" created successfully.`);
   };
+
   
 
   const formatDate = (date) => {
@@ -56,9 +66,9 @@ const FolderList = () => {
     setShowConfirmModal(true);
   };
 
-  const deleteFolder = async () => {
+  const handleDeleteFolder = async () => {
     if (folderToDelete) {
-      await handleDeleteFolder(folderToDelete.id);
+      await deleteFolder(folderToDelete.id);
       toast.success("Folder deleted successfully.");
     } else {
       toast.info("Folder deletion canceled.");
@@ -205,9 +215,10 @@ const FolderList = () => {
       <ConfirmModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
-        onConfirm={deleteFolder}
         title="Delete Folder"
         message={`Are you sure you want to delete the folder "${folderToDelete?.name}"? This action cannot be undone.`}
+        onConfirm={handleDeleteFolder}
+
       />
       
       {/* Update Folder Form Modal */}

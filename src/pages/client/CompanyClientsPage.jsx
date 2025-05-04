@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { FaUserPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import React, { useState} from "react";
+import { FaUserPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { FaUser, FaSearch } from 'react-icons/fa';
 
 import AddClientForm from "../../components/client/AddClientForm";
@@ -22,11 +22,10 @@ const CompanyClientsPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [clientToDelete, setClientToDelete] = useState(null);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
 
-  const clientsPerPage = 10;
+
+  const clientsPerPage = 6;
 
   const addClient = async (newClient) => {
     await handleAddClient(newClient);
@@ -118,7 +117,7 @@ const CompanyClientsPage = () => {
                       {client.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">{client.email}</td>
-                    <td className="px-6 py-4 text-sm text-gray-600">{client.phoneNumber}</td>
+                    <td className="px-6 py-4 text-sm text-gray-600">{client.phone}</td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       <button
                         onClick={() => openEditModal(client)}
@@ -139,13 +138,16 @@ const CompanyClientsPage = () => {
             </table>
           </div>
 
-          {/*  Pagination */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          />
+          {filteredClients.length > 6 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </div>
+        )}
 
         </div>
 

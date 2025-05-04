@@ -49,7 +49,9 @@ function App() {
 
                     {/* Admin Routes */}
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                    <Route path="/users" element={<UsersPage />} />
+                    <Route path="/users" element={  
+                          <UsersPage />}
+                         />
 
                     {/* Company Routes */}
                     <Route path="/company/dashboard" element={<CompanyDashboard />} />
@@ -74,7 +76,7 @@ function App() {
                     <Route
                       path="/accountant/dashboard"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <AccountantDashboard />
                         </PrivateRoute>
                       }
@@ -82,7 +84,7 @@ function App() {
                     <Route
                       path="/my-clients"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
                           <AccountantClientsPage />
                         </PrivateRoute>
                       }
@@ -90,7 +92,7 @@ function App() {
                     <Route
                       path="/my-folders"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <FolderList />
                         </PrivateRoute>
                       }
@@ -98,7 +100,7 @@ function App() {
                     <Route
                       path="/manage-invoices"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <FolderList />
                         </PrivateRoute>
                       }
@@ -106,7 +108,7 @@ function App() {
                     <Route
                       path="/my-folders/:folderId/invoices"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <InvoiceList />
                         </PrivateRoute>
                       }
@@ -114,7 +116,7 @@ function App() {
                     <Route
                       path="/favorites"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <Favorite />
                         </PrivateRoute>
                       }
@@ -122,7 +124,7 @@ function App() {
                     <Route
                       path="/archive"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT ACCOUNTANT', 'INTERNAL ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
                           <Archive />
                         </PrivateRoute>
                       }

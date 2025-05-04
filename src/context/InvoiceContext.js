@@ -1,8 +1,5 @@
-import { useState, createContext, useContext, useCallback} from 'react';
-import { getInvoices, createInvoice, deleteInvoice } from '../services/InvoiceService';
-import { useFolder } from './FolderContext';
-
-import { toast } from 'react-toastify';
+import React, { createContext, useContext, useState } from 'react';
+import InvoiceService from '../services/InvoiceService';
 
 const InvoiceContext = createContext();
 
@@ -10,101 +7,73 @@ export const useInvoice = () => useContext(InvoiceContext);
 
 export const InvoiceProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([]);
-  
-  //// States to manage loading and error states:
-  // Loading state to show a spinner 
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const [lastUpdated, setLastUpdated] = useState(Date.now());
-  
-  const { currentFolder } = useFolder();
-
-  //useCallback to fetch invoices when the folder changes
-  // This will prevent unnecessary re-renders and API calls
-  const fetchInvoices = useCallback(async (folderId) => {
-    if (!folderId) return;
-    
-    setIsLoading(true);
-    setError(null);
-
+  // Fetch invoices by folder
+  const fetchInvoices = async (folderId) => {
+    setLoading(true);
     try {
-      const fetchedInvoices = await getInvoices(folderId);
+      const fetchedInvoices = await InvoiceService.getInvoicesByFolder(folderId);
       setInvoices(fetchedInvoices);
-      
-      // Updating last updated time
-      setLastUpdated(Date.now());
-
-    } catch (error) {
-      setError(error);
-      toast.error('Failed to load invoices');
-      console.error('Fetch error:', error);
+    } catch (err) {
+      setError('Failed to fetch invoices');
     } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  //adding invoice to the corresponding folder
-  const handleAddInvoice = async (folderId, formData) => {
-    let newInvoice; 
-    
-    try {
-      setIsLoading(true);
-      newInvoice = await createInvoice(folderId, formData);
-      
-      setInvoices(prev => [...prev, newInvoice]);
-      
-      // Verify with server
-      await fetchInvoices(folderId);
-      
-      toast.success('Invoice uploaded successfully');
-      return newInvoice;
-
-    } catch (error) {
-
-     //newInvoice is defined
-      if (newInvoice) {
-        setInvoices(prev => prev.filter(invoice => invoice.id !== newInvoice.id));
-      }
-      toast.error('Failed to add an invoice');
-      throw error;
-    } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-//deleting invoice from the folder
- const handleDeleteInvoice = async (invoiceId) => {
+  // Create a new invoice
+  const createInvoice = async (formData) => {
+    setLoading(true);
+    try {
+      const newInvoice = await InvoiceService.createInvoice(formData);
+      setInvoices((prev) => [...prev, newInvoice]);
+    } catch (err) {
+      setError('Failed to create invoice');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  try {
-    setIsLoading(true);
+  // Update an invoice
+  const updateInvoice = async (invoiceId, updatedData) => {
+    setLoading(true);
+    try {
+      const updatedInvoice = await InvoiceService.updateInvoice(invoiceId, updatedData);
+      setInvoices((prev) =>
+        prev.map((invoice) => (invoice.id === invoiceId ? updatedInvoice : invoice))
+      );
+    } catch (err) {
+      setError('Failed to update invoice');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    await deleteInvoice(currentFolder.id, invoiceId);
-    setInvoices(prev => prev.filter(i => i.id !== invoiceId));
-
-  } catch (error) {
-    toast.error('Failed to delete invoice');
-    console.error('Delete error:', error);
-    setError(error);
-    throw error;
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  // Delete an invoice
+  const deleteInvoice = async (invoiceId) => {
+    setLoading(true);
+    try {
+      await InvoiceService.deleteInvoice(invoiceId);
+      setInvoices((prev) => prev.filter((invoice) => invoice.id !== invoiceId));
+    } catch (err) {
+      setError('Failed to delete invoice');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <InvoiceContext.Provider 
-      value={{ 
-        invoices, 
-        isLoading,
-        setIsLoading,
+    <InvoiceContext.Provider
+      value={{
+        invoices,
+        loading,
         error,
-        currentFolderId: currentFolder?.id,
         fetchInvoices,
-        handleAddInvoice, 
-        handleDeleteInvoice,
-        lastUpdated
+        createInvoice,
+        updateInvoice,
+        deleteInvoice,
       }}
     >
       {children}

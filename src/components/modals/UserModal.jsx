@@ -77,9 +77,9 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
     const RequiredStar = () => <span className="text-red-500">*</span>;
 
     return (
-        <div className={`fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
+        <div className={`fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center pt-8 pb-4 ${isOpen ? 'opacity-100' : 'opacity-0'}`}
             onClick={onClose}>
-            <div className={`bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl relative transition-all duration-300 transform ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+            <div className={`bg-white rounded-lg p-6 max-w-2xl w-full max-h-[calc(101vh-11rem)] shadow-xl ${isOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
                 onClick={(e) => e.stopPropagation()}>
                 <button
                     onClick={onClose}

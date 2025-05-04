@@ -2,54 +2,45 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useClient } from '../../context/ClientContext';
-import { useFolder } from '../../context/FolderContext';
-
+import { useFolder } from '../../context/FolderContext'; // Assure-toi que le hook correspond bien
 
 const AddFolderForm = ({ show, onHide, onSave }) => {
-  const { clients, handleAddClient } = useClient();
-  const { handleAddFolder } = useFolder();
+  const { clients, addClient } = useClient();
+  const { createFolder } = useFolder(); // ✅ Correction ici : fonction venant du contexte
+  const token = localStorage.getItem('token'); // ✅ Assure-toi d'avoir un token valide
 
-  // Step 1: Client Info, Step 2: Folder Info
   const [step, setStep] = useState(1);
   const [clientType, setClientType] = useState('existing');
 
-  // Folder Info
   const [folderName, setFolderName] = useState('');
   const [folderDescription, setFolderDescription] = useState('');
 
-
-  // Client Info
   const [selectedClientId, setSelectedClientId] = useState('');
-
   const [newClient, setNewClient] = useState({
     name: '',
     email: '',
-    phoneNumber: ''
+    phone: ''
   });
-
-
 
   const handleNext = () => {
     if (step === 1) {
-
-      // Validate client information 
       if (clientType === 'existing' && !selectedClientId) {
         toast.warn('Please select an existing client.');
         return;
       }
-      if (clientType === 'new' && (!newClient.name || !newClient.email || !newClient.phoneNumber)) {
+      if (clientType === 'new' && (!newClient.name || !newClient.email || !newClient.phone)) {
         toast.warn('Please fill in all client details.');
         return;
       }
-      // Email validation regex pattern
+
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (clientType === 'new' && !emailRegex.test(newClient.email)) {
         toast.warn('Please enter a valid email address.');
         return;
       }
-      // Phone number validation regex (supports international formats)
+
       const phoneRegex = /^\+?[0-9]{8,15}$/;
-      if (clientType === 'new' && !phoneRegex.test(newClient.phoneNumber)) {
+      if (clientType === 'new' && !phoneRegex.test(newClient.phone)) {
         toast.warn('Please enter a valid phone number (8-15 digits, optional "+").');
         return;
       }
@@ -59,57 +50,38 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
   };
 
   const handleSave = async () => {
-    // Validate folder name
     if (!folderName.trim()) {
       toast.warn('Please enter a folder name.');
       return;
     }
+
     try {
-      let clientData = {};
+      let clientId = '';
       let clientName = '';
 
       if (clientType === 'new') {
-
-        // Validate new client details
-        if (!newClient.name || !newClient.email || !newClient.phoneNumber) {
-          toast.warn('Please fill in all client details.');
-          return;
-        }
-        //indicate a new client
-        const addedClient = await handleAddClient(newClient);
-        clientData = { id: addedClient.id };
-        clientName = newClient.name;
+        const addedClient = await addClient(newClient);
+        clientId = addedClient.id;
+        clientName = addedClient.name;
       } else {
-        // For an existing client, validate the selected client ID
-        if (!selectedClientId) {
-          toast.warn('Please select an existing client.');
-          return;
-        }
-
-        clientData = { id: selectedClientId };
-
-        const selectedClient = clients.find((client) => client.id === selectedClientId);
-        clientName = selectedClient ? selectedClient.name : '';
+        clientId = selectedClientId;
+        const selectedClient = clients.find(client => client.id === selectedClientId);
+        clientName = selectedClient?.name || '';
       }
-
 
       const folderData = {
-        folderName: folderName,
+        folderName,
         description: folderDescription,
-        clientId: clientData,
-        clientName: clientName,
+        clientId, 
+        clientName,
       };
 
-      const createdFolder = await handleAddFolder(folderData);
+      const createdFolder = await createFolder(folderData, token); 
 
-      if (clientType === 'new') {
-        createdFolder.client = { id: createdFolder.clientId, name: newClient.name };
-      } else {
-        const selectedClient = clients.find(
-          (client) => client.id === selectedClientId
-        );
-        createdFolder.client = selectedClient;
-      }
+      // Associer client à la réponse
+      createdFolder.client = clientType === 'new'
+        ? { id: clientId, name: newClient.name }
+        : clients.find(client => client.id === clientId);
 
       onSave(createdFolder);
       onHide();
@@ -119,15 +91,13 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
     }
   };
 
-
-
   const resetForm = () => {
     setStep(1);
     setClientType('existing');
     setFolderName('');
     setFolderDescription('');
     setSelectedClientId('');
-    setNewClient({ name: '', email: '', phoneNumber: '' });
+    setNewClient({ name: '', email: '', phone: '' });
   };
 
   return (
@@ -204,8 +174,8 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
                       id="clientPhone"
                       name="clientPhone"
                       autoComplete="tel"
-                      value={newClient.phoneNumber}
-                      onChange={(e) => setNewClient({ ...newClient, phoneNumber: e.target.value })}
+                      value={newClient.phone}
+                      onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
                       className="mb-2"
                     />
                   </>

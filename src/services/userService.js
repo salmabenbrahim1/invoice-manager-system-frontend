@@ -2,12 +2,24 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:9090/api/users';
 
+// Helper to get auth config
+const getAuthConfig = () => {
+  const token = localStorage.getItem('authToken');
+  if (!token) throw new Error('No token found');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  };
+};
 
 export const userService = {
   // Create a new user
   createUser: async (userData) => {
     try {
-      const response = await axios.post(API_URL, userData);
+      const config = getAuthConfig();
+      const response = await axios.post(API_URL, userData, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to create user');
@@ -17,7 +29,8 @@ export const userService = {
   // Get all users
   getAllUsers: async () => {
     try {
-      const response = await axios.get(API_URL);
+      const config = getAuthConfig();
+      const response = await axios.get(API_URL, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch users');
@@ -27,7 +40,8 @@ export const userService = {
   // Get user by ID
   getUserById: async (id) => {
     try {
-      const response = await axios.get(`${API_URL}/${id}`);
+      const config = getAuthConfig();
+      const response = await axios.get(`${API_URL}/${id}`, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'User not found');
@@ -37,19 +51,10 @@ export const userService = {
   // Update user
   updateUser: async (id, userData) => {
     try {
-      // Add authorization header
-      const token = localStorage.getItem('token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      };
-
+      const config = getAuthConfig();
       const response = await axios.put(`${API_URL}/${id}`, userData, config);
       return response.data;
     } catch (error) {
-      // Enhanced error handling
       const errorMessage = error.response?.data?.message ||
         error.response?.data?.error ||
         'Failed to update user';
@@ -60,27 +65,32 @@ export const userService = {
   // Delete user
   deleteUser: async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      const config = getAuthConfig();
+      await axios.delete(`${API_URL}/${id}`, config);
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to delete user');
     }
   },
 
+  // Toggle activation status
   toggleUserActivation: async (id) => {
     try {
-      const response = await axios.patch(`${API_URL}/${id}/toggle-activation`);
-      console.log('Updated user:', response.data); // Log the response data
-      const updatedUser = response.data;
-      return updatedUser;
+      const config = getAuthConfig();
+      const response = await axios.patch(`${API_URL}/${id}/toggle-activation`, {}, config);
+      return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to toggle activation');
     }
   },
-  // Check if email exists (for registration)
+
+  // Check if email exists (no auth required)
+  // Check if email exists (with authorization)
   checkEmailExists: async (email) => {
     try {
+      const config = getAuthConfig(); // Get the authentication header config
       const response = await axios.get(`${API_URL}/check-email`, {
-        params: { email }
+        params: { email },
+        ...config // Include the auth header in the request
       });
       return response.data;
     } catch (error) {
@@ -88,36 +98,35 @@ export const userService = {
     }
   },
 
-
-  // Get user statistics 
+  // Get user statistics
   getUserStats: async () => {
     try {
-      const response = await axios.get(`${API_URL}/dashboard`);
+      const config = getAuthConfig();
+      const response = await axios.get(`${API_URL}/dashboard`, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch stats');
     }
   },
 
-  // Get current user profile
+  // Get current user's profile
   getCurrentUserProfile: async () => {
     try {
-      const response = await axios.get(`${API_URL}/me`);
+      const config = getAuthConfig();
+      const response = await axios.get(`${API_URL}/me`, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch profile');
     }
   },
 
- // check permissions (mirrors backend logic)
+  // Permission checks
   canManage: (currentUser) => {
     return currentUser?.role === 'ADMIN' || currentUser?.role === 'COMPANY';
   },
 
-  // check view permissions
   canView: (currentUser, targetUser) => {
     if (currentUser?.role === 'ADMIN') return true;
     return targetUser?.createdBy === currentUser?.id;
   }
 };
-

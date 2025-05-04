@@ -1,62 +1,76 @@
 import axios from 'axios';
 
-const api = axios.create({
-  //backend URL
-  baseURL: 'http://localhost:9090/api'
-});
+const API_URL = 'http://localhost:9090/api/folders';
 
-axios.interceptors.request.use(config => {
+// Helper to get auth config
+const getAuthConfig = () => {
   const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-//fetching all folders from the backend
-export const getFolders = async () => {
-  try {
-    const response = await api.get('/folders');
-    return response.data.map(folder => ({ ...folder,
-      clientName: folder.client ? folder.client.name : '', 
-    }));
-  } catch (error) {
-    console.error("Error fetching folders:", error);
-    throw error;
-  }
+  if (!token) throw new Error('No token found');
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  };
 };
 
-//adding a new folder to the backend
-export const addFolder = async (folder) => {
-  try{
-    const response = await api.post('/folders', folder);
-    return response.data;
-  }
-  catch (error) {
-    console.error("Error adding folder:", error);
+export const folderService = {
+  // Create a new folder (with new or existing client)
+  createFolder: async (folderData) => {
+    try {
+      const config = getAuthConfig();
+      const response = await axios.post(API_URL, folderData, config);
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to create folder';
+      throw new Error(message);
+    }
+  },
 
-    throw error;
-  }
-}
+  // Get folders created by the authenticated user
+  getMyFolders: async () => {
+    try {
+      const config = getAuthConfig();
+      const response = await axios.get(`${API_URL}/my-folders`, config);
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        'Failed to fetch folders';
+      throw new Error(message);
+    }
+  },
 
-//deleting a folder by its ID
-export const deleteFolder = async (folderId) => {
-  try{
-    const response = await api.delete(`/folders/${folderId}`);
-    return response.data;
-  }catch (error) {
-    console.error("Error updating folder:", error);
-    throw error;  
-  }
+   // Update a folder by ID
+   updateFolder: async (folderId, updatedFolderData) => {
+    try {
+      const config = getAuthConfig();
+      const response = await axios.put(`${API_URL}/${folderId}`, updatedFolderData, config);
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        `Failed to update folder with id ${folderId}`;
+      throw new Error(message);
+    }
+  },
+
+  // Delete a folder by ID
+  deleteFolder: async (folderId) => {
+    try {
+      const config = getAuthConfig();
+      await axios.delete(`${API_URL}/${folderId}`, config);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        `Failed to delete folder with id ${folderId}`;
+      throw new Error(message);
+    }
+  },
 };
-
-// updating an existing folder's details
-export const updateFolder = async (folderId, updatedFolder) => {
-  try {
-    const response = await api.put(`/folders/${folderId}`, updatedFolder);
-    return response.data;  
-  } catch (error) {
-    console.error("Error updating folder:", error);
-    throw error;  
-  }
-};
-

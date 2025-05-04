@@ -1,139 +1,131 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { getFolders, deleteFolder, addFolder, updateFolder } from '../services/FolderService';
-import { useParams } from 'react-router-dom';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { folderService } from '../services/FolderService';
 import { toast } from 'react-toastify';
+import { useParams } from 'react-router-dom';
 
-export const FolderContext = createContext();
+const FolderContext = createContext();
 
 export const useFolder = () => useContext(FolderContext);
 
 export const FolderProvider = ({ children }) => {
   const [folders, setFolders] = useState([]);
+   // the current folder is the one selected by the user 
 
-  // the current folder is the one selected by the user 
-  const [currentFolder, setCurrentFolder] = useState(null);
-  const { folderId } = useParams();
 
   const [archivedFolders, setArchivedFolders] = useState([]);
   const [favoriteFolders, setFavoriteFolders] = useState([]);
 
-  // Add a folder from API
-  const handleAddFolder = async (folder) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch folders created by the authenticated user
+  const fetchFolders = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const newFolder = await addFolder(folder);
-      setFolders((prevFolders) => [...prevFolders, newFolder]);
+      const fetchedFolders = await folderService.getMyFolders();
+      setFolders(fetchedFolders); // Set the fetched folders
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Create a folder and update state
+  const createFolder = async (folderData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const newFolder = await folderService.createFolder(folderData);
+      setFolders((prev) => [...prev, newFolder]); // Add the new folder to the list
       return newFolder;
-    } catch (error) {
-      console.error('Failed to add folder:', error);
-      toast.error('Failed to add folder. Please try again.');
+    } catch (err) {
+      setError(err.message);
+      throw err; // Rethrow for components to handle
+    } finally {
+      setLoading(false);
     }
   };
 
+// Update folder by id and update state
+const updateFolder = async (folderId, updatedFolderData) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const updatedFolder = await folderService.updateFolder(folderId, updatedFolderData);
+    setFolders((prev) => prev.map(folder => folder.id === folderId ? updatedFolder : folder)); // Update the folder in the list
+    return updatedFolder;
+  } catch (err) {
+    setError(err.message);
+    throw err; // Rethrow for components to handle
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Delete a folder from API
-  const handleDeleteFolder = async (folderId) => {
-    try {
-      await deleteFolder(folderId);
-      setFolders((prevFolders) => prevFolders.filter(folder => folder.id !== folderId));
-    } catch (error) {
-      console.error('Failed to delete folder:', error);
-      toast.error('Failed to delete folder. Please try again.');
-    }
-  };
+ // Delete folder by id and update state
+ const deleteFolder = async (folderId) => {
+  setLoading(true);
+  setError(null);
+  try {
+    await folderService.deleteFolder(folderId);
+    setFolders((prev) => prev.filter(folder => folder.id !== folderId)); 
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
-  // Fetch all folders 
-  useEffect(() => {
-    const fetchFolders = async () => {
-      try {
-        const data = await getFolders();
-        setFolders(data);
-      } catch (error) {
-        console.error('Error fetching folders:', error);
-      }
-    };
-    fetchFolders();
-  }, []);
 
-  useEffect(() => {
-    const updateCurrentFolder = () => {
-      if (folders.length > 0) {
-        if (!folderId) {
-          // Default to first folder if no folderId in URL
-          setCurrentFolder(folders[0]);
-        } else {
-          const folderToSet = folders.find((folder) => folder.id === folderId);
-          if (folderToSet) {
-            setCurrentFolder(folderToSet);
-          } else {
-            console.error('Folder not found.');
-          }
-        }
-      }
-    };
-    updateCurrentFolder();
-  }, [folderId, folders]);
-  
-  // Update an existing folder from API
-  const handleUpdateFolder = async (folderId, updatedData) => {
-    try {
-      const updatedFolder = await updateFolder(folderId, updatedData);
-      setFolders((prevFolders) =>
-        prevFolders.map((folder) =>
-          folder.id === folderId ? { ...folder, ...updatedFolder } : folder
-        )
-      );
-    } catch (error) {
-      console.error('Failed to update folder:', error);
-      toast.error('Failed to update folder. Please try again.');
-    }
-  };
+// Archive folders
+const archiveFolder = (folderId) => {
+  const folderToArchive = folders.find((folder) => folder.id === folderId);
+  if (!folderToArchive) return;
 
-  // Archive folders
-  const archiveFolder = (folderId) => {
-    const folderToArchive = folders.find((folder) => folder.id === folderId);
-    if (!folderToArchive) return;
+  setArchivedFolders((prevArchived) => [...prevArchived, folderToArchive]);
+  setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== folderId));
+};
 
-    setArchivedFolders((prevArchived) => [...prevArchived, folderToArchive]);
-    setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== folderId));
-  };
-
-  // Favorite folders
-  const toggleFavorite = (folderId) => {
-    setFavoriteFolders((prevFavorites) => {
-      const isFavorite = prevFavorites.some((fav) => fav.id === folderId);
-      if (isFavorite) {
-        return prevFavorites.filter((fav) => fav.id !== folderId);
-      } else {
-        const folderToAdd = folders.find((f) => f.id === folderId);
-        return [...prevFavorites, folderToAdd];
-      }
-    });
-  };
-
-  // Ensuring `currentFolder` is always updated when folder is switched 
-  const handleFolderSwitch = (folderId) => {
-    const folderToSet = folders.find((folder) => folder.id === folderId);
-    if (folderToSet) {
-      setCurrentFolder(folderToSet);
+// Favorite folders
+const toggleFavorite = (folderId) => {
+  setFavoriteFolders((prevFavorites) => {
+    const isFavorite = prevFavorites.some((fav) => fav.id === folderId);
+    if (isFavorite) {
+      return prevFavorites.filter((fav) => fav.id !== folderId);
     } else {
-      console.error('Folder not found.');
+      const folderToAdd = folders.find((f) => f.id === folderId);
+      return [...prevFavorites, folderToAdd];
     }
+  });
+};
+
+// Set the current folder when a folder is selected
+  const setFolderList = (folderList) => {
+    setFolders(folderList);
   };
 
   return (
     <FolderContext.Provider
       value={{
         folders,
-        currentFolder,
-        setCurrentFolder,
-        archivedFolders,
         favoriteFolders,
-        handleAddFolder,
-        handleDeleteFolder,
-        archiveFolder,
-        handleUpdateFolder,
+        archivedFolders,
+        loading,
+        error,
+        createFolder,
+        setFolderList,
+        fetchFolders,
+        updateFolder, 
+        deleteFolder,
         toggleFavorite,
-        handleFolderSwitch,
+        archiveFolder,
+        favoriteFolders,
+        archivedFolders
+
+
+        
       }}
     >
       {children}

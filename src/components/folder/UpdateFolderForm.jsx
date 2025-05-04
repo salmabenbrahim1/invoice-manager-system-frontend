@@ -4,7 +4,7 @@ import { Modal, Form, Button } from 'react-bootstrap';
 import { useFolder } from '../../context/FolderContext';
 
 const UpdateFolderForm = ({ show, onHide, folderData }) => {
-  const { handleUpdateFolder } = useFolder(); 
+  const { updateFolder } = useFolder(); 
 
   const [formData, setFormData] = useState({
     folderName: '',
@@ -30,7 +30,7 @@ const UpdateFolderForm = ({ show, onHide, folderData }) => {
     
 
     try {
-      await handleUpdateFolder(folderData.id, formData); 
+      await updateFolder(folderData.id, formData); 
       toast.success('folder updated successfully!');
       onHide(); // Close the modal
     } catch (error) {

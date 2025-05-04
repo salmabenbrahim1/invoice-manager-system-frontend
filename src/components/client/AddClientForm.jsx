@@ -1,79 +1,182 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { Modal, Form, Button } from 'react-bootstrap';
+import { Modal, Form, Button, Spinner } from 'react-bootstrap';
 import { useClient } from '../../context/ClientContext';
+
 const AddClientForm = ({ show, onHide }) => {
-  const { handleAddClient } = useClient();
+  const { addClient, loading: contextLoading } = useClient();
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [newClient, setNewClient] = useState({
     name: '',
     email: '',
-    phoneNumber: '',
+    phone: '',
   });
 
-  const handleSave = async () => {
-    if (!newClient.name || !newClient.email || !newClient.phoneNumber) {
-      toast.warn('Please fill in all client details.');
-      return;
-    }
-    // Email validation regex pattern
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(newClient.email)) {
-    toast.warn('Please enter a valid email address.');
-    return;
-  }
-   // Phone number validation regex (supports international formats)
-   const phoneRegex = /^\+?[0-9]{8,15}$/; 
-   if (!phoneRegex.test(newClient.phoneNumber)) {
-     toast.warn('Please enter a valid phone number (8-15 digits, optional "+").');
-     return;
-   }
+  const validateForm = () => {
+    const errors = {};
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\+?[\d\s-]{8,15}$/;
 
-    try {
-      await handleAddClient(newClient); 
-      toast.success('Client added successfully!');
-      setNewClient({ name: '', email: '', phoneNumber: '' }); // Reset form
-      onHide(); // Close modal
-    } catch (error) {
-      toast.error('Failed to add client.');
+    if (!newClient.name.trim()) errors.name = 'Name is required';
+    if (!newClient.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!emailRegex.test(newClient.email)) {
+      errors.email = 'Please enter a valid email';
+    }
+    if (!newClient.phone.trim()) {
+      errors.phone = 'Phone number is required';
+    } else if (!phoneRegex.test(newClient.phone.replace(/[\s-]/g, ''))) {
+      errors.phone = '8-15 digits, optional "+" prefix';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setNewClient(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (formErrors[name]) {
+      setFormErrors(prev => ({
+        ...prev,
+        [name]: undefined
+      }));
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    try {
+      await addClient(newClient);
+      toast.success('Client added successfully!');
+      setNewClient({ name: '', email: '', phone: '' });
+      onHide();
+    } catch (error) {
+      if (error.message.includes('already exists')) {
+        setFormErrors(prev => ({
+          ...prev,
+          email: 'This email is already in use'
+        }));
+        toast.error('Client with this email already exists');
+      } else {
+        toast.error(error.message || 'Failed to add client');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handlePhoneInput = (e) => {
+    const input = e.target.value.replace(/\D/g, '');
+    let formatted = input;
+    
+    if (input.length > 3) {
+      formatted = `${input.substring(0, 3)} ${input.substring(3, 6)}`;
+      if (input.length > 6) {
+        formatted += ` ${input.substring(6, 10)}`;
+      }
+    }
+    
+    setNewClient(prev => ({
+      ...prev,
+      phone: formatted
+    }));
+  };
+
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={onHide} size="lg" backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>Add New Client</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Client Name<span className="text-red-500">*</span></Form.Label>
+        <Form onSubmit={handleSubmit}>
+          <Form.Group className="mb-3" controlId="formClientName">
+            <Form.Label>Client Name <span className="text-danger">*</span></Form.Label>
             <Form.Control
               type="text"
-              placeholder="Enter name"
+              name="name"
+              placeholder="Enter full name"
               value={newClient.name}
-              onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
+              onChange={handleChange}
+              isInvalid={!!formErrors.name}
             />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.name}
+            </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Email Address <span className="text-red-500">*</span></Form.Label>
+
+          <Form.Group className="mb-3" controlId="formClientEmail">
+            <Form.Label>Email Address <span className="text-danger">*</span></Form.Label>
             <Form.Control
               type="email"
-              placeholder="Enter email"
+              name="email"
+              placeholder="example@domain.com"
               value={newClient.email}
-              onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+              onChange={handleChange}
+              isInvalid={!!formErrors.email}
             />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.email}
+            </Form.Control.Feedback>
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Phone Number <span className="text-red-500">*</span></Form.Label>
+
+          <Form.Group className="mb-4" controlId="formClientPhone">
+            <Form.Label>Phone Number <span className="text-danger">*</span></Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Enter phone number"
-              value={newClient.phoneNumber}
-              onChange={(e) => setNewClient({ ...newClient, phoneNumber: e.target.value })}
+              type="tel"
+              name="phone"
+              placeholder="123 456 7890"
+              value={newClient.phone}
+              onChange={handleChange}
+              onBlur={handlePhoneInput}
+              isInvalid={!!formErrors.phone}
             />
+            <Form.Control.Feedback type="invalid">
+              {formErrors.phone}
+            </Form.Control.Feedback>
+            <Form.Text className="text-muted">
+              Format: 123 456 7890 or +123 456 7890
+            </Form.Text>
           </Form.Group>
-          <Button variant="primary" onClick={handleSave}>Save Client</Button>
+
+          <div className="d-flex justify-content-end gap-2">
+            <Button 
+              variant="outline-secondary" 
+              onClick={onHide}
+              disabled={isSubmitting || contextLoading}
+            >
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              type="submit"
+              disabled={isSubmitting || contextLoading}
+            >
+              {isSubmitting ? (
+                <>
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    role="status"
+                    aria-hidden="true"
+                    className="me-2"
+                  />
+                  Saving...
+                </>
+              ) : 'Save Client'}
+            </Button>
+          </div>
         </Form>
       </Modal.Body>
     </Modal>
