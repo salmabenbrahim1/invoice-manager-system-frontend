@@ -180,9 +180,9 @@ const FolderList = () => {
                               </div>
                               <div className="d-flex align-items-center text-muted small mt-2">
                               <span className="me-4 d-flex align-items-center">
-  <FaRegCalendarAlt className="me-1" />
-  {formatDate(folder.createdAt)}
-</span>
+                          <FaRegCalendarAlt className="me-1" />
+             {formatDate(folder.createdAt)}
+                          </span>
                               <span className="me-2">•</span>
                             <span>Invoices: {folder.invoiceCount || 0}</span>
                                 </div>

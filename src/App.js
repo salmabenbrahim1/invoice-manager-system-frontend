@@ -28,6 +28,7 @@ import FolderList from './pages/folder/FolderList';
 import InvoiceList from './pages/invoice/InvoiceList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
+import EmailHistoryPage from './pages/admin/EmailHistoryPage';
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
                     {/* Admin Routes */}
                     <Route path="/admin/dashboard" element={<AdminDashboard />} />
                     <Route path="/users" element={<UsersPage />} />
+                    <Route path="/admin/email-history" element={<EmailHistoryPage />} />
 
                     {/* Company Routes */}
                     <Route path="/company/dashboard" element={<CompanyDashboard />} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield } from 'react-icons/fa';
+import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield,  FaEnvelope } from 'react-icons/fa';
 import '../../styles/sideBar.css';
 import { useAuth } from '../../context/AuthContext';
 
@@ -32,6 +32,14 @@ const SidebarAdmin = () => {
         >
           <FaUsers className="mr-3 text-lg" />
           <span>Users</span>
+        </NavLink>
+        
+        <NavLink
+          to="/admin/email-history"  
+          className="sidebar-link"
+        >
+          <FaEnvelope className="mr-3 text-lg" /> 
+          <span>Email History</span>
         </NavLink>
         <hr />
 
