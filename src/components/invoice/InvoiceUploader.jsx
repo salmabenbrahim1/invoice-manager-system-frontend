@@ -5,8 +5,10 @@ import { useInvoice } from '../../context/InvoiceContext';
 import { useParams } from 'react-router-dom';
 
 const InvoiceUploader = ({ onClose }) => {
-  const { folderId } = useParams(); // Grab folderId from URL
-  const { isLoading, createInvoice } = useInvoice();
+
+  const { folderId } = useParams(); // folderId from URL
+ 
+  const { createInvoice } = useInvoice(); //From the invoice context
 
   const [invoiceName, setInvoiceName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -45,15 +47,16 @@ const InvoiceUploader = ({ onClose }) => {
     formData.append('invoiceName', invoiceName);
     formData.append('status', status);
     formData.append('folderId', folderId);
-    formData.append('file', selectedFile);  // Correct the reference to selectedFile
+    formData.append('file', selectedFile); 
 
     try {
-      await createInvoice(formData);  // Call the createInvoice function from your context or service
+      await createInvoice(formData); 
       toast.success('Invoice uploaded successfully');
+
       onClose(false);  // Close the form after successful submission
+
       // Reset the form after submission
       setInvoiceName('');
-      setStatus('pending');
       setSelectedFile(null);
       setImageUrl('');
     } catch (error) {
@@ -73,6 +76,7 @@ const InvoiceUploader = ({ onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="p-4">
+
           {/* Invoice Name Input */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -86,22 +90,6 @@ const InvoiceUploader = ({ onClose }) => {
               placeholder="Upload new Invoice"
               required
             />
-          </div>
-
-          {/* Status Select */}
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-medium mb-2">
-              Status <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full px-3 py-2 border rounded-md"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              required
-            >
-              <option value="pending">Pending</option>
-              <option value="processed">Processed</option>
-            </select>
           </div>
 
           {/* File Upload Section */}
@@ -130,7 +118,7 @@ const InvoiceUploader = ({ onClose }) => {
                   <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
                   <p className="text-xs text-gray-500 mt-1">PNG, JPG (Max. 5MB)</p>
                   <input
-                    type="file"
+                    type="file"ng
                     accept="image/*"
                     className="hidden"
                     onChange={handleFileChange}
@@ -146,14 +134,14 @@ const InvoiceUploader = ({ onClose }) => {
               type="button"
               onClick={() => onClose(false)}
               className="px-4 py-2 border text-white bg-gray-500 hover:bg-gray-700 rounded-md"
-              disabled={isLoading}
+              
             >
               Cancel
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
-              disabled={isLoading}
+              
             >
               Upload Invoice
             </button>

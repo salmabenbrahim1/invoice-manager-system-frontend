@@ -80,7 +80,7 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
     try {
       const dataToSave = {
         ...formData,
-        role: "INTERNAL ACCOUNTANT",
+        role: "INTERNAL_ACCOUNTANT",
         phone: formData.phoneNumber,
       };
 

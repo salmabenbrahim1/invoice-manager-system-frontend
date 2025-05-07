@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:9090/api/users';
 
-// Helper to get auth config
+// Get auth config
 const getAuthConfig = () => {
   const token = localStorage.getItem('authToken');
   if (!token) throw new Error('No token found');
@@ -18,7 +18,7 @@ export const userService = {
   // Create a new user
   createUser: async (userData) => {
     try {
-      const config = getAuthConfig();
+      const config = getAuthConfig();   // Get the authentication header config
       const response = await axios.post(API_URL, userData, config);
       return response.data;
     } catch (error) {
@@ -86,10 +86,10 @@ export const userService = {
   // Check if email exists (with authorization)
   checkEmailExists: async (email) => {
     try {
-      const config = getAuthConfig(); // Get the authentication header config
+      const config = getAuthConfig();
       const response = await axios.get(`${API_URL}/check-email`, {
         params: { email },
-        ...config // Include the auth header in the request
+        ...config 
       });
       return response.data;
     } catch (error) {

@@ -57,6 +57,9 @@ export const UserProvider = ({ children }) => {
     setLoading(true);
     try {
       let user;
+      let emailSent = false;
+      let subject = "";   
+      let body = "";
       if (id) {
         const existingUser = users.find(u => u.id === id);
         if (!existingUser) throw new Error('User not found');
@@ -80,12 +83,16 @@ export const UserProvider = ({ children }) => {
         user = await userService.updateUser(id, updatedData);
         setUsers(prev => prev.map(u => u.id === id ? user : u));
       } else {
-        user = await userService.createUser(userData);
-        setUsers(prev => [...prev, user]);
+        const response = await userService.createUser(userData);
+        user = response.user;
+        emailSent = response.emailSent;  // Extract email sent status from the response
+       subject = response.subject || "No subject"; 
+       body=response.body || "No body";       
+       setUsers(prev => [...prev, user]);
       }
 
-      return user;
-    } catch (err) {
+      return { user, emailSent, subject ,body}; 
+        } catch (err) {
       console.error('Error saving user:', err);
       toast.error(err.message || 'Failed to save user');
       throw err;

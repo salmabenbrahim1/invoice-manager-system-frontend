@@ -70,14 +70,34 @@ const UsersPage = () => {
     };
     
     try {
-      await saveUser(formData, selectedUser?.id);
+      const createdUser = await saveUser(formData, selectedUser?.id);
+    
       toast.success("User created successfully!");
-      toast.info("Email sent successfully!");
+    
+      const emailStatus = createdUser.emailSent ? 'sent' : 'failed';
+      toast.info(`Email ${emailStatus === 'sent' ? 'sent' : 'not sent'}`);
+    
+      const emailHistory = JSON.parse(localStorage.getItem('emailHistory')) || [];
+    
+      const newEntry = {
+        email: formData.email,
+        subject: createdUser.subject || "No subject", 
+        body: createdUser.body || "No body",
+        status: emailStatus,
+        date: new Date().toISOString()
+      };
+    
+      localStorage.setItem('emailHistory', JSON.stringify([newEntry, ...emailHistory]));
+    
       setIsModalOpen(false);
       setSelectedUser(null);
     } catch (error) {
       console.error("Error saving user:", error);
+      toast.error("Failed to create user.");
     }
+    
+    
+
   };
 
   // Handle user deletion confirmation
