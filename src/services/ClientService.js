@@ -1,10 +1,12 @@
-// src/services/clientService.js
 
 import axios from 'axios';
 
+
 const API_URL = 'http://localhost:9090/api/clients';
 
-// Helper to get token from localStorage (or sessionStorage if preferred)
+
+
+//Get token from localStorage
 const getAuthHeader = (token) => {
   const authToken = token || localStorage.getItem('token');
   return {
@@ -67,3 +69,28 @@ export const deleteClient = async (clientId, token) => {
     throw error;
   }
 };
+
+// Assign an accountant to an existing client
+export const assignAccountantToClientAPI = async (clientId, accountantId, token) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/${clientId}/assign-accountant`,
+      { accountantId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error assigning accountant to client:', error.response?.data || error.message);
+    throw error.response?.data?.message || 'Failed to assign accountant to client';
+  }
+};
+
+
+
+
+

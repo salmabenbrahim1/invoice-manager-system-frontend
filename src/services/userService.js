@@ -120,10 +120,10 @@ export const userService = {
       throw new Error(error.response?.data?.message || 'Failed to update profile');
     }
   },
-  
-  
+
   
 
+  
   // Permission checks
   canManage: (currentUser) => {
     return currentUser?.role === 'ADMIN' || currentUser?.role === 'COMPANY';

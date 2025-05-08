@@ -29,6 +29,7 @@ import InvoiceList from './pages/invoice/InvoiceList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import EmailHistoryPage from './pages/admin/EmailHistoryPage';
+import InternalAccountantClientsPage from './pages/client/InternalAccountantClientsPage';
 
 function App() {
   return (
@@ -87,6 +88,15 @@ function App() {
                       element={
                         <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
                           <AccountantClientsPage />
+                        </PrivateRoute>
+                      }
+                    />
+
+<Route 
+                      path="/my-assigned-clients"
+                      element={
+                        <PrivateRoute allowedRoles={['INTERNAL_ACCOUNTANT']}>
+                          <InternalAccountantClientsPage />
                         </PrivateRoute>
                       }
                     />

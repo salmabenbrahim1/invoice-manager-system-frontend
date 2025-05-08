@@ -4,16 +4,22 @@ import {
   getMyClients,
   updateClient as updateClientAPI,
   deleteClient as deleteClientAPI,
+ assignAccountantToClientAPI,
 } from '../services/ClientService';
+
 import { useAuth } from './AuthContext';
 
 const ClientContext = createContext();
 
 const ClientProvider = ({ children }) => {
   const [clients, setClients] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
   const { user } = useAuth(); // Access user from AuthContext
+
+  
 
   // Fetch clients created by the authenticated user
   const fetchClients = async () => {
@@ -36,6 +42,8 @@ const ClientProvider = ({ children }) => {
     }
   }, [user]);
 
+
+
   // Create a new client
   const addClient = async (clientData) => {
     if (!user) return;
@@ -44,6 +52,7 @@ const ClientProvider = ({ children }) => {
       const newClient = await createClient(clientData, user.token);
       setClients((prev) => [...prev, newClient]);
       return newClient; // Return the newly created client
+
     } catch (error) {
       console.error('Error creating client', error);
       setError('Failed to create client');
@@ -80,7 +89,30 @@ const ClientProvider = ({ children }) => {
       console.error('Error deleting client', error);
       setError('Failed to delete client');
     }
+
+    
   };
+
+
+ 
+
+// Assign accountant to client
+const assignAccountantToClient = async (clientId, accountantId) => {
+  if (!user) return;
+
+  try {
+    await assignAccountantToClientAPI(clientId, accountantId, user.token);
+
+    // Refresh the client list after successful assignment
+    await fetchClients();
+  } catch (error) {
+    console.error('Error assigning accountant', error);
+    setError('Failed to assign accountant');
+  }
+};
+
+
+  
 
   return (
     <ClientContext.Provider
@@ -92,6 +124,7 @@ const ClientProvider = ({ children }) => {
         addClient,
         updateClient,
         deleteClient,
+        assignAccountantToClient,
       }}
     >
       {children}
