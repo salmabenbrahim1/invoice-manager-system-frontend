@@ -135,7 +135,7 @@ function App() {
                     <Route
                       path="/archive"
                       element={
-                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
+                        <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                           <Archive />
                         </PrivateRoute>
                       }

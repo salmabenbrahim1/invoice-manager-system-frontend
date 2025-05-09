@@ -5,6 +5,7 @@ import {
   updateClient as updateClientAPI,
   deleteClient as deleteClientAPI,
  assignAccountantToClientAPI,
+ getAccountantClients,
 } from '../services/ClientService';
 
 import { useAuth } from './AuthContext';
@@ -36,11 +37,31 @@ const ClientProvider = ({ children }) => {
     }
   };
 
+  const fetchAccountantClients = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const clientData = await getAccountantClients(user.token);
+      setClients(clientData);
+    } catch (error) {
+      console.error('Error fetching clients', error);
+      setError('Failed to fetch clients');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchClients();
     }
   }, [user]);
+  useEffect(() => {
+    if (user) {
+      fetchAccountantClients();
+    }
+  }, [user]);
+  
 
 
 
@@ -112,6 +133,9 @@ const assignAccountantToClient = async (clientId, accountantId) => {
 };
 
 
+
+
+
   
 
   return (
@@ -125,6 +149,7 @@ const assignAccountantToClient = async (clientId, accountantId) => {
         updateClient,
         deleteClient,
         assignAccountantToClient,
+        fetchAccountantClients,
       }}
     >
       {children}

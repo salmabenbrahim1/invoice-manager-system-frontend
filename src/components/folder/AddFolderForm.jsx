@@ -223,7 +223,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        {step === 1 && (
+        {step === 1 && ( 
           <Button variant="primary" onClick={handleNext}>
             Next
           </Button>
