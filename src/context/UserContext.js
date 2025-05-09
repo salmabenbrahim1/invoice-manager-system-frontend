@@ -58,7 +58,7 @@ export const UserProvider = ({ children }) => {
     try {
       let user;
       let emailSent = false;
-      let subject = "";   
+      let subject = "";
       let body = "";
       if (id) {
         const existingUser = users.find(u => u.id === id);
@@ -85,14 +85,14 @@ export const UserProvider = ({ children }) => {
       } else {
         const response = await userService.createUser(userData);
         user = response.user;
-  emailSent = response.emailSent;  // Extract email sent status from the response
-       subject = response.subject || "No subject"; 
-body=response.body || "No body";       
-   setUsers(prev => [...prev, user]);
+        emailSent = response.emailSent;  // Extract email sent status from the response
+        subject = response.subject || "No subject";
+        body = response.body || "No body";
+        setUsers(prev => [...prev, user]);
       }
 
-      return { user, emailSent, subject ,body}; 
-        } catch (err) {
+      return { user, emailSent, subject, body };
+    } catch (err) {
       console.error('Error saving user:', err);
       toast.error(err.message || 'Failed to save user');
       throw err;
@@ -155,7 +155,7 @@ body=response.body || "No body";
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
       checkEmailExists,
-      
+
     }}>
       {children}
     </UserContext.Provider>

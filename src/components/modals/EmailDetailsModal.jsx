@@ -9,14 +9,14 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-40 bg-black bg-opacity-50 pt-16 pb-8">
-      <div 
+      <div
         className="bg-white rounded-lg shadow-xl w-11/12 md:w-3/4 lg:w-2/3 max-h-[calc(101vh-9rem)] "
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-white p-2 border-b border-gray-200 flex justify-between items-center z-10">
           <h3 className="text-xl font-bold text-gray-800">Email Details</h3>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Close modal"
           >
@@ -30,12 +30,11 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
               <p className="text-sm font-medium text-gray-500">Recipient</p>
               <p className="text-gray-900 break-all">{email.email}</p>
             </div>
-        
+
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-500">Status</p>
-              <p className={`inline-flex items-center gap-1 ${
-                email.status === "sent" ? "text-green-600" : "text-red-600"
-              }`}>
+              <p className={`inline-flex items-center gap-1 ${email.status === "sent" ? "text-green-600" : "text-red-600"
+                }`}>
                 {email.status === "sent" ? (
                   <>
                     <span className="h-2 w-2 rounded-full bg-green-500"></span>
@@ -51,8 +50,11 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
             </div>
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-500">Subject</p>
-              <p className="text-gray-900">{email.subject}</p>
+              <p className="text-gray-900">
+                {email.status === "failed" ? "No subject available" : email.subject}
+              </p>
             </div>
+
             <div className="space-y-1">
               <p className="text-sm font-medium text-gray-500">Date Sent</p>
               <p className="text-gray-900">
@@ -70,9 +72,9 @@ const EmailDetailsModal = ({ email, isOpen, onClose }) => {
           {!isEmailFailed && (
             <div className="space-y-2 pt-4">
               <p className="text-sm font-medium text-gray-500">Message Content</p>
-              <div 
+              <div
                 className="p-3 bg-gray-50 rounded border border-gray-200 prose max-w-none text-sm"
-                dangerouslySetInnerHTML={{ __html: email.body }} 
+                dangerouslySetInnerHTML={{ __html: email.body }}
               />
             </div>
           )}

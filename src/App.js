@@ -8,6 +8,8 @@ import { UserProvider } from './context/UserContext';
 import { ClientProvider } from './context/ClientContext';
 import { FolderProvider } from './context/FolderContext';
 import { InvoiceProvider } from './context/InvoiceContext';
+import { ForgotPasswordProvider } from './context/ForgotPasswordContext';
+
 
 // Components
 import Navbar from './components/Navbar';
@@ -29,10 +31,12 @@ import InvoiceList from './pages/invoice/InvoiceList';
 import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import EmailHistoryPage from './pages/admin/EmailHistoryPage';
+import ForgotPasswordPage from "./pages/ForgotPassword";
 
 function App() {
   return (
     <div>
+      <ForgotPasswordProvider>
       <AuthProvider>
         <UserProvider>
           <ClientProvider>
@@ -46,6 +50,8 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/home" element={<Home />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+
                     <Route path="/unauthorized" element={<Unauthorized />} />
 
                     {/* Admin Routes */}
@@ -137,6 +143,7 @@ function App() {
           </ClientProvider>
         </UserProvider>
       </AuthProvider>
+      </ForgotPasswordProvider>
     </div>
   );
 }

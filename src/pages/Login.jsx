@@ -16,29 +16,37 @@ const Login = () => {
 
   const navigate = useNavigate();
   const { login } = useAuth();
-
   const handleLogin = async () => {
     try {
       await login(email, password);
-
-      
-      const role = localStorage.getItem('role'); 
-
-      // Redirect user based on their role
+  
+      const role = localStorage.getItem('role');
+  
+      // Rediriger l'utilisateur selon son rôle
       if (role === 'ADMIN') {
         navigate('/admin/dashboard');
       } else if (role === 'COMPANY') {
         navigate('/company/dashboard');
-      } else if (role === 'INDEPENDENT_ACCOUNTANT' || role === 'INTERNAL_ACCOUNTANT')  {
+      } else if (role === 'INDEPENDENT_ACCOUNTANT' || role === 'INTERNAL_ACCOUNTANT') {
         navigate('/accountant/dashboard');
       } else {
-        navigate('/'); 
+        navigate('/');
       }
     } catch (error) {
-      setError('Incorrect email or password');
+      console.log('Full error object:', error);
+  
+      if (
+        (typeof error === 'string' && error === 'User is not active') ||
+        (error.response && error.response.data && error.response.data.message === 'User is not active')
+      ) {
+        setModalMessage(`Your account with email <strong>${email}</strong> is deactivated. Please contact the system administrator.`);
+        setIsModalOpen(true);
+      } else {
+        setError('Login failed. The email or password you entered is incorrect. Please try again.');
+      }
     }
   };
-
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
@@ -99,9 +107,19 @@ const Login = () => {
 
             {/* Password Input */}
             <div className="mb-5">
-              <label htmlFor="password" className="block text-base font-medium mb-2">
-                Password
-              </label>
+              <div className="flex justify-between items-center mb-2">
+                <label htmlFor="password" className="text-base font-medium">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-sm text-[#75529e] hover:underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
+
               <input
                 type="password"
                 id="password"
@@ -124,9 +142,8 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`w-full bg-black text-white py-2.5 rounded-xl hover:bg-gray-800 transition ${
-                loading ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={`w-full bg-black text-white py-2.5 rounded-xl hover:bg-gray-800 transition ${loading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}
