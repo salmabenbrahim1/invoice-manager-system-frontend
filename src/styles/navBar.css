@@ -163,3 +163,19 @@
     left: 0;
   }
 }
+.language-selector select {
+  border: 1px solid #75529e;
+  color: #75529e;
+  padding: 8px 16px;
+  border-radius: 4px;
+  background-color: white;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.language-selector select:hover {
+  background-color: #75529e;
+  color: white;
+}
+.language-selector {
+  margin-left: 15px;} 

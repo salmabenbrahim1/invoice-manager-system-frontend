@@ -4,16 +4,13 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditProfileModal from './modals/EditProfileModal';
+import { useTranslation } from 'react-i18next'; // Importation du hook useTranslation
 import '../styles/navbar.css'; 
-import invoiceLogo from '../assets/images/invox-logo.png'
-
-
+import invoiceLogo from '../assets/images/invox-logo.png';
 
 const Navbar = () => {
+  const { t, i18n } = useTranslation(); // Initialisation du hook useTranslation
   const { user, logout } = useAuth();
-  console.log("Navbar user:", user);
-
-
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -23,6 +20,11 @@ const Navbar = () => {
 
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
   const toggleMobileMenu = () => setMenuOpen(!menuOpen);
+
+  // Changer la langue via le select
+  const handleLanguageChange = (language) => {
+    i18n.changeLanguage(language); // Changer la langue
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -40,25 +42,20 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav className="navbar-container ">
+    <nav className="navbar-container">
       <div>
-        <Link to="/home" >
-        <img  className="navbar-logo" src={invoiceLogo} alt="Invoice Logo" />
+        <Link to="/home">
+          <img className="navbar-logo" src={invoiceLogo} alt="Invoice Logo" />
         </Link>
 
         <button className="d-md-none btn" onClick={toggleMobileMenu}>
           {menuOpen ? <FaTimes /> : <FaBars />}
         </button> 
-        <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex '}  nav-links-container`} >
-          <Link to="/home" className="nav-link">
-            Home
-          </Link>
-          <Link to="/manage-invoices" className="nav-link">
-            Manage Invoices
-          </Link>
-          <Link to="/contact-us" className="nav-link">
-            Contact Us
-          </Link>
+
+        <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex'} nav-links-container`}>
+          <Link to="/home" className="nav-link">{t('home')}</Link>
+          <Link to="/manage-invoices" className="nav-link">{t('manageInvoices')}</Link>
+          <Link to="/contact-us" className="nav-link">{t('contactUs')}</Link>
         </div>
 
         <div className="user-section" ref={menuRef}>
@@ -98,7 +95,6 @@ const Navbar = () => {
                       onClick={() => {
                         logout();
                         setUserMenuOpen(false);
-
                       }}
                     >
                       Logout
@@ -112,6 +108,14 @@ const Navbar = () => {
               Login
             </Link>
           )}
+        </div>
+
+        {/* Sélecteur de langue */}
+        <div className="language-selector">
+          <select onChange={(e) => handleLanguageChange(e.target.value)} defaultValue="en">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+          </select>
         </div>
       </div>
 

@@ -44,4 +44,6 @@ const toggleAccountantActivation = async (id, isActive, token) => {
   }
 };
 
-export { getInternalAccountants, addInternalAccountant, updateInternalAccountant, toggleAccountantActivation };
+
+
+export { getInternalAccountants, addInternalAccountant, updateInternalAccountant, toggleAccountantActivation};

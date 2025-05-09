@@ -8,7 +8,7 @@ const InfoModal = ({ show, onHide, title, message }) => {
         <Modal.Title>{title || "Account Status"}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{message || "Your account has been deactivated by the admin. Please contact support for further assistance."}</p>
+        <p dangerouslySetInnerHTML={{ __html: message }}></p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>
