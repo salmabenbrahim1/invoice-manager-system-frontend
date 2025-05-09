@@ -5,7 +5,8 @@ import { useUser } from "../../context/UserContext";
 import { validateEmail, validatePhoneNumber, validateCIN, areRequiredFieldsFilled } from "../../utils/validation";
 
 const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
-  const { saveUser,checkEmailExists } = useUser();
+
+  const { saveUser,checkEmailExists,refreshUsers } = useUser();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -15,7 +16,7 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
     gender: "MALE",
   });
 
-  // Initialize form data with userToEdit values if available
+  // Initialize form data with userToEdit values
   useEffect(() => {
     if (userToEdit) {
       setFormData({
@@ -45,17 +46,19 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
   const handleSubmit = async () => {
     const requiredFields = ["firstName", "lastName", "email", "phoneNumber", "cin"];
 
+    // Check if all required fields are filled
     if (!areRequiredFieldsFilled(formData, requiredFields)) {
       toast.warn("Please fill in all required fields.");
       return;
     }
-
+    
+    // Validate email format
     if (!validateEmail(formData.email)) {
       toast.warn("Please enter a valid email address.");
       return;
     }
 
-    // Check if email already exists 
+    // Check if email already used by another user in the system
     try {
       const emailExists = await checkEmailExists(formData.email);
       if (emailExists && (!userToEdit || userToEdit.email.toLowerCase() !== formData.email.toLowerCase())) {
@@ -67,11 +70,13 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
       return;
     }
 
+    // Validate phone number format
     if (!validatePhoneNumber(formData.phoneNumber)) {
       toast.warn("Please enter a valid phone number (8-15 digits, optional '+').");
       return;
     }
-
+    
+    // Validate CIN format
     if (!validateCIN(formData.cin)) {
       toast.warn("Please enter a valid CIN number (8 digits).");
       return;
@@ -80,11 +85,14 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
     try {
       const dataToSave = {
         ...formData,
-        role: "INTERNAL ACCOUNTANT",
+        role: "INTERNAL_ACCOUNTANT",
         phone: formData.phoneNumber,
       };
 
+      
       await saveUser(dataToSave, userToEdit?.id);
+      refreshUsers(); 
+
 
       toast.success(`Accountant ${userToEdit ? "updated" : "created"} successfully!`);
       toast.info("email sent to accountant with login details");
@@ -151,6 +159,8 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               required
+              maxLength={15}
+
             />
           </Form.Group>
 
@@ -185,7 +195,7 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
           Cancel
         </Button>
         <Button variant="primary" onClick={handleSubmit}>
-          {userToEdit ? "Update" : "Save"}
+          {userToEdit ? "Update Accountant" : "Save Accountant"}
         </Button>
       </Modal.Footer>
     </Modal>

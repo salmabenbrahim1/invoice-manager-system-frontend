@@ -9,12 +9,19 @@ import FolderContextMenu from '../../components/folder/FolderContextMenu';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import { toast } from 'react-toastify';
 import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
-import { FaFolder, FaStar, FaSearch,FaRegCalendarAlt } from 'react-icons/fa';
+import { FaFolder, FaStar, FaSearch, FaRegCalendarAlt } from 'react-icons/fa';
+import { useClient } from '../../context/ClientContext';
+import { useAuth } from '../../context/AuthContext';
+import InternalAddFolderForm from '../../components/folder/InternalAddFolderForm';
+
 import { useNavigate } from 'react-router-dom';
 
+
 const FolderList = () => {
-  const { folders, archiveFolder, toggleFavorite,fetchFolders, deleteFolder } = useFolder();
-  
+  const { folders, archiveFolder, toggleFavorite, fetchFolders, deleteFolder } = useFolder();
+  const { clients, fetchAccountantClients } = useClient();
+  const { user } = useAuth();
+
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -27,20 +34,22 @@ const FolderList = () => {
 
   const [favoriteFolders, setFavoriteFolders] = useState([]);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  // Fetch folders when the component mounts
+  useEffect(() => {
+    if (user?.id) {
+      fetchAccountantClients(user.id);
+    }
+  }, [user, fetchAccountantClients]);
+
   useEffect(() => {
     fetchFolders();
   }, []);
 
-  // Save favorite folders to localStorage
   useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favoriteFolders")) || [];
     setFavoriteFolders(storedFavorites);
   }, []);
-
-  
 
   useEffect(() => {
     if (favoriteFolders.length > 0) {
@@ -48,18 +57,15 @@ const FolderList = () => {
     }
   }, [favoriteFolders]);
 
-  
   const handleSaveFolder = (createdFolder) => {
     setShowAddModal(false);
     toast.success(`Folder "${createdFolder.folderName}" created successfully.`);
   };
 
-  
-
   const formatDate = (date) => {
-    const options = { 
-      month: 'short', 
-      day: 'numeric', 
+    const options = {
+      month: 'short',
+      day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -104,8 +110,8 @@ const FolderList = () => {
         break;
       case 'favorite':
         toggleFavorite(folderId);
-        const updatedFavorites = favoriteFolders.some(fav => fav.id === folderId)
-          ? favoriteFolders.filter(fav => fav.id !== folderId)
+        const updatedFavorites = favoriteFolders.some((fav) => fav.id === folderId)
+          ? favoriteFolders.filter((fav) => fav.id !== folderId)
           : [...favoriteFolders, folder];
         setFavoriteFolders(updatedFavorites);
         break;
@@ -170,7 +176,7 @@ const FolderList = () => {
                     <ContextMenuTrigger>
                       <div
                         className={`folder-item ${selectedFolder === folder ? "selected" : ""}`}
-                        onClick={() => handleFolderClick(folder.id)} 
+                        onClick={() => handleFolderClick(folder.id)}
                       >
                         <Card
                           className={`p-3 shadow-sm ${selectedFolder === folder ? "border-secondary" : ""}`}
@@ -189,14 +195,13 @@ const FolderList = () => {
                                 {folder.client?.name || "No Client"}
                               </div>
                               <div className="d-flex align-items-center text-muted small mt-2">
-                              <span className="me-4 d-flex align-items-center">
-                          <FaRegCalendarAlt className="me-1" />
-             {formatDate(folder.createdAt)}
-                          </span>
-                              <span className="me-2">•</span>
-                            <span>Invoices: {folder.invoiceCount || 0}</span>
-                                </div>
-
+                                <span className="me-4 d-flex align-items-center">
+                                  <FaRegCalendarAlt className="me-1" />
+                                  {formatDate(folder.createdAt)}
+                                </span>
+                                <span className="me-2">•</span>
+                                <span>Invoices: {folder.invoiceCount || 0}</span>
+                              </div>
                             </div>
                           </div>
                         </Card>
@@ -217,11 +222,20 @@ const FolderList = () => {
       </div>
 
       {/* Add Folder Form Modal */}
-      <AddFolderForm
-        show={showAddModal}
-        onHide={() => setShowAddModal(false)}
-        onSave={handleSaveFolder}
-      />
+      {user?.role === 'INTERNAL_ACCOUNTANT' ? (
+        <InternalAddFolderForm
+          show={showAddModal}
+          onHide={() => setShowAddModal(false)}
+          onSave={(folder) => console.log('New folder:', folder)}
+          clients={clients} 
+        />
+      ) : (
+        <AddFolderForm
+          show={showAddModal}
+          onHide={() => setShowAddModal(false)}
+          onSave={handleSaveFolder}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
@@ -230,9 +244,8 @@ const FolderList = () => {
         title="Delete Folder"
         message={`Are you sure you want to delete the folder "${folderToDelete?.name}"? This action cannot be undone.`}
         onConfirm={handleDeleteFolder}
-
       />
-      
+
       {/* Update Folder Form Modal */}
       {showEditModal && folderToEdit && (
         <UpdateFolderForm
@@ -246,3 +259,5 @@ const FolderList = () => {
 };
 
 export default FolderList;
+
+

@@ -18,7 +18,20 @@ const invoiceService = {
       throw error;
     }
   },
-  
+
+  //save the invoice after extraction
+ saveInvoice : async (invoiceId, formData) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:9090/api/invoices/extracted/${invoiceId}`,
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error while saving the invoice.');
+      throw error; 
+    }
+  },
 
   // Get invoices by folder ID
   getInvoicesByFolder: async (folderId) => {
@@ -56,29 +69,59 @@ const invoiceService = {
       throw error;
     }
   },
+
+ // Update the status of an existing invoice
+ updateInvoiceStatus: async (invoiceId, status) => {
+  try {
+    const response = await axios.put(`${API_URL}/${invoiceId}/status?status=${status}`, null, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating invoice status:', error);
+    throw error;
+  }
+},
+
 };
-const API_URL1 = 'http://localhost:5000/extract';
+
+const API_AI_URL= 'http://localhost:5000/extract';
+
+// Extracting structured invoice data using the OCR service
 export const extractInvoiceData = async (imagePath) => {
   try {
-    const response = await axios.post(API_URL1, {
+    const response = await axios.post(API_AI_URL, {
       imageUrl: `http://localhost:9090${imagePath}`,
     });
 
     const extracted = response.data || {};
 
+    // Using camelCase field names based on the updated Python output
     const structuredData = {
-      siret_number: extracted.siret_number || 'N/A',
-      invoice_number: extracted.invoice_number || 'N/A',
-      TVA_Number: extracted['TVA Number'] || extracted.TVA_Number || 'N/A',
-      invoice_date: extracted.document_date || extracted.invoice_date || 'N/A',
-      TVA: extracted.TVA || 'N/A',
-      HT: extracted.HT || 'N/A',
-      TTC: extracted.TTC || 'N/A',
-      client_name: extracted.client_name || 'N/A',
-      currency: extracted.currency || 'N/A',
+      sellerSiretNumber: extracted.sellerSiretNumber || 'null',
+      invoiceNumber: extracted.invoiceNumber || 'null',
+      invoiceDate: extracted.invoiceDate || 'null',
+      dueDate: extracted.dueDate || 'null',
+      currency: extracted.currency || 'null',
+
+      sellerName: extracted.sellerName || 'null',
+      sellerAddress: extracted.sellerAddress || 'null',
+      sellerPhone: extracted.sellerPhone || 'null',
+      customerName: extracted.customerName || 'null',
+      customerAddress: extracted.customerAddress || 'null',
+      customerPhone: extracted.customerPhone || 'null',
+      tva : extracted.tva || 'null',
+      tvaNumber: extracted.tvaNumber || 'null',
+      tvaRate: extracted.tvaRate || 'null',
+      ht: extracted.ht || 'null',
+      ttc: extracted.ttc || 'null',
+      discount: extracted.discount || 'null',
     };
 
-    const isEmpty = Object.values(structuredData).every(val => val === 'N/A');
+     //Check if the extracted data contains usable information
+    const isEmpty = Object.values(structuredData).every(val => val === 'null');
     if (isEmpty) throw new Error('No usable data returned from extraction');
 
     return structuredData;
@@ -87,5 +130,10 @@ export const extractInvoiceData = async (imagePath) => {
     throw error;
   }
 };
-export default invoiceService;
 
+
+
+
+
+
+export default invoiceService;

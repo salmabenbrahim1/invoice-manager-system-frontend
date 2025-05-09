@@ -71,7 +71,7 @@ const AuthProvider = ({ children }) => {
       setLoading(true);
       const userData = await authLogin(email, password);
       setUser(userData);
-      navigate('/dashboard'); // Navigate to the dashboard or appropriate page
+      navigate('/dashboard'); // Navigate to the dashboard 
       return userData;
     } finally {
       setLoading(false);
@@ -80,7 +80,7 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     try {
-      authLogout();  // Make sure this does not throw any errors
+      authLogout();  
       setUser(null);  // Clear user state
       navigate('/login');  // Navigate to login page
     } catch (error) {

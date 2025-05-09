@@ -10,7 +10,6 @@ export const InvoiceProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch invoices by folder
   const fetchInvoices = async (folderId) => {
     setLoading(true);
     try {
@@ -23,7 +22,6 @@ export const InvoiceProvider = ({ children }) => {
     }
   };
 
-  // Create a new invoice
   const createInvoice = async (formData) => {
     setLoading(true);
     try {
@@ -36,7 +34,6 @@ export const InvoiceProvider = ({ children }) => {
     }
   };
 
-  // Update an invoice
   const updateInvoice = async (invoiceId, updatedData) => {
     setLoading(true);
     try {
@@ -51,7 +48,6 @@ export const InvoiceProvider = ({ children }) => {
     }
   };
 
-  // Delete an invoice
   const deleteInvoice = async (invoiceId) => {
     setLoading(true);
     try {
@@ -63,6 +59,9 @@ export const InvoiceProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+
+ 
 
   return (
     <InvoiceContext.Provider

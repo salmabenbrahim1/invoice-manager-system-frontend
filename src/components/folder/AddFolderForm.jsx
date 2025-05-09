@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useClient } from '../../context/ClientContext';
-import { useFolder } from '../../context/FolderContext'; // Assure-toi que le hook correspond bien
+import { useFolder } from '../../context/FolderContext'; 
 
 const AddFolderForm = ({ show, onHide, onSave }) => {
   const { clients, addClient } = useClient();
-  const { createFolder } = useFolder(); // ✅ Correction ici : fonction venant du contexte
-  const token = localStorage.getItem('token'); // ✅ Assure-toi d'avoir un token valide
+  const { createFolder } = useFolder(); 
+  const token = localStorage.getItem('token'); 
 
   const [step, setStep] = useState(1);
   const [clientType, setClientType] = useState('existing');
@@ -223,7 +223,7 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
         )}
       </Modal.Body>
       <Modal.Footer>
-        {step === 1 && (
+        {step === 1 && ( 
           <Button variant="primary" onClick={handleNext}>
             Next
           </Button>

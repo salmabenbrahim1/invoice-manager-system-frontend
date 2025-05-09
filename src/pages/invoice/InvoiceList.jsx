@@ -4,6 +4,9 @@ import { useInvoice } from '../../context/InvoiceContext';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
+import { MdDocumentScanner } from 'react-icons/md';
+
+import { FaQrcode } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';
 import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
@@ -18,7 +21,7 @@ const InvoiceList = () => {
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [viewMode, setViewMode] = useState(null); 
+  const [viewMode, setViewMode] = useState(null);
 
   useEffect(() => {
     if (folderId) {
@@ -52,11 +55,11 @@ const InvoiceList = () => {
 
   const handleShowInvoice = (invoice) => {
     setSelectedInvoice(invoice);
-    setViewMode('image'); 
+    setViewMode('image');
   };
 
   const handleScanInvoice = () => {
-    setViewMode('full'); 
+    setViewMode('full');
   };
 
   const handleCloseViewer = () => {
@@ -146,10 +149,9 @@ const InvoiceList = () => {
                           <button
                             onClick={() => handleShowInvoice(invoice)}
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
-                            title="View"
+                            title="Scan"
                           >
-                            <FaEye />
-                          </button>
+                            <MdDocumentScanner />                          </button>
                           <button
                             onClick={() => setInvoiceToDelete(invoice)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
@@ -213,26 +215,26 @@ const InvoiceList = () => {
             </div>
           </div>
         )}
- 
-{/* Image Viewer Modal */}
-{selectedInvoice && viewMode === 'image' && (
-  <ImageInvoiceModal
-    imgUrl={`http://localhost:9090${selectedInvoice.img}`}  
-    onClose={handleCloseViewer}
-    onScan={handleScanInvoice}
-  />
-)}
+
+        {/* Image Viewer Modal */}
+        {selectedInvoice && viewMode === 'image' && (
+          <ImageInvoiceModal
+            imgUrl={`http://localhost:9090${selectedInvoice.img}`}
+            onClose={handleCloseViewer}
+            onScan={handleScanInvoice}
+          />
+        )}
 
 
         {/* Full Viewer with Form */}
         {selectedInvoice && viewMode === 'full' && (
-          <InvoiceViewer 
-            invoice={selectedInvoice} 
+          <InvoiceViewer
+            invoice={selectedInvoice}
             onClose={handleCloseViewer}
           />
         )}
 
-        
+
       </div>
     </div>
   );

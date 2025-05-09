@@ -28,6 +28,20 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // get internal accountants
+  const getInternalAccountants = () => {
+    return users.filter(user => user.role === 'INTERNAL_ACCOUNTANT');
+  };
+
+  
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchUsers();
+    }
+  }, [currentUser]);
+
+  // Fetch user statistics
   const fetchStats = async () => {
     setLoading(true);
     try {
@@ -42,10 +56,10 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-
+// Check if email exists
   const checkEmailExists = async (email) => {
     try {
-      return await userService.checkEmailExists(email); // Calls service with token header
+      return await userService.checkEmailExists(email); 
     } catch (error) {
       console.error('Email check failed:', error);
       throw error;
@@ -53,6 +67,7 @@ export const UserProvider = ({ children }) => {
   };
 
 
+  // Save user (create or update)
   const saveUser = async (userData, id) => {
     setLoading(true);
     try {
@@ -89,6 +104,7 @@ export const UserProvider = ({ children }) => {
         subject = response.subject || "No subject";
         body = response.body || "No body";
         setUsers(prev => [...prev, user]);
+
       }
 
       return { user, emailSent, subject, body };
@@ -101,6 +117,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // Delete user
   const deleteUser = async (id) => {
     setLoading(true);
     try {
@@ -116,6 +133,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // Toggle user activation
   const toggleActivation = async (id) => {
     setLoading(true);
     try {
@@ -135,6 +153,7 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  // Fetch users and stats when the component mounts or when currentUser changes
   useEffect(() => {
     if (currentUser) {
       fetchUsers();
@@ -156,6 +175,8 @@ export const UserProvider = ({ children }) => {
       refreshStats: fetchStats,
       checkEmailExists,
 
+      getInternalAccountants
+      
     }}>
       {children}
     </UserContext.Provider>
