@@ -88,8 +88,6 @@ const invoiceService = {
 };
 
 const API_AI_URL= 'http://localhost:5000/extract';
-
-// Extracting structured invoice data using the OCR service
 export const extractInvoiceData = async (imagePath) => {
   try {
     const response = await axios.post(API_AI_URL, {
@@ -98,29 +96,38 @@ export const extractInvoiceData = async (imagePath) => {
 
     const extracted = response.data || {};
 
-    // Using camelCase field names based on the updated Python output
-    const structuredData = {
-      sellerSiretNumber: extracted.sellerSiretNumber || 'null',
-      invoiceNumber: extracted.invoiceNumber || 'null',
-      invoiceDate: extracted.invoiceDate || 'null',
-      dueDate: extracted.dueDate || 'null',
-      currency: extracted.currency || 'null',
+    // We deconstruct the 4 internal objects
+    const {
+      invoiceMetadata = {},
+      sellerInformations = {},
+      customerInformations = {},
+      amounts = {},
+    } = extracted;
 
-      sellerName: extracted.sellerName || 'null',
-      sellerAddress: extracted.sellerAddress || 'null',
-      sellerPhone: extracted.sellerPhone || 'null',
-      customerName: extracted.customerName || 'null',
-      customerAddress: extracted.customerAddress || 'null',
-      customerPhone: extracted.customerPhone || 'null',
-      tva : extracted.tva || 'null',
-      tvaNumber: extracted.tvaNumber || 'null',
-      tvaRate: extracted.tvaRate || 'null',
-      ht: extracted.ht || 'null',
-      ttc: extracted.ttc || 'null',
-      discount: extracted.discount || 'null',
+    // Reconstruct a single flat object from sub-objects
+    const structuredData = {
+      sellerSiretNumber: sellerInformations.sellerSiretNumber || 'null',
+      sellerName: sellerInformations.sellerName || 'null',
+      sellerAddress: sellerInformations.sellerAddress || 'null',
+      sellerPhone: sellerInformations.sellerPhone || 'null',
+
+      customerName: customerInformations.customerName || 'null',
+      customerAddress: customerInformations.customerAddress || 'null',
+      customerPhone: customerInformations.customerPhone || 'null',
+
+      invoiceNumber: invoiceMetadata.invoiceNumber || 'null',
+      invoiceDate: invoiceMetadata.invoiceDate || 'null',
+      dueDate: invoiceMetadata.dueDate || 'null',
+      currency: invoiceMetadata.currency || 'null',
+
+      tva: amounts.tva || 'null',
+      tvaNumber: amounts.tvaNumber || 'null',
+      tvaRate: amounts.tvaRate || 'null',
+      ht: amounts.ht || 'null',
+      ttc: amounts.ttc || 'null',
+      discount: amounts.discount || 'null',
     };
 
-     //Check if the extracted data contains usable information
     const isEmpty = Object.values(structuredData).every(val => val === 'null');
     if (isEmpty) throw new Error('No usable data returned from extraction');
 
@@ -130,8 +137,6 @@ export const extractInvoiceData = async (imagePath) => {
     throw error;
   }
 };
-
-
 
 
 
