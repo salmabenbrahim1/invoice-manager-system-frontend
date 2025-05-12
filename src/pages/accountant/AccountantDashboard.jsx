@@ -89,6 +89,7 @@ const AccountantDashboard = () => {
             value={stats?.pendingInvoices || 0}
             bg="bg-yellow-50"
           />
+          
         </div>
 
         {/* Charts Section */}

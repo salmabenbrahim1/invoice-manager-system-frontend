@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTimes, FaCheck, FaRedo } from 'react-icons/fa';
-import { extractInvoiceData} from '../../services/InvoiceService';
+import { FaEdit, FaTimes, FaCheck } from 'react-icons/fa';
+import { extractInvoiceData } from '../../services/InvoiceService';
 import invoiceService from '../../services/InvoiceService';
 import ZoomableImage from '../ZoomableImage';
 import { toast } from 'react-toastify';
@@ -10,7 +10,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [extractionFailed, setExtractionFailed] = useState(false);
+  const [extractionError, setExtractionError] = useState(false); // Ajouté pour gérer l'erreur
 
   const fieldGroups = [
     {
@@ -55,14 +55,19 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const fetchData = async () => {
     if (!invoice?.img) return;
     setLoading(true);
-    setExtractionFailed(false);
+    setExtractionError(false); // Reset before each attempt
 
     try {
-      const data = await extractInvoiceData(invoice.img); //from invoice Service
-      setExtractedData(data);
+      const data = await extractInvoiceData(invoice.img);
+      console.log("Extracted Data:", data); // Log to verify returned data
+      if (!data || Object.keys(data).length === 0) {
+        throw new Error("No usable data returned from extraction");
+      }
       setFormData(data);
+      setExtractedData(data); // Optionally store extracted data for canceling edits
     } catch (error) {
-      setExtractionFailed(true);
+      console.error("Error extracting data:", error);
+      setExtractionError(true); // Trigger error state
     } finally {
       setLoading(false);
     }
@@ -72,20 +77,18 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
     fetchData();
   }, [invoice]);
 
-
   const handleEditClick = () => setIsEditing(true);
 
   const handleCancelEdit = () => {
     setIsEditing(false);
     setFormData(extractedData);
   };
-  
+
   const handleSave = async () => {
-    // Save the data even if there are missing fields
     try {
       await invoiceService.saveInvoice(invoice.id, formData);
       toast.success('Invoice saved successfully!');
-      setIsEditing(false); 
+      setIsEditing(false);
     } catch (error) {
       toast.error('Error while saving the invoice.');
     }
@@ -105,8 +108,8 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
         <div className="sticky top-0 bg-white z-10 pb-3 -mx-4 px-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-800">Invoice Editor</h2>
-          <button 
-            onClick={onClose} 
+          <button
+            onClick={onClose}
             className="text-gray-500 hover:text-gray-700 p-1 rounded-full hover:bg-gray-200 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,9 +117,8 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
             </svg>
           </button>
         </div>
-  
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2 flex-1 overflow-hidden">
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2 flex-1 overflow-hidden">
           {/* Left panel - Form fields */}
           <div className="flex flex-col overflow-hidden">
             {loading ? (
@@ -124,12 +126,13 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
                 <div className="w-8 h-8 border-3 border-blue-100 border-t-blue-500 rounded-full animate-spin mb-3"></div>
                 <p className="text-sm text-gray-500">Extracting data...</p>
               </div>
-            ) : extractionFailed ? (
+            ) : extractionError ? (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <p className="text-red-600 text-sm mb-3">Failed to extract data from this invoice.</p>
-
-                <button onClick={fetchData} className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 flex items-center">
-                  <FaRedo className="mr-2" /> Try Again
+                <p className="text-sm text-red-600 mb-3">Failed to retrieve data. Please try again.</p>                <button
+                  onClick={fetchData}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                >
+                  Try Again
                 </button>
               </div>
             ) : (
@@ -147,11 +150,10 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
                             value={formData?.[field.name] || ''}
                             onChange={handleInputChange}
                             disabled={!isEditing}
-                            className={`w-full px-3 py-2 text-sm rounded border focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${
-                              isEditing 
-                                ? 'bg-white border-gray-300 hover:border-gray-400' 
-                                : 'bg-gray-100 border-gray-200'
-                            }`}
+                            className={`w-full px-3 py-2 text-sm rounded border focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${isEditing
+                              ? 'bg-white border-gray-300 hover:border-gray-400'
+                              : 'bg-gray-100 border-gray-200'
+                              }`}
                           />
                         </div>
                       ))}
@@ -161,7 +163,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
               </div>
             )}
           </div>
-  
+
           {/* Right panel - Image */}
           <div className="flex flex-col h-full sticky top-16">
             <div className="bg-gray-50 rounded-md p-4 h-full overflow-hidden">
@@ -169,23 +171,27 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
             </div>
           </div>
         </div>
-  
+
         {/* Sticky action buttons */}
         <div className="sticky bottom-0 bg-white pt-3 pb-2 -mx-4 px-4 border-t">
           <div className="flex justify-end space-x-2">
             {!isEditing ? (
               <>
-                <button onClick={handleEditClick} className= "   flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"> <FaEdit/>  Edit</button>
+                <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                  <FaCheck /> Validate
+                </button>
+                <button onClick={handleEditClick} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                  <FaEdit /> Edit
+                </button>
                 <button onClick={onClose} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Close</button>
               </>
             ) : (
               <>
-                <button onClick={handleSave} className=" flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                  <FaCheck className="mr-2" /> Validate
+                <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                  <FaCheck /> Validate
                 </button>
-
-                <button onClick={handleCancelEdit} className=" flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                  <FaTimes className="mr-2" /> Cancel
+                <button onClick={handleCancelEdit} className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
+                  <FaTimes /> Cancel
                 </button>
               </>
             )}

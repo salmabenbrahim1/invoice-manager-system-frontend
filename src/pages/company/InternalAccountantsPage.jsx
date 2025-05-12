@@ -1,6 +1,5 @@
-
 import React, { useState } from "react";
-import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
+import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch, FaEye, FaUser } from "react-icons/fa"; // Ajout de FaUser
 import InternalAccountantForm from "../../components/company/InternalAccountantForm";
 import Pagination from "../../components/Pagination";
 import ConfirmModal from "../../components/modals/ConfirmModal";
@@ -9,6 +8,7 @@ import { useUser } from "../../context/UserContext";
 
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import { useNavigate } from "react-router-dom";
 
 const InternalAccountantsPage = () => {
   const {
@@ -17,7 +17,6 @@ const InternalAccountantsPage = () => {
     deleteUser,
     toggleActivation,
     refreshUsers
-
   } = useUser();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,6 +28,7 @@ const InternalAccountantsPage = () => {
   const [userToDelete, setUserToDelete] = useState(null);
   const [showToggleModal, setShowToggleModal] = useState(false);
   const [userToToggle, setUserToToggle] = useState(null);
+  const navigate = useNavigate();
 
   // Filter internal accountants
   const accountants = users.filter(
@@ -45,7 +45,6 @@ const InternalAccountantsPage = () => {
     (currentPage - 1) * accountantsPerPage,
     currentPage * accountantsPerPage
   );
-
 
   // Handle loading state
   if (contextLoading) {
@@ -99,7 +98,6 @@ const InternalAccountantsPage = () => {
 
     try {
       await toggleActivation(userToToggle?.id);
-
       refreshUsers();
     } catch (err) {
       console.error('Toggle Activation Error:', err);
@@ -110,15 +108,20 @@ const InternalAccountantsPage = () => {
     }
   };
 
-
   const handleEditClick = (user) => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
 
+ const handleViewClick = (user) => {
+navigate(`/view-accountant-folder/${user.id}`, {
+  state: { accountantName: `${user.firstName} ${user.lastName}` }
+});
+};
+
+
   return (
     <CompanyLayout>
-
       <div className="container mx-auto px-4 py-8">
         {/* Search and Add Button */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -183,8 +186,11 @@ const InternalAccountantsPage = () => {
                   {currentAccountants.map((user) => (
                     <tr key={user.id}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">
-                          {user.firstName} {user.lastName}
+                        <div className="flex items-center">
+                          <FaUser className="mr-2 text-blue-600" /> 
+                          <div className="font-medium text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-500">
@@ -226,7 +232,13 @@ const InternalAccountantsPage = () => {
                           >
                             {user.active ? <FaToggleOn /> : <FaToggleOff />}
                           </button>
-
+                          <button
+                            onClick={() => handleViewClick(user)}
+                            className="text-blue-600 hover:text-blue-900"
+                            title="View Folders"
+                          >
+                            <FaEye className="text-lg" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -284,7 +296,7 @@ const InternalAccountantsPage = () => {
             </p>
           }
           isDeactivation={true}
-          isActive={userToToggle?.active}
+          isToggleAction
         />
       </div>
     </CompanyLayout>

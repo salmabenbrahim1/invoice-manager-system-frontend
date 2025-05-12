@@ -34,7 +34,8 @@ import EmailHistoryPage from './pages/admin/EmailHistoryPage';
 import ForgotPasswordPage from "./pages/ForgotPassword";
 
 import InternalAccountantClientsPage from './pages/client/InternalAccountantClientsPage';
-
+import ViewAccountantFolder from './pages/company/ViewAccountantFoldersPage';
+import ViewInvoices from './pages/company/ViewInvoices';
 function App() {
   return (
     <div>
@@ -71,7 +72,12 @@ function App() {
                             <CompanyClientsPage />
                           </PrivateRoute>
                         }
+                        
                       />
+                      <Route path="/view-accountant-folder/:id" element={<ViewAccountantFolder />} />
+                      <Route path="/folders/:folderId/invoices" element={<ViewInvoices />} />
+
+
                       <Route
                         path="/my-accountants"
                         element={

@@ -11,16 +11,17 @@ export const InvoiceProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const fetchInvoices = async (folderId) => {
-    setLoading(true);
-    try {
-      const fetchedInvoices = await InvoiceService.getInvoicesByFolder(folderId);
-      setInvoices(fetchedInvoices);
-    } catch (err) {
-      setError('Failed to fetch invoices');
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  setError(null);
+  try {
+    const fetchedInvoices = await InvoiceService.getInvoicesByFolder(folderId);
+    setInvoices(fetchedInvoices);
+  } catch (err) {
+    setError(err.response?.data?.message || 'Failed to fetch invoices');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const createInvoice = async (formData) => {
     setLoading(true);

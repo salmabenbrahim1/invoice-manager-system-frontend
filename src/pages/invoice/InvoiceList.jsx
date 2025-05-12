@@ -134,15 +134,18 @@ const InvoiceList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            ${invoice.status === 'processed'
+                          ${invoice.status === 'processed'
                               ? 'bg-green-100 text-green-800'
                               : invoice.status === 'pending'
                                 ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-red-100 text-red-800'
+                                : invoice.status === 'VALIDATED'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
                             }`}
                         >
                           {invoice.status}
                         </span>
+
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
