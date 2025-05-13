@@ -72,10 +72,25 @@ function App() {
                             <CompanyClientsPage />
                           </PrivateRoute>
                         }
-                        
+
                       />
-                      <Route path="/view-accountant-folder/:id" element={<ViewAccountantFolder />} />
-                      <Route path="/folders/:folderId/invoices" element={<ViewInvoices />} />
+                      <Route
+                        path="/view-accountant-folder/:id"
+                        element={
+                          <PrivateRoute allowedRoles={['COMPANY']}>
+                            <ViewAccountantFolder />
+                          </PrivateRoute>
+                        }
+                      />
+                      <Route
+                        path="/folders/:folderId/invoices"
+                        element={
+                          <PrivateRoute allowedRoles={['COMPANY']}>
+                            <ViewInvoices />
+                          </PrivateRoute>
+                        }
+                      />
+
 
 
                       <Route

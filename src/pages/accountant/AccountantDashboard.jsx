@@ -51,9 +51,14 @@ const AccountantDashboard = () => {
   if (loading) return <div className="p-8">Loading...</div>;
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
 
-  if (!currentUser || currentUser.role !== "INDEPENDENT_ACCOUNTANT") {
-    return <div className="p-8 text-red-500">Unauthorized</div>;
-  }
+  if (
+  !currentUser ||
+  (currentUser.role !== "INDEPENDENT_ACCOUNTANT" &&
+    currentUser.role !== "INTERNAL_ACCOUNTANT")
+) {
+  return <div className="p-8 text-red-500">Unauthorized</div>;
+}
+
 
   return (
     <AccountantLayout>

@@ -10,7 +10,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [extractionError, setExtractionError] = useState(false); // Ajouté pour gérer l'erreur
+  const [extractionError, setExtractionError] = useState(false); 
 
   const fieldGroups = [
     {
@@ -55,19 +55,19 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const fetchData = async () => {
     if (!invoice?.img) return;
     setLoading(true);
-    setExtractionError(false); // Reset before each attempt
+    setExtractionError(false); 
 
     try {
       const data = await extractInvoiceData(invoice.img);
-      console.log("Extracted Data:", data); // Log to verify returned data
+      console.log("Extracted Data:", data);
       if (!data || Object.keys(data).length === 0) {
         throw new Error("No usable data returned from extraction");
       }
       setFormData(data);
-      setExtractedData(data); // Optionally store extracted data for canceling edits
+      setExtractedData(data); 
     } catch (error) {
       console.error("Error extracting data:", error);
-      setExtractionError(true); // Trigger error state
+      setExtractionError(true); 
     } finally {
       setLoading(false);
     }

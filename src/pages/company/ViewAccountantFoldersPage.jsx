@@ -2,170 +2,215 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Container } from 'react-bootstrap';
 import {
-    FaFolder,
-    FaSearch,
-    FaRegCalendarAlt
+  FaFolder,
+  FaSearch,
+  FaRegCalendarAlt,
+  FaEye,
+  FaArrowLeft 
 } from 'react-icons/fa';
 
 // Components
 import CompanyLayout from "../../components/company/CompanyLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
+import Pagination from "../../components/Pagination";
 
 const ViewAccountantFolder = () => {
-    const { id } = useParams();
-    const navigate = useNavigate();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    // State management
-    const [folders, setFolders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [searchQuery, setSearchQuery] = useState("");
-    const location = useLocation();
-    const accountantName = location.state?.accountantName || id;
+  // State management
+  const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const accountantName = location.state?.accountantName || id;
 
-
-    // Fetch folders on component mount
-    useEffect(() => {
-        const storedFolders = localStorage.getItem(`folders-${id}`);
-        if (storedFolders) {
-            setFolders(JSON.parse(storedFolders));
-            setLoading(false);
-        } else {
-            const fetchFolders = async () => {
-                try {
-                    const response = await axios.get(
-                        `http://localhost:9090/api/folders/by-internal-accountant/${id}`
-                    );
-                    setFolders(response.data);
-                    // Store the folders in localStorage
-                    localStorage.setItem(`folders-${id}`, JSON.stringify(response.data));
-                } catch (error) {
-                    console.error("Error fetching folders:", error);
-                    toast.error("Failed to load folders");
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            fetchFolders();
+  // Pagination
+  const foldersPerPage = 7;
+  const totalPages = Math.ceil(folders.length / foldersPerPage);
+  const currentFolders = folders.slice(
+    (currentPage - 1) * foldersPerPage,
+    currentPage * foldersPerPage
+  );
+  
+  // Fetch folders on component mount
+  useEffect(() => {
+    const storedFolders = localStorage.getItem(`folders-${id}`);
+    if (storedFolders) {
+      setFolders(JSON.parse(storedFolders));
+      setLoading(false);
+    } else {
+      const fetchFolders = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:9090/api/folders/by-internal-accountant/${id}`
+          );
+          setFolders(response.data);
+          localStorage.setItem(`folders-${id}`, JSON.stringify(response.data));
+        } catch (error) {
+          console.error("Error fetching folders:", error);
+          toast.error("Failed to load folders");
+        } finally {
+          setLoading(false);
         }
-    }, [id]);
+      };
 
-    // Event handlers
-    const handleFolderClick = (folderId) => {
-        navigate(`/folders/${folderId}/invoices`);
-    };
-
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-    };
-
-    // Utility functions
-    const formatDate = (dateString) => {
-        const options = {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        };
-        return new Date(dateString).toLocaleDateString('en-US', options);
-    };
-
-    const filteredFolders = folders.filter(folder => {
-        const query = searchQuery.toLowerCase();
-        return (
-            folder.folderName?.toLowerCase().includes(query) ||
-            folder.client?.name.toLowerCase().includes(query)
-        );
-    });
-
-    // Loading state
-    if (loading) {
-        return (
-            <CompanyLayout>
-                <LoadingSpinner
-                    size="lg"
-                    color="primary"
-                    fullScreen
-                    text="Loading Folders..."
-                />
-            </CompanyLayout>
-        );
+      fetchFolders();
     }
+  }, [id]);
 
+  const handleFolderClick = (folderId, e) => {
+    if (e && e.target.closest('button')) return;
+    navigate(`/folders/${folderId}/invoices`);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); 
+  };
+
+  const formatDate = (dateString) => {
+    const options = {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
+  const filteredFolders = folders.filter(folder => {
+    const query = searchQuery.toLowerCase();
     return (
-        <CompanyLayout>
-            <Container className="px-4 py-8">
-                {/* Header with search */}
-                <div className="d-flex justify-content-between align-items-center mb-5">
-                    <h2 className="text-2xl font-semibold">
-                        Folders for Accountant {accountantName}
-                    </h2>
-                    <div className="position-relative">
-                        <FaSearch className="position-absolute left-3 top-3 text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="Search folders..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="ps-5 pe-3 py-2 border border-gray-300 rounded-lg shadow-sm"
-                        />
-                    </div>
-                </div>
-                {/* Folders list */}
-                <div className="folder-list">
-                    {filteredFolders.length === 0 ? (
-                        <div className="text-center text-muted py-5">
-                            {searchQuery ? "No matching folders found" : "No folders available"}
-                        </div>
-                    ) : (
-                        <ul className="list-unstyled">
-                            {filteredFolders.map(folder => (
-                                <li key={folder.id} className="mb-3">
-                                    <div
-                                        className="folder-item card card-hover p-3"
-                                        onClick={() => handleFolderClick(folder.id)}
-                                        style={{ backgroundColor: '#f8f9fa' }}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="folder-icon me-3">
-                                                <FaFolder
-                                                    size={48}
-                                                    style={{
-                                                        color: '#6f42c1',  // Couleur violette
-                                                        minWidth: '48px'   // Taille fixe pour l'icône
-                                                    }}
-                                                />
-                                            </div>
-
-                                            <div className="flex-grow-1">
-                                                <div className="d-flex justify-content-between align-items-center mb-1">
-                                                    <h5 className="folder-title mb-0">
-                                                        {folder.folderName || "Unnamed Folder"}
-                                                    </h5>
-                                                </div>
-
-                                                <p className="text-muted small mb-2">
-                                                    {folder.client?.name || "No client assigned"}
-                                                </p>
-
-                                                <div className="text-muted small d-flex align-items-center">
-                                                    <FaRegCalendarAlt className="me-1" />
-                                                    {formatDate(folder.createdAt)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </div>
-            </Container>
-        </CompanyLayout>
+      folder.folderName?.toLowerCase().includes(query) ||
+      folder.client?.name.toLowerCase().includes(query)
     );
+  });
+
+  // Loading state
+  if (loading) {
+    return (
+      <CompanyLayout>
+        <LoadingSpinner
+          size="lg"
+          color="primary"
+          fullScreen
+          text="Loading Folders..."
+        />
+      </CompanyLayout>
+    );
+  }
+
+  return (
+    <CompanyLayout>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to Accountant 
+          </button>
+        </div>
+        
+        {/* Header with search */}
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+          <h2 className="text-2xl font-semibold">
+            Folders of Accountant {accountantName}
+          </h2>
+          
+          <div className="relative w-full md:w-1/3">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <FaSearch className="text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search folders by name or client..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* Folders Table */}
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          {filteredFolders.length === 0 ? (
+            <div className="p-8 text-center text-gray-500">
+              {searchQuery ? "No matching folders found" : "No folders available"}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Folder</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredFolders
+                    .slice((currentPage - 1) * foldersPerPage, currentPage * foldersPerPage)
+                    .map(folder => (
+                      <tr 
+                        key={folder.id} 
+                        className="hover:bg-gray-50 cursor-pointer"
+                        onClick={(e) => handleFolderClick(folder.id, e)}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <FaFolder className="mr-2 text-purple-600" size={20} />
+                            <div className="font-medium text-gray-900">
+                              {folder.folderName || "Unnamed Folder"}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                          {folder.client?.name || "No client assigned"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                          <div className="flex items-center">
+                            <FaRegCalendarAlt className="mr-2 text-gray-400" />
+                            {formatDate(folder.createdAt)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button
+                            onClick={() => handleFolderClick(folder.id)}
+                            className="text-blue-600 hover:text-blue-900 flex items-center"
+                            title="View Invoices"
+                          >
+                            <FaEye className="mr-1" /> View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onNext={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              onPrev={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            />
+          </div>
+        )}
+      </div>
+    </CompanyLayout>
+  );
 };
 
 export default ViewAccountantFolder;
