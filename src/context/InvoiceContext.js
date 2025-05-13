@@ -9,7 +9,10 @@ export const InvoiceProvider = ({ children }) => {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
+
+  // Fetch invoices by folder ID
   const fetchInvoices = async (folderId) => {
   setLoading(true);
   setError(null);
@@ -23,6 +26,23 @@ export const InvoiceProvider = ({ children }) => {
   }
 };
 
+// Fetch a single invoice by ID
+const fetchInvoiceById = async (invoiceId) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const invoice = await InvoiceService.getInvoiceById(invoiceId);
+    setSelectedInvoice(invoice);
+    return invoice;
+  } catch (err) {
+    setError('Failed to fetch invoice details');
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Create a new invoice
   const createInvoice = async (formData) => {
     setLoading(true);
     try {
@@ -35,6 +55,7 @@ export const InvoiceProvider = ({ children }) => {
     }
   };
 
+  // Update an existing invoice
   const updateInvoice = async (invoiceId, updatedData) => {
     setLoading(true);
     try {
@@ -49,6 +70,7 @@ export const InvoiceProvider = ({ children }) => {
     }
   };
 
+  // Delete an invoice
   const deleteInvoice = async (invoiceId) => {
     setLoading(true);
     try {
@@ -74,6 +96,10 @@ export const InvoiceProvider = ({ children }) => {
         createInvoice,
         updateInvoice,
         deleteInvoice,
+        fetchInvoiceById,
+        selectedInvoice,
+        setSelectedInvoice,
+        
       }}
     >
       {children}

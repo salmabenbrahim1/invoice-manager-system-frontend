@@ -43,6 +43,20 @@ const invoiceService = {
       throw error;
     }
   },
+  // Get invoice by ID
+ getInvoiceById: async (invoiceId) => {
+  try {
+    const response = await axios.get(`${API_URL}/${invoiceId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching invoice by ID:', error);
+    throw error;
+  }
+},
+
+
+
+
 
   // Update an existing invoice
   updateInvoice: async (invoiceId, updatedData) => {
@@ -99,21 +113,21 @@ export const extractInvoiceData = async (imagePath) => {
     // We deconstruct the 4 internal objects
     const {
       invoiceMetadata = {},
-      sellerInformations = {},
-      customerInformations = {},
+      sellerInformation = {},
+      customerInformation = {},
       amounts = {},
     } = extracted;
 
     // Reconstruct a single flat object from sub-objects
     const structuredData = {
-      sellerSiretNumber: sellerInformations.sellerSiretNumber || 'null',
-      sellerName: sellerInformations.sellerName || 'null',
-      sellerAddress: sellerInformations.sellerAddress || 'null',
-      sellerPhone: sellerInformations.sellerPhone || 'null',
+      sellerSiretNumber: sellerInformation.sellerSiretNumber || 'null',
+      sellerName: sellerInformation.sellerName || 'null',
+      sellerAddress: sellerInformation.sellerAddress || 'null',
+      sellerPhone: sellerInformation.sellerPhone || 'null',
 
-      customerName: customerInformations.customerName || 'null',
-      customerAddress: customerInformations.customerAddress || 'null',
-      customerPhone: customerInformations.customerPhone || 'null',
+      customerName: customerInformation.customerName || 'null',
+      customerAddress: customerInformation.customerAddress || 'null',
+      customerPhone: customerInformation.customerPhone || 'null',
 
       invoiceNumber: invoiceMetadata.invoiceNumber || 'null',
       invoiceDate: invoiceMetadata.invoiceDate || 'null',

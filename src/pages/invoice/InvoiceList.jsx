@@ -12,15 +12,23 @@ import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
 import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
+import InvoiceSavedViewer from '../../components/invoice/InvoiceSavedViewer';
+import { AiOutlineEye } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
+
+
+
+
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, deleteInvoice } = useInvoice();
+  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2,fetchInvoiceById } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
+    const [selectedInvoice, setSelectedInvoice] = useState(false);
+
   const [viewMode, setViewMode] = useState(null);
 
   useEffect(() => {
@@ -28,6 +36,7 @@ const InvoiceList = () => {
       fetchInvoices(folderId);
     }
   }, [folderId]);
+ 
 
   const filteredInvoices = invoices
     .filter(
@@ -61,6 +70,19 @@ const InvoiceList = () => {
   const handleScanInvoice = () => {
     setViewMode('full');
   };
+
+  const handleViewSavedData = async (invoice) => {
+  try {
+    const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
+    console.log(updatedInvoice);
+    setSelectedInvoice(updatedInvoice); // set the updated one
+    setViewMode('view');
+  } catch (error) {
+    toast.error("Failed to fetch updated invoice data");
+  }
+};
+
+
 
   const handleCloseViewer = () => {
     setViewMode(null);
@@ -154,13 +176,20 @@ const InvoiceList = () => {
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                             title="Scan"
                           >
-                            <MdDocumentScanner />                          </button>
+                            <MdDocumentScanner />
+                          </button>
                           <button
                             onClick={() => setInvoiceToDelete(invoice)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                             title="Delete"
                           >
                             <FaTrash />
+                          </button>
+                          <button
+                            onClick={() => handleViewSavedData(invoice)}
+                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
+                            title="View">
+                            <FaEye />
                           </button>
                         </div>
                       </td>
@@ -178,13 +207,21 @@ const InvoiceList = () => {
           </div>
         </div>
 
+        {selectedInvoice && viewMode === 'view' && (
+          <InvoiceSavedViewer
+            invoice={selectedInvoice}
+            onClose={handleCloseViewer}
+          />
+        )}
+
+
         {/* Uploader Modal */}
         {showUploader && (
           <InvoiceUploader
 
             folderId={folderId}
             onClose={(uploaded) => {
-              console.log("onClose called with uploaded:", uploaded); // Debug log
+
               setShowUploader(false); // Close the modal
               if (uploaded && folderId) {
                 fetchInvoices(folderId); // Fetch updated invoices

@@ -10,7 +10,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [extractionError, setExtractionError] = useState(false); // Ajouté pour gérer l'erreur
+  const [extractionError, setExtractionError] = useState(false); 
 
   const fieldGroups = [
     {
@@ -125,15 +125,6 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
               <div className="flex flex-col items-center justify-center h-full">
                 <div className="w-8 h-8 border-3 border-blue-100 border-t-blue-500 rounded-full animate-spin mb-3"></div>
                 <p className="text-sm text-gray-500">Extracting data...</p>
-              </div>
-            ) : extractionError ? (
-              <div className="flex flex-col items-center justify-center h-full text-center">
-                <p className="text-sm text-red-600 mb-3">Failed to retrieve data. Please try again.</p>                <button
-                  onClick={fetchData}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Try Again
-                </button>
               </div>
             ) : (
               <div className="overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
