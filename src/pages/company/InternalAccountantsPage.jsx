@@ -122,10 +122,13 @@ navigate(`/view-accountant-folder/${user.id}`, {
 
   return (
     <CompanyLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="h-screen  overflow-y-auto p-10">
         {/* Search and Add Button */}
+       
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+           <h2 className="text-2xl font-semibold">My Accountants</h2>
           <div className="relative w-full md:w-1/4">
+          
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
             </div>
@@ -137,6 +140,7 @@ navigate(`/view-accountant-folder/${user.id}`, {
               className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
+            
 
           <button
             onClick={() => {
@@ -145,12 +149,13 @@ navigate(`/view-accountant-folder/${user.id}`, {
             }}
             className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 w-full md:w-auto"
           >
+           
             <FaUserPlus className="mr-2" />
             Add Internal Accountant
           </button>
         </div>
 
-        {/* Add/Edit Accountant Form */}
+        {/* Add/Edit internal Accountant Form */}
         <InternalAccountantForm
           show={isModalOpen}
           onHide={() => {
@@ -171,15 +176,15 @@ navigate(`/view-accountant-folder/${user.id}`, {
               {searchQuery ? "No matching accountants found" : "No internal accountants available"}
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div className="overflow-hidden rounded-lg shadow">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Name</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Phone Number</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">

@@ -136,7 +136,7 @@ const CompanyClientsPage = () => {
 
   return (
     <CompanyLayout>
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-gray-100 ">
         <div className="flex flex-col flex-grow p-6 overflow-auto">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold">My Clients</h2>

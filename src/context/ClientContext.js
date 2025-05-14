@@ -57,7 +57,7 @@ const ClientProvider = ({ children }) => {
     }
   }, [user]);
   useEffect(() => {
-    if (user) {
+    if (user?.role === 'INTERNAL_ACCOUNTANT') {
       fetchAccountantClients();
     }
   }, [user]);

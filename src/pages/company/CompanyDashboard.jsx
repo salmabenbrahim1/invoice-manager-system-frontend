@@ -131,7 +131,7 @@ const CompanyDashboard = () => {
           <DashboardCard
             icon={<FaFileInvoice className="text-green-600 text-2xl" />}
             label="Validated Invoices"
-            value={stats?.validatedInvoices || 0}
+           value={stats?.validatedInvoices?. validated || 0}
             bg="bg-green-50"
           />
         
