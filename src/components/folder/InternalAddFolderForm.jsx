@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useFolder } from '../../context/FolderContext';
 
- const InternalAddFolderForm = ({ show, onHide, onSave, clients }) => {
+const InternalAddFolderForm = ({ show, onHide, onSave, clients }) => {
   const { createFolder } = useFolder();
   const token = localStorage.getItem('token');
 
@@ -20,7 +20,8 @@ import { useFolder } from '../../context/FolderContext';
 
     try {
       // Find the selected client by ID
-      const selectedClient = clients.find(c => c.id === selectedClientId);
+      const selectedClient = clients.find(c => c.client.id === selectedClientId)?.client;
+
 
       // Prepare the folder data
       const folderData = {
@@ -58,11 +59,14 @@ import { useFolder } from '../../context/FolderContext';
               onChange={(e) => setSelectedClientId(e.target.value)}
             >
               <option value="">Choose client</option>
-              {clients?.map(client => (
-                <option key={client.id} value={client.id}>
-                  {client.name}
-                </option>
-              ))}
+              {clients
+                ?.filter(c => c && c.client) // élimine les cas problématiques
+                .map(client => (
+                  <option key={client.client.id} value={client.client.id}>
+                    {client.client.name}
+                  </option>
+                ))}
+
             </Form.Control>
           </Form.Group>
 

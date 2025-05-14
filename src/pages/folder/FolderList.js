@@ -227,8 +227,7 @@ const FolderList = () => {
           show={showAddModal}
           onHide={() => setShowAddModal(false)}
           onSave={(folder) => console.log('New folder:', folder)}
-          clients={clients} 
-        />
+          clients={clients.map(c => c.client)} />
       ) : (
         <AddFolderForm
           show={showAddModal}

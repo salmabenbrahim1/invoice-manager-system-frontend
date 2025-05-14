@@ -4,6 +4,7 @@ import { extractInvoiceData } from '../../services/InvoiceService';
 import invoiceService from '../../services/InvoiceService';
 import ZoomableImage from '../ZoomableImage';
 import { toast } from 'react-toastify';
+import { useInvoice } from '../../context/InvoiceContext';
 
 const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [extractedData, setExtractedData] = useState(null);
@@ -11,6 +12,8 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [extractionError, setExtractionError] = useState(false); 
+  const { fetchInvoices } = useInvoice();
+  const folderId = invoice?.folderId;
 
   const fieldGroups = [
     {
@@ -23,7 +26,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       ]
     },
     {
-      title: "Seller Informations",
+      title: "Seller Information",
       fields: [
         { name: 'sellerName', label: 'Seller Name' },
         { name: 'sellerAddress', label: 'Seller Address' },
@@ -32,7 +35,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       ]
     },
     {
-      title: "Customer Informations",
+      title: "Customer Information",
       fields: [
         { name: 'customerName', label: 'Customer Name' },
         { name: 'customerAddress', label: 'Customer Address' },
@@ -59,12 +62,11 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
     try {
       const data = await extractInvoiceData(invoice.img);
-      console.log("Extracted Data:", data); // Log to verify returned data
       if (!data || Object.keys(data).length === 0) {
         throw new Error("No usable data returned from extraction");
       }
       setFormData(data);
-      setExtractedData(data); // Optionally store extracted data for canceling edits
+      setExtractedData(data); 
     } catch (error) {
       console.error("Error extracting data:", error);
       setExtractionError(true); // Trigger error state
@@ -86,11 +88,19 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
   const handleSave = async () => {
     try {
-      await invoiceService.saveInvoice(invoice.id, formData);
+      await invoiceService.saveInvoice(invoice.id, {
+      ...formData,
+      status: 'Validated', 
+    });
       toast.success('Invoice saved successfully!');
       setIsEditing(false);
-    } catch (error) {
-      toast.error('Error while saving the invoice.');
+      const updatedInvoice = { ...invoice, status: 'Validated' };
+      setFormData(updatedInvoice); // Update formData 
+      onClose(); 
+      
+     fetchInvoices(folderId); // Refresh the invoices list 
+  } catch (error) {
+    toast.error('Error while saving the invoice.');
     }
   };
 

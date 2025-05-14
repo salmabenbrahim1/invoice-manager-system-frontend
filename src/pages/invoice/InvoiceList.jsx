@@ -36,6 +36,11 @@ const InvoiceList = () => {
       fetchInvoices(folderId);
     }
   }, [folderId]);
+
+  const handleValidated = () => {
+  fetchInvoices(folderId); // refresh invoices list 
+};
+
  
 
   const filteredInvoices = invoices
@@ -160,7 +165,7 @@ const InvoiceList = () => {
                               ? 'bg-green-100 text-green-800'
                               : invoice.status === 'pending'
                                 ? 'bg-yellow-100 text-yellow-800'
-                                : invoice.status === 'VALIDATED'
+                                : invoice.status === 'Validated'
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-red-100 text-red-800'
                             }`}
@@ -271,6 +276,7 @@ const InvoiceList = () => {
           <InvoiceViewer
             invoice={selectedInvoice}
             onClose={handleCloseViewer}
+            onValidated={handleValidated}
           />
         )}
 

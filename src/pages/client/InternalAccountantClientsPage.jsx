@@ -10,13 +10,13 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 import { FaSync } from 'react-icons/fa';
 
 const InternalAccountantClientsPage = () => {
-  const { 
-    clients, 
-    loading: contextLoading, 
-    fetchAccountantClients ,
+  const {
+    clients,
+    loading: contextLoading,
+    fetchAccountantClients,
 
   } = useClient();
-  
+
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,9 +27,9 @@ const InternalAccountantClientsPage = () => {
   const handleRefresh = useCallback(async () => {
     try {
       if (!user) throw new Error("User not authenticated");
-  
+
       setOperationLoading(true);
-      await fetchAccountantClients(user.id); 
+      await fetchAccountantClients(user.id);
       toast.success('Clients refreshed successfully');
     } catch (error) {
       toast.error(error.message || 'Failed to refresh clients');
@@ -38,10 +38,10 @@ const InternalAccountantClientsPage = () => {
     }
   }, [fetchAccountantClients, user]);
 
-  
+
 
   // Filter clients by search query
-  const filteredClients = clients.filter(client => {
+  const filteredClients = clients.filter(({ client }) => {
     const query = searchQuery.toLowerCase();
     return (
       client.name?.toLowerCase().includes(query) ||
@@ -49,6 +49,7 @@ const InternalAccountantClientsPage = () => {
       (client.phone && client.phone.replace(/\D/g, '').includes(searchQuery))
     );
   });
+
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
@@ -68,6 +69,7 @@ const InternalAccountantClientsPage = () => {
     );
   }
 
+  
   return (
     <div className="flex h-screen">
       <SidebarAccountant />
@@ -77,12 +79,12 @@ const InternalAccountantClientsPage = () => {
           <div className="flex flex-col sm:flex-row gap-4">
 
             <button
-                            onClick={handleRefresh}
-                            className="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-                            disabled={contextLoading || operationLoading}
-                          >
-                            <FaSync className="mr-2" /> Refresh
-                          </button>
+              onClick={handleRefresh}
+              className="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+              disabled={contextLoading || operationLoading}
+            >
+              <FaSync className="mr-2" /> Refresh
+            </button>
             <div className="relative">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
               <input
@@ -102,20 +104,24 @@ const InternalAccountantClientsPage = () => {
               <LoadingSpinner />
             </div>
           )}
-
+          {/* Table for displaying internal Accountant's clients */}
           <div className="overflow-hidden rounded-lg shadow">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone Number</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Company</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Assigned At
+                  </th>
+
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {paginatedClients.length > 0 ? (
-                  paginatedClients.map((client) => (
+                  paginatedClients.map(({ client, companyName, assignedAt }) => (
                     <tr key={client.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
@@ -130,10 +136,21 @@ const InternalAccountantClientsPage = () => {
                         {client.phone || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {client.company?.name || '-'}
+                        {companyName || '-'}
+                      </td>
+
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {assignedAt
+                          ? new Date(assignedAt).toLocaleString('en-GB', {
+                            day: '2-digit',
+                            month: 'long',
+                            year: 'numeric'
+                          }) // Format as day Month year (e.g., 13 May 2025)
+                          : '-'}
                       </td>
                     </tr>
                   ))
+
                 ) : (
                   <tr>
                     <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
