@@ -58,10 +58,11 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const fetchData = async () => {
     if (!invoice?.img) return;
     setLoading(true);
-    setExtractionError(false); // Reset before each attempt
+    setExtractionError(false); 
 
     try {
       const data = await extractInvoiceData(invoice.img);
+
       if (!data || Object.keys(data).length === 0) {
         throw new Error("No usable data returned from extraction");
       }
@@ -69,7 +70,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       setExtractedData(data); 
     } catch (error) {
       console.error("Error extracting data:", error);
-      setExtractionError(true); // Trigger error state
+      setExtractionError(true); 
     } finally {
       setLoading(false);
     }

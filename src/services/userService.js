@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_URL = 'http://localhost:9090/api/users';
-
+const API_URL_stats = 'http://localhost:9090/api/dashboard';
 // Get auth config
 const getAuthConfig = () => {
   const token = localStorage.getItem('authToken');
@@ -101,7 +101,7 @@ export const userService = {
   getUserStats: async () => {
     try {
       const config = getAuthConfig();
-      const response = await axios.get(`${API_URL}/dashboard`, config);
+      const response = await axios.get(`${API_URL_stats}`, config);
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Failed to fetch stats');
