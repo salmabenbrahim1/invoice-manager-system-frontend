@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   FaUser,
   FaFolderOpen,
@@ -7,6 +7,7 @@ import {
   FaArchive,
   FaStar,
   FaChartLine,
+  FaDownload,
 } from "react-icons/fa";
 import { useUser } from "../../context/UserContext";
 import AccountantLayout from "../../components/accountant/AccountantLayout";
@@ -20,8 +21,8 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { exportDashboardAsPDF } from "../../utils/pdfUtils"; 
 
-// Dashboard Card Component
 const DashboardCard = ({ icon, label, value, bg }) => (
   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
     <div className="flex items-center">
@@ -34,7 +35,6 @@ const DashboardCard = ({ icon, label, value, bg }) => (
   </div>
 );
 
-// Graph Card Component
 const GraphCard = ({ title, icon, children }) => (
   <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
     <div className="flex items-center mb-4">
@@ -47,28 +47,43 @@ const GraphCard = ({ title, icon, children }) => (
 
 const AccountantDashboard = () => {
   const { currentUser, stats, loading, error } = useUser();
+  const dashboardRef = useRef(null);
+
+  const handleExportData = () => {
+    exportDashboardAsPDF(dashboardRef); 
+  };
 
   if (loading) return <div className="p-8">Loading...</div>;
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
 
   if (
-  !currentUser ||
-  (currentUser.role !== "INDEPENDENT_ACCOUNTANT" &&
-    currentUser.role !== "INTERNAL_ACCOUNTANT")
-) {
-  return <div className="p-8 text-red-500">Unauthorized</div>;
-}
-
+    !currentUser ||
+    (currentUser.role !== "INDEPENDENT_ACCOUNTANT" &&
+      currentUser.role !== "INTERNAL_ACCOUNTANT")
+  ) {
+    return <div className="p-8 text-red-500">Unauthorized</div>;
+  }
 
   return (
     <AccountantLayout>
-      <div className="p-8">
+      <div className="p-8" ref={dashboardRef}>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-800">Accountant Dashboard</h1>
-          <p className="text-sm text-gray-500">Last updated: {new Date().toLocaleString()}</p>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Accountant Dashboard
+            </h1>
+            <p className="text-sm text-gray-500">
+              Last updated: {new Date().toLocaleString()}
+            </p>
+          </div>
+          <button
+                     onClick={() => exportDashboardAsPDF(dashboardRef)}
+                     className="px-4 py-2 bg-violet-800 text-white rounded-lg flex items-center"
+                   >
+            Export PDF
+          </button>
         </div>
 
-        {/* Cards Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard
             icon={<FaUser className="text-blue-600 text-2xl" />}
@@ -94,12 +109,13 @@ const AccountantDashboard = () => {
             value={stats?.pendingInvoices || 0}
             bg="bg-yellow-50"
           />
-          
         </div>
 
-        {/* Charts Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <GraphCard title="Uploaded Invoices by Month" icon={<FaChartLine className="text-blue-500" />}>
+          <GraphCard
+            title="Uploaded Invoices by Month"
+            icon={<FaChartLine className="text-blue-500" />}
+          >
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats?.invoiceData || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -118,7 +134,10 @@ const AccountantDashboard = () => {
             </ResponsiveContainer>
           </GraphCard>
 
-          <GraphCard title="Validated Invoices" icon={<FaChartLine className="text-green-500" />}>
+          <GraphCard
+            title="Validated Invoices"
+            icon={<FaChartLine className="text-green-500" />}
+          >
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats?.validatedInvoices || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -137,24 +156,36 @@ const AccountantDashboard = () => {
             </ResponsiveContainer>
           </GraphCard>
 
-          <GraphCard title="Archived Folders" icon={<FaArchive className="text-indigo-600" />}>
+          <GraphCard
+            title="Archived Folders"
+            icon={<FaArchive className="text-indigo-600" />}
+          >
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-500">Total Archived (All Time)</span>
+                <span className="text-sm text-gray-500">
+                  Total Archived (All Time)
+                </span>
                 <span className="font-medium">{stats?.archivedFiles || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">Archived This Year</span>
-                <span className="font-medium text-blue-600">+{stats?.archivedThisYear || 0}</span>
+                <span className="font-medium text-blue-600">
+                  +{stats?.archivedThisYear || 0}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">This Month</span>
-                <span className="font-medium text-green-600">+{stats?.recentArchives || 0}</span>
+                <span className="font-medium text-green-600">
+                  +{stats?.recentArchives || 0}
+                </span>
               </div>
             </div>
           </GraphCard>
 
-          <GraphCard title="Favorite Folders" icon={<FaStar className="text-yellow-500" />}>
+          <GraphCard
+            title="Favorite Folders"
+            icon={<FaStar className="text-yellow-500" />}
+          >
             <div className="space-y-3">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">Total Favorites</span>
@@ -162,11 +193,15 @@ const AccountantDashboard = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">Added This Year</span>
-                <span className="font-medium text-blue-600">+{stats?.favoritesThisYear || 0}</span>
+                <span className="font-medium text-blue-600">
+                  +{stats?.favoritesThisYear || 0}
+                </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">This Month</span>
-                <span className="font-medium text-green-600">+{stats?.favoritesThisMonth || 0}</span>
+                <span className="font-medium text-green-600">
+                  +{stats?.favoritesThisMonth || 0}
+                </span>
               </div>
             </div>
           </GraphCard>

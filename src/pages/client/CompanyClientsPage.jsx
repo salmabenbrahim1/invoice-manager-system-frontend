@@ -53,7 +53,7 @@ const CompanyClientsPage = () => {
     setClientToDelete(client);
     setShowConfirmModal(true);
   };
-//confirm delete client
+  //confirm delete client
   const handleDeleteClient = async () => {
     if (clientToDelete) {
       await deleteClient(clientToDelete.id);
@@ -70,33 +70,42 @@ const CompanyClientsPage = () => {
     setClientToEdit(client);
     setShowEditModal(true);
   };
-//update client
+  //update client
   const handleUpdateClient = async (clientId, updatedClient) => {
     await updateClient(clientId, updatedClient);
     setShowEditModal(false);
   };
 
-  
 
-//assign accountant to client
+
+  //assign accountant to client
   const handleAssignClientToAccountant = async (clientId, accountantId) => {
-    if (accountantId) {
-      try {
-        await assignAccountantToClient(clientId, accountantId);
-
-        setSelectedAccountants(prev => ({
-          ...prev,
-          [clientId]: ""
-        }));
-        toast.success("Client assigned to accountant successfully.");
-      } catch (error) {
-        toast.error("Failed to assign accountant to client.");
-        console.error(error);
-      }
-    } else {
+    if (!accountantId) {
       toast.error("Please select an accountant to assign.");
+      return;
+    }
+
+    const client = clients.find(c => c.id === clientId);
+
+    // Check if the selected accountant is already assigned
+    if (client?.assignedTo?.id === accountantId) {
+      toast.info("This accountant is already assigned to the client.");
+      return;
+    }
+
+    try {
+      await assignAccountantToClient(clientId, accountantId);
+      setSelectedAccountants(prev => ({
+        ...prev,
+        [clientId]: ""
+      }));
+      toast.success("Client assigned to accountant successfully.");
+    } catch (error) {
+      toast.error("Failed to assign accountant to client.");
+      console.error(error);
     }
   };
+
 
   //reassign client
   const handleReassignClient = (clientId) => {
@@ -224,8 +233,11 @@ const CompanyClientsPage = () => {
                           </button>
                         </div>
                       ) : (
-                        <div className="flex items-center">
-                          <span className="mr-2 font-medium">
+                        <div className="flex items-center justify-between space-x-2 min-w-[220px]">
+                          <span
+                            className="font-medium truncate max-w-[130px]"
+                            title={getAccountantDisplayName(client)}
+                          >
                             {getAccountantDisplayName(client)}
                           </span>
                           <button
@@ -235,6 +247,7 @@ const CompanyClientsPage = () => {
                             Change
                           </button>
                         </div>
+
                       )}
 
                     </td>
