@@ -32,10 +32,12 @@ import Archive from './pages/folder/Archive';
 import Favorite from './pages/folder/Favorite';
 import EmailHistoryPage from './pages/admin/EmailHistoryPage';
 import ForgotPasswordPage from "./pages/ForgotPassword";
-
+import EmailHistoryCompanyPage from "./pages/company/CompanyEmailHistoryPage"
 import InternalAccountantClientsPage from './pages/client/InternalAccountantClientsPage';
 import ViewAccountantFolder from './pages/company/ViewAccountantFoldersPage';
 import ViewInvoices from './pages/company/ViewInvoices';
+import CompanyHistoryPage from './pages/company/CompanyEmailHistoryPage';
+import ArchivedInvoiceList from './pages/invoice/ArchivedInvoiceList';
 function App() {
   return (
     <div>
@@ -73,6 +75,14 @@ function App() {
                           </PrivateRoute>
                         }
 
+                      />
+                      <Route
+                        path="/company/history"
+                        element={
+                          <PrivateRoute allowedRoles={['COMPANY']}>
+                           <CompanyHistoryPage/>
+                          </PrivateRoute>
+                        }
                       />
                       <Route
                         path="/view-accountant-folder/:id"
@@ -150,6 +160,15 @@ function App() {
                           <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
                             <InvoiceList />
                           </PrivateRoute>
+                        }
+                      />
+
+                          <Route
+                        path="/archive/:folderId/invoices"
+                        element={
+                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                               <ArchivedInvoiceList/>
+                           </PrivateRoute>
                         }
                       />
                       <Route

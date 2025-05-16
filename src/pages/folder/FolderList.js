@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { useFolder } from '../../context/FolderContext';
+import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
-import SidebarAccountant from '../../components/accountant/SidebarAccountant';
-import AddFolderForm from '../../components/folder/AddFolderForm';
-import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
-import '../../styles/folderList.css';
-import FolderContextMenu from '../../components/folder/FolderContextMenu';
-import ConfirmModal from '../../components/modals/ConfirmModal';
-import { toast } from 'react-toastify';
-import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
 import { FaFolder, FaStar, FaSearch, FaRegCalendarAlt } from 'react-icons/fa';
+import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
+import { toast } from 'react-toastify';
+
+import { useFolder } from '../../context/FolderContext';
 import { useClient } from '../../context/ClientContext';
 import { useAuth } from '../../context/AuthContext';
+
+import SidebarAccountant from '../../components/accountant/SidebarAccountant';
+import AddFolderForm from '../../components/folder/AddFolderForm';
 import InternalAddFolderForm from '../../components/folder/InternalAddFolderForm';
+import FolderContextMenu from '../../components/folder/FolderContextMenu';
+import ConfirmModal from '../../components/modals/ConfirmModal';
+import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
 
-import { useNavigate } from 'react-router-dom';
-
+import '../../styles/folderList.css';
 
 const FolderList = () => {
   const { folders, archiveFolder, toggleFavorite, fetchFolders, deleteFolder } = useFolder();
@@ -23,38 +24,35 @@ const FolderList = () => {
   const { user } = useAuth();
 
   const [selectedFolder, setSelectedFolder] = useState(null);
-  const [searchQuery, setSearchQuery] = useState("");
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favoriteFolders, setFavoriteFolders] = useState([]);
   const [folderToDelete, setFolderToDelete] = useState(null);
   const [folderToEdit, setFolderToEdit] = useState(null);
-
   const [showAddModal, setShowAddModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  const [favoriteFolders, setFavoriteFolders] = useState([]);
-
   const navigate = useNavigate();
 
+  // Fetch clients for internal accountants
   useEffect(() => {
-    if (user?.id) {
-      fetchAccountantClients(user.id);
-    }
+    if (user?.id) fetchAccountantClients(user.id);
   }, [user, fetchAccountantClients]);
 
+  // Initial fetch of folders
   useEffect(() => {
     fetchFolders();
   }, []);
 
+  // Load favorites from localStorage
   useEffect(() => {
-    const storedFavorites = JSON.parse(localStorage.getItem("favoriteFolders")) || [];
-    setFavoriteFolders(storedFavorites);
+    const stored = JSON.parse(localStorage.getItem('favoriteFolders')) || [];
+    setFavoriteFolders(stored);
   }, []);
 
+  // Update localStorage on change
   useEffect(() => {
-    if (favoriteFolders.length > 0) {
-      localStorage.setItem("favoriteFolders", JSON.stringify(favoriteFolders));
-    }
+    localStorage.setItem('favoriteFolders', JSON.stringify(favoriteFolders));
   }, [favoriteFolders]);
 
   const handleSaveFolder = (createdFolder) => {
@@ -62,39 +60,28 @@ const FolderList = () => {
     toast.success(`Folder "${createdFolder.folderName}" created successfully.`);
   };
 
-  const formatDate = (date) => {
-    const options = {
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
-    };
-    return new Date(date).toLocaleDateString('en-US', options);
-  };
+      minute: '2-digit',
+    });
 
-  const requestDeleteFolder = (folderId, folderName) => {
-    setFolderToDelete({ id: folderId, name: folderName });
+  const requestDeleteFolder = (id, name) => {
+    setFolderToDelete({ id, name });
     setShowConfirmModal(true);
   };
 
   const handleDeleteFolder = async () => {
     if (folderToDelete) {
       await deleteFolder(folderToDelete.id);
-      toast.success("Folder deleted successfully.");
-    } else {
-      toast.info("Folder deletion canceled.");
+      toast.success('Folder deleted successfully.');
     }
     setFolderToDelete(null);
     setShowConfirmModal(false);
   };
-
-  const filteredFolders = folders.filter((folder) => {
-    const matchesSearch =
-      (folder.folderName && folder.folderName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (folder.client?.name && folder.client.name.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesSearch;
-  });
 
   const handleAction = (action, folderId) => {
     const folder = folders.find((f) => f.id === folderId);
@@ -110,8 +97,8 @@ const FolderList = () => {
         break;
       case 'favorite':
         toggleFavorite(folderId);
-        const updatedFavorites = favoriteFolders.some((fav) => fav.id === folderId)
-          ? favoriteFolders.filter((fav) => fav.id !== folderId)
+        const updatedFavorites = favoriteFolders.some((f) => f.id === folderId)
+          ? favoriteFolders.filter((f) => f.id !== folderId)
           : [...favoriteFolders, folder];
         setFavoriteFolders(updatedFavorites);
         break;
@@ -124,21 +111,29 @@ const FolderList = () => {
   };
 
   const handleFolderClick = (folderId) => {
-    setSelectedFolder(folderId); // Set the selected folder
-
-    // Navigate to the invoice list for the clicked folder
+    setSelectedFolder(folderId);
     navigate(`/my-folders/${folderId}/invoices`);
   };
+
+const filteredFolders = folders.filter((folder) => {
+  const matchesSearch =
+    (folder.folderName && folder.folderName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (folder.client?.name && folder.client.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  // Exclure les dossiers archivés
+  const isArchived = folder.archived; // Assurez-vous que la propriété `archived` est bien dans votre modèle
+  return matchesSearch && !isArchived;
+});
+
 
   return (
     <Container fluid className="flex h-screen vh-100 p-0">
       <SidebarAccountant />
 
       <div className="flex flex-col flex-grow p-6 overflow-auto">
+        {/* Header */}
         <div className="flex justify-between items-center mb-10">
-          <div>
-            <h2 className="text-2xl font-semibold">My Folders</h2>
-          </div>
+          <h2 className="text-2xl font-semibold">My Folders</h2>
           <div className="flex space-x-4">
             <div className="relative">
               <FaSearch className="absolute left-3 top-3 text-gray-400" />
@@ -150,18 +145,16 @@ const FolderList = () => {
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg shadow-md"
               />
             </div>
-            <div>
-              <button
-                className="px-4 py-2 text-white rounded-lg hover:bg-blue-700 transition duration-200 add-folder-button"
-                onClick={() => setShowAddModal(true)}
-              >
-                + Add Folder
-              </button>
-            </div>
+            <button
+              className="px-4 py-2 text-white rounded-lg hover:bg-blue-700 transition duration-200 add-folder-button"
+              onClick={() => setShowAddModal(true)}
+            >
+              + Add Folder
+            </button>
           </div>
         </div>
 
-        {/* Folder List */}
+        {/* Folder Grid */}
         <Row className="g-4">
           {filteredFolders.length === 0 ? (
             <Col xs={12}>
@@ -175,12 +168,12 @@ const FolderList = () => {
                   <ContextMenu>
                     <ContextMenuTrigger>
                       <div
-                        className={`folder-item ${selectedFolder === folder ? "selected" : ""}`}
+                        className={`folder-item ${selectedFolder === folder.id ? 'selected' : ''}`}
                         onClick={() => handleFolderClick(folder.id)}
                       >
                         <Card
-                          className={`p-3 shadow-sm ${selectedFolder === folder ? "border-secondary" : ""}`}
-                          style={{ cursor: "pointer", transition: "all 0.3s ease" }}
+                          className={`p-3 shadow-sm ${selectedFolder === folder.id ? 'border-secondary' : ''}`}
+                          style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
                         >
                           <div className="d-flex align-items-center">
                             <div className="folder-icon me-3">
@@ -188,11 +181,11 @@ const FolderList = () => {
                             </div>
                             <div className="folder-details">
                               <div className="folder-name fw-semibold flex items-center">
-                                {folder.folderName || "Unnamed Folder"}
+                                {folder.folderName || 'Unnamed Folder'}
                                 {isFavorite && <FaStar className="text-warning ms-2" />}
                               </div>
                               <div className="folder-client text-muted">
-                                {folder.client?.name || "No Client"}
+                                {folder.client?.name || 'No Client'}
                               </div>
                               <div className="d-flex align-items-center text-muted small mt-2">
                                 <span className="me-4 d-flex align-items-center">
@@ -208,11 +201,7 @@ const FolderList = () => {
                       </div>
                     </ContextMenuTrigger>
 
-                    {/* Folder Context Menu */}
-                    <FolderContextMenu
-                      folderId={folder.id}
-                      onAction={handleAction}
-                    />
+                    <FolderContextMenu folderId={folder.id} onAction={handleAction} />
                   </ContextMenu>
                 </Col>
               );
@@ -221,13 +210,14 @@ const FolderList = () => {
         </Row>
       </div>
 
-      {/* Add Folder Form Modal */}
+      {/* Add Folder Modal */}
       {user?.role === 'INTERNAL_ACCOUNTANT' ? (
         <InternalAddFolderForm
           show={showAddModal}
           onHide={() => setShowAddModal(false)}
           onSave={(folder) => console.log('New folder:', folder)}
-          clients={clients.map(c => c.client)} />
+          clients={clients.map((c) => c.client)}
+        />
       ) : (
         <AddFolderForm
           show={showAddModal}
@@ -236,7 +226,7 @@ const FolderList = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Confirm Delete Modal */}
       <ConfirmModal
         show={showConfirmModal}
         onHide={() => setShowConfirmModal(false)}
@@ -245,7 +235,7 @@ const FolderList = () => {
         onConfirm={handleDeleteFolder}
       />
 
-      {/* Update Folder Form Modal */}
+      {/* Edit Folder Modal */}
       {showEditModal && folderToEdit && (
         <UpdateFolderForm
           show={showEditModal}
@@ -258,5 +248,3 @@ const FolderList = () => {
 };
 
 export default FolderList;
-
-

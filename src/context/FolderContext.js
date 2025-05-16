@@ -79,13 +79,50 @@ const updateFolder = async (folderId, updatedFolderData) => {
 };
 
 
-// Archive folders
-const archiveFolder = (folderId) => {
-  const folderToArchive = folders.find((folder) => folder.id === folderId);
-  if (!folderToArchive) return;
+const archiveFolder = async (folderId) => {
+  setLoading(true);
+  setError(null);
+  try {
+    await folderService.archiveFolder(folderId);
 
-  setArchivedFolders((prevArchived) => [...prevArchived, folderToArchive]);
-  setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== folderId));
+    // Mettre à jour localement l'état
+    const archived = folders.find((f) => f.id === folderId);
+    if (archived) {
+      archived.archived = true;
+      setArchivedFolders((prev) => [...prev, archived]);
+      setFolders((prev) => prev.filter((f) => f.id !== folderId));
+    }
+
+    toast.success("Dossier archivé avec succès !");
+  } catch (err) {
+    setError(err.message);
+    toast.error("Erreur lors de l'archivage !");
+  } finally {
+    setLoading(false);
+  }
+};
+
+const unarchiveFolder = async (folderId) => {
+  setLoading(true);
+  setError(null);
+  try {
+    await folderService.unarchiveFolder(folderId);
+
+    // Mise à jour de l'état local
+    const unarchived = archivedFolders.find((f) => f.id === folderId);
+    if (unarchived) {
+      unarchived.archived = false;
+      setFolders((prev) => [...prev, unarchived]);
+      setArchivedFolders((prev) => prev.filter((f) => f.id !== folderId));
+    }
+
+    toast.success("Dossier désarchivé avec succès !");
+  } catch (err) {
+    setError(err.message);
+    toast.error("Erreur lors du désarchivage !");
+  } finally {
+    setLoading(false);
+  }
 };
 
 // Favorite folders
@@ -122,7 +159,8 @@ const toggleFavorite = (folderId) => {
         toggleFavorite,
         archiveFolder,
         favoriteFolders,
-        archivedFolders
+        archiveFolder,
+         unarchiveFolder,
 
 
         
