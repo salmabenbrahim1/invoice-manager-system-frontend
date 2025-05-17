@@ -163,7 +163,6 @@ function App() {
                           </PrivateRoute>
                         }
                       />
-
                           <Route
                         path="/archive/:folderId/invoices"
                         element={
