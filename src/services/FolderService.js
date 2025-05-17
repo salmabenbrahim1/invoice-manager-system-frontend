@@ -106,4 +106,32 @@ unarchiveFolder: async (folderId) => {
       throw new Error(message);
     }
   },
+
+
+  markAsFavorite: async (folderId) => {
+  try {
+    const config = getAuthConfig();
+    await axios.put(`${API_URL}/${folderId}/favorite`, {}, config);
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      'Failed to mark as favorite';
+    throw new Error(message);
+  }
+},
+
+unmarkAsFavorite: async (folderId) => {
+  try {
+    const config = getAuthConfig();
+    await axios.put(`${API_URL}/${folderId}/unfavorite`, {}, config);
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      'Failed to unmark as favorite';
+    throw new Error(message);
+  }
+},
+
 };

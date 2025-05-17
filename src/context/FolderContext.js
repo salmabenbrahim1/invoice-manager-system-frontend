@@ -9,7 +9,7 @@ export const useFolder = () => useContext(FolderContext);
 
 export const FolderProvider = ({ children }) => {
   const [folders, setFolders] = useState([]);
-   // the current folder is the one selected by the user 
+  // the current folder is the one selected by the user 
 
 
   const [archivedFolders, setArchivedFolders] = useState([]);
@@ -48,97 +48,109 @@ export const FolderProvider = ({ children }) => {
     }
   };
 
-// Update folder by id and update state
-const updateFolder = async (folderId, updatedFolderData) => {
-  setLoading(true);
-  setError(null);
-  try {
-    const updatedFolder = await folderService.updateFolder(folderId, updatedFolderData);
-    setFolders((prev) => prev.map(folder => folder.id === folderId ? updatedFolder : folder)); // Update the folder in the list
-    return updatedFolder;
-  } catch (err) {
-    setError(err.message);
-    throw err; // Rethrow for components to handle
-  } finally {
-    setLoading(false);
-  }
-};
-
- // Delete folder by id and update state
- const deleteFolder = async (folderId) => {
-  setLoading(true);
-  setError(null);
-  try {
-    await folderService.deleteFolder(folderId);
-    setFolders((prev) => prev.filter(folder => folder.id !== folderId)); 
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-const archiveFolder = async (folderId) => {
-  setLoading(true);
-  setError(null);
-  try {
-    await folderService.archiveFolder(folderId);
-
-    // Mettre à jour localement l'état
-    const archived = folders.find((f) => f.id === folderId);
-    if (archived) {
-      archived.archived = true;
-      setArchivedFolders((prev) => [...prev, archived]);
-      setFolders((prev) => prev.filter((f) => f.id !== folderId));
+  // Update folder by id and update state
+  const updateFolder = async (folderId, updatedFolderData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedFolder = await folderService.updateFolder(folderId, updatedFolderData);
+      setFolders((prev) => prev.map(folder => folder.id === folderId ? updatedFolder : folder)); // Update the folder in the list
+      return updatedFolder;
+    } catch (err) {
+      setError(err.message);
+      throw err; // Rethrow for components to handle
+    } finally {
+      setLoading(false);
     }
+  };
 
-    toast.success("Dossier archivé avec succès !");
-  } catch (err) {
-    setError(err.message);
-    toast.error("Erreur lors de l'archivage !");
-  } finally {
-    setLoading(false);
-  }
-};
-
-const unarchiveFolder = async (folderId) => {
-  setLoading(true);
-  setError(null);
-  try {
-    await folderService.unarchiveFolder(folderId);
-
-    // Mise à jour de l'état local
-    const unarchived = archivedFolders.find((f) => f.id === folderId);
-    if (unarchived) {
-      unarchived.archived = false;
-      setFolders((prev) => [...prev, unarchived]);
-      setArchivedFolders((prev) => prev.filter((f) => f.id !== folderId));
+  // Delete folder by id and update state
+  const deleteFolder = async (folderId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await folderService.deleteFolder(folderId);
+      setFolders((prev) => prev.filter(folder => folder.id !== folderId));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    toast.success("Dossier désarchivé avec succès !");
-  } catch (err) {
-    setError(err.message);
-    toast.error("Erreur lors du désarchivage !");
-  } finally {
-    setLoading(false);
-  }
-};
 
-// Favorite folders
-const toggleFavorite = (folderId) => {
-  setFavoriteFolders((prevFavorites) => {
-    const isFavorite = prevFavorites.some((fav) => fav.id === folderId);
-    if (isFavorite) {
-      return prevFavorites.filter((fav) => fav.id !== folderId);
-    } else {
-      const folderToAdd = folders.find((f) => f.id === folderId);
-      return [...prevFavorites, folderToAdd];
+  const archiveFolder = async (folderId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await folderService.archiveFolder(folderId);
+
+      const archived = folders.find((f) => f.id === folderId);
+      if (archived) {
+        archived.archived = true;
+        setArchivedFolders((prev) => [...prev, archived]);
+        setFolders((prev) => prev.filter((f) => f.id !== folderId));
+      }
+
+      toast.success("Folder successfully archived! !");
+    } catch (err) {
+      setError(err.message);
+      toast.error("Error archiving folder!");
+    } finally {
+      setLoading(false);
     }
-  });
-};
+  };
 
-// Set the current folder when a folder is selected
+  const unarchiveFolder = async (folderId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await folderService.unarchiveFolder(folderId);
+
+      const unarchived = archivedFolders.find((f) => f.id === folderId);
+      if (unarchived) {
+        unarchived.archived = false;
+        setFolders((prev) => [...prev, unarchived]);
+        setArchivedFolders((prev) => prev.filter((f) => f.id !== folderId));
+      }
+
+      toast.success("Folder successfully unarchived!");
+    } catch (err) {
+      setError(err.message);
+      toast.error("Error unarchiving folder!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Favorite folders
+  const toggleFavorite = async (folderId) => {
+    const folder = folders.find((f) => f.id === folderId);
+    if (!folder) return;
+
+    try {
+      if (folder.favorite) {
+        await folderService.unmarkAsFavorite(folderId);
+      } else {
+        await folderService.markAsFavorite(folderId);
+      }
+
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === folderId ? { ...f, favorite: !f.favorite } : f
+        )
+      );
+
+      toast.success(`Folder ${folder.favorite ? 'removed from favorites' : 'added to favorites'}!`);
+    } catch (err) {
+      toast.error("Error while updating favorites!");
+      console.error(err);
+    }
+  };
+
+
+
+  // Set the current folder when a folder is selected
   const setFolderList = (folderList) => {
     setFolders(folderList);
   };
@@ -147,23 +159,20 @@ const toggleFavorite = (folderId) => {
     <FolderContext.Provider
       value={{
         folders,
-        favoriteFolders,
-        archivedFolders,
         loading,
         error,
         createFolder,
         setFolderList,
         fetchFolders,
-        updateFolder, 
+        updateFolder,
         deleteFolder,
         toggleFavorite,
-        archiveFolder,
         favoriteFolders,
         archiveFolder,
-         unarchiveFolder,
+        unarchiveFolder,
 
 
-        
+
       }}
     >
       {children}

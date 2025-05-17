@@ -25,7 +25,6 @@ const FolderList = () => {
 
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [favoriteFolders, setFavoriteFolders] = useState([]);
   const [folderToDelete, setFolderToDelete] = useState(null);
   const [folderToEdit, setFolderToEdit] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -34,26 +33,15 @@ const FolderList = () => {
 
   const navigate = useNavigate();
 
-  // Fetch clients for internal accountants
   useEffect(() => {
+    // Fetch clients for the internal accountant
     if (user?.id) fetchAccountantClients(user.id);
   }, [user, fetchAccountantClients]);
 
-  // Initial fetch of folders
   useEffect(() => {
+    // Fetch folders from API
     fetchFolders();
   }, []);
-
-  // Load favorites from localStorage
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem('favoriteFolders')) || [];
-    setFavoriteFolders(stored);
-  }, []);
-
-  // Update localStorage on change
-  useEffect(() => {
-    localStorage.setItem('favoriteFolders', JSON.stringify(favoriteFolders));
-  }, [favoriteFolders]);
 
   const handleSaveFolder = (createdFolder) => {
     setShowAddModal(false);
@@ -83,7 +71,7 @@ const FolderList = () => {
     setShowConfirmModal(false);
   };
 
-  const handleAction = (action, folderId) => {
+  const handleAction = async (action, folderId) => {
     const folder = folders.find((f) => f.id === folderId);
     if (!folder) return;
 
@@ -96,11 +84,8 @@ const FolderList = () => {
         setShowEditModal(true);
         break;
       case 'favorite':
-        toggleFavorite(folderId);
-        const updatedFavorites = favoriteFolders.some((f) => f.id === folderId)
-          ? favoriteFolders.filter((f) => f.id !== folderId)
-          : [...favoriteFolders, folder];
-        setFavoriteFolders(updatedFavorites);
+        await toggleFavorite(folderId);
+        await fetchFolders();
         break;
       case 'archive':
         archiveFolder(folderId);
@@ -115,23 +100,19 @@ const FolderList = () => {
     navigate(`/my-folders/${folderId}/invoices`);
   };
 
-const filteredFolders = folders.filter((folder) => {
-  const matchesSearch =
-    (folder.folderName && folder.folderName.toLowerCase().includes(searchQuery.toLowerCase())) ||
-    (folder.client?.name && folder.client.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredFolders = folders.filter((folder) => {
+    const matchesSearch =
+      (folder.folderName && folder.folderName.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (folder.client?.name && folder.client.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Exclure les dossiers archivés
-  const isArchived = folder.archived; // Assurez-vous que la propriété `archived` est bien dans votre modèle
-  return matchesSearch && !isArchived;
-});
-
+    return matchesSearch && !folder.archived;
+  });
 
   return (
     <Container fluid className="flex h-screen vh-100 p-0">
       <SidebarAccountant />
 
       <div className="flex flex-col flex-grow p-6 overflow-auto">
-        {/* Header */}
         <div className="flex justify-between items-center mb-10">
           <h2 className="text-2xl font-semibold">My Folders</h2>
           <div className="flex space-x-4">
@@ -154,58 +135,54 @@ const filteredFolders = folders.filter((folder) => {
           </div>
         </div>
 
-        {/* Folder Grid */}
         <Row className="g-4">
           {filteredFolders.length === 0 ? (
             <Col xs={12}>
               <p className="text-center text-muted">No folders found</p>
             </Col>
           ) : (
-            filteredFolders.map((folder) => {
-              const isFavorite = favoriteFolders.some((fav) => fav.id === folder.id);
-              return (
-                <Col xs={12} md={6} lg={4} key={folder.id}>
-                  <ContextMenu>
-                    <ContextMenuTrigger>
-                      <div
-                        className={`folder-item ${selectedFolder === folder.id ? 'selected' : ''}`}
-                        onClick={() => handleFolderClick(folder.id)}
+            filteredFolders.map((folder) => (
+              <Col xs={12} md={6} lg={4} key={folder.id}>
+                <ContextMenu>
+                  <ContextMenuTrigger>
+                    <div
+                      className={`folder-item ${selectedFolder === folder.id ? 'selected' : ''}`}
+                      onClick={() => handleFolderClick(folder.id)}
+                    >
+                      <Card
+                        className={`p-3 shadow-sm ${selectedFolder === folder.id ? 'border-secondary' : ''}`}
+                        style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
                       >
-                        <Card
-                          className={`p-3 shadow-sm ${selectedFolder === folder.id ? 'border-secondary' : ''}`}
-                          style={{ cursor: 'pointer', transition: 'all 0.3s ease' }}
-                        >
-                          <div className="d-flex align-items-center">
-                            <div className="folder-icon me-3">
-                              <FaFolder size={40} />
+                        <div className="d-flex align-items-center">
+                          <div className="folder-icon me-3">
+                            <FaFolder size={40} />
+                          </div>
+                          <div className="folder-details">
+                            <div className="folder-name fw-semibold flex items-center">
+                              {folder.folderName || 'Unnamed Folder'}
+                              {folder.favorite && <FaStar className="text-warning ms-2" />}
                             </div>
-                            <div className="folder-details">
-                              <div className="folder-name fw-semibold flex items-center">
-                                {folder.folderName || 'Unnamed Folder'}
-                                {isFavorite && <FaStar className="text-warning ms-2" />}
-                              </div>
-                              <div className="folder-client text-muted">
-                                {folder.client?.name || 'No Client'}
-                              </div>
-                              <div className="d-flex align-items-center text-muted small mt-2">
-                                <span className="me-4 d-flex align-items-center">
-                                  <FaRegCalendarAlt className="me-1" />
-                                  {formatDate(folder.createdAt)}
-                                </span>
-                                <span className="me-2">•</span>
-                                <span>Invoices: {folder.invoiceCount || 0}</span>
-                              </div>
+                            <div className="folder-client text-muted">
+                              {folder.client?.name || 'No Client'}
+                            </div>
+                            <div className="d-flex align-items-center text-muted small mt-2">
+                              <span className="me-4 d-flex align-items-center">
+                                <FaRegCalendarAlt className="me-1" />
+                                {formatDate(folder.createdAt)}
+                              </span>
+                              <span className="me-2">•</span>
+                              <span>Invoices: {folder.invoiceCount || 0}</span>
                             </div>
                           </div>
-                        </Card>
-                      </div>
-                    </ContextMenuTrigger>
+                        </div>
+                      </Card>
+                    </div>
+                  </ContextMenuTrigger>
 
-                    <FolderContextMenu folderId={folder.id} onAction={handleAction} />
-                  </ContextMenu>
-                </Col>
-              );
-            })
+                  <FolderContextMenu folderId={folder.id} onAction={handleAction} />
+                </ContextMenu>
+              </Col>
+            ))
           )}
         </Row>
       </div>
@@ -216,7 +193,7 @@ const filteredFolders = folders.filter((folder) => {
           show={showAddModal}
           onHide={() => setShowAddModal(false)}
           onSave={(folder) => console.log('New folder:', folder)}
-          clients={clients.map((c) => c.client)}
+          clients={clients}
         />
       ) : (
         <AddFolderForm

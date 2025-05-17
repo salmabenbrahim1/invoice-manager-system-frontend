@@ -83,23 +83,42 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
     }
 
     try {
-      const dataToSave = {
-        ...formData,
-        role: "INTERNAL_ACCOUNTANT",
-        phone: formData.phoneNumber,
-      };
+  const dataToSave = {
+    ...formData,
+    role: "INTERNAL_ACCOUNTANT",
+    phone: formData.phoneNumber,
+  };
 
-      
-      await saveUser(dataToSave, userToEdit?.id);
-      refreshUsers(); 
+  const createdUser = await saveUser(dataToSave, userToEdit?.id);
+  refreshUsers();
 
+  // 🔽 Sauvegarde email dans localStorage si nouveau
+  if (!userToEdit) {
+    const emailStatus = createdUser.emailSent ? 'sent' : 'failed';
 
-      toast.success(`Accountant ${userToEdit ? "updated" : "created"} successfully!`);
-      toast.info("email sent to accountant with login details");
-      onHide();
-    } catch (error) {
-      toast.error(error.message || "Failed to save accountant");
-    }
+const companyEmailHistory = JSON.parse(localStorage.getItem("companyEmailHistory")) || [];
+
+const storedUserEmail = localStorage.getItem("email");
+const newEntry = {
+  sender: storedUserEmail || "unknown",
+  email: createdUser.email || formData.email,
+  subject: createdUser.subject || "Internal Accountant Account Created",
+  body: createdUser.body || "An email with login credentials was sent.",
+  status: emailStatus,
+  date: new Date().toISOString(),
+  companyEmail: storedUserEmail || "unknown" 
+};
+localStorage.setItem('companyEmailHistory', JSON.stringify([newEntry, ...companyEmailHistory]));
+
+  }
+
+  toast.success(`Accountant ${userToEdit ? "updated" : "created"} successfully!`);
+  toast.info("email sent to accountant with login details");
+
+  onHide();
+} catch (error) {
+  toast.error(error.message || "Failed to save accountant");
+}
   };
 
   return (

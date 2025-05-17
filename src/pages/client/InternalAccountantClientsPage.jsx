@@ -38,17 +38,22 @@ const InternalAccountantClientsPage = () => {
     }
   }, [fetchAccountantClients, user]);
 
-
+//
 
   // Filter clients by search query
-  const filteredClients = clients.filter(({ client }) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      client.name?.toLowerCase().includes(query) ||
-      client.email?.toLowerCase().includes(query) ||
-      (client.phone && client.phone.replace(/\D/g, '').includes(searchQuery))
-    );
-  });
+ const filteredClients = (clients || []).filter((item) => {
+  if (!item?.client) return false;
+
+  const { name, email, phone } = item.client;
+  const query = searchQuery.toLowerCase();
+
+  return (
+    name?.toLowerCase().includes(query) ||
+    email?.toLowerCase().includes(query) ||
+    (phone && phone.replace(/\D/g, '').includes(searchQuery))
+  );
+});
+
 
 
   // Pagination calculations

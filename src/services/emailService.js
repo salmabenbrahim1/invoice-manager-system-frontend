@@ -8,18 +8,16 @@ export const getEmailLogs = () => {
     localStorage.setItem("emailHistory", JSON.stringify(updatedEmails));
     return updatedEmails;
   };
+ 
+
   export const getCompanyEmailLogs = () => {
-  const allEmails = getEmailLogs();
+  return JSON.parse(localStorage.getItem("companyEmailHistory")) || [];
+};
 
-  // Récupération de l'utilisateur connecté
-  const currentUser = JSON.parse(localStorage.getItem("user"));
-
-  if (!currentUser || !currentUser.email || currentUser.role !== "COMPANY") {
-    return [];
-  }
-
-  // Filtrage des emails envoyés par la company
-  const companyEmails = allEmails.filter(email => email.sender === currentUser.email);
-
-  return companyEmails;
+export const deleteCompanyEmail = (emailLogs, emailToDelete) => {
+  const updatedEmails = emailLogs.filter(
+    email => email.date !== emailToDelete.date 
+  );
+  localStorage.setItem("companyEmailHistory", JSON.stringify(updatedEmails));
+  return updatedEmails;
 };
