@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie } from 'react-icons/fa';
+import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie,FaEnvelope } from 'react-icons/fa';
 import '../../styles/sidebar.css';
 
 
@@ -34,6 +34,10 @@ const SidebarCompany = () => {
         <NavLink to="/manage-clients" className="sidebar-link">
           <FaUsers className="mr-3 text-lg" />
           <span className="text-md">My Clients</span>
+        </NavLink>
+        <NavLink to="/company/history" className="sidebar-link">
+          <FaEnvelope className="mr-3 text-lg" /> 
+          <span className="text-md">Email History</span>
         </NavLink>
         <hr />
 

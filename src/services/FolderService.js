@@ -74,6 +74,64 @@ export const folderService = {
       throw new Error(message);
     }
   },
+
+
+
+// Archive folder
+archiveFolder: async (folderId) => {
+  try {
+    const config = getAuthConfig();
+    const response = await axios.put(`${API_URL}/${folderId}/archive`, {}, config);
+    return response.data;
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      `Failed to archive folder with id ${folderId}`;
+    throw new Error(message);
+  }
+},
+
+// Unarchive folder
+unarchiveFolder: async (folderId) => {
+    try {
+      const config = getAuthConfig();
+      const response = await axios.put(`${API_URL}/${folderId}/unarchive`, {}, config);
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        `Failed to unarchive folder with id ${folderId}`;
+      throw new Error(message);
+    }
+  },
+
+
+  markAsFavorite: async (folderId) => {
+  try {
+    const config = getAuthConfig();
+    await axios.put(`${API_URL}/${folderId}/favorite`, {}, config);
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      'Failed to mark as favorite';
+    throw new Error(message);
+  }
+},
+
+unmarkAsFavorite: async (folderId) => {
+  try {
+    const config = getAuthConfig();
+    await axios.put(`${API_URL}/${folderId}/unfavorite`, {}, config);
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.error ||
+      'Failed to unmark as favorite';
+    throw new Error(message);
+  }
+},
+
 };
-
-
