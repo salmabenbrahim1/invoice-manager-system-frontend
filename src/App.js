@@ -38,6 +38,7 @@ import ViewAccountantFolder from './pages/company/ViewAccountantFoldersPage';
 import ViewInvoices from './pages/company/ViewInvoices';
 import CompanyHistoryPage from './pages/company/CompanyEmailHistoryPage';
 import ArchivedInvoiceList from './pages/invoice/ArchivedInvoiceList';
+import FavoriteInvoiceList from './pages/invoice/FavoriteInvoiceList';
 function App() {
   return (
     <div>
@@ -179,6 +180,15 @@ function App() {
                           </PrivateRoute>
                         }
                       />
+                            <Route
+                        path="/favorites/:folderId/invoices"
+                        element={
+                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                            <FavoriteInvoiceList/>
+                          </PrivateRoute>
+                        }
+                      />
+
                       <Route
                         path="/archive"
                         element={
