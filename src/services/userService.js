@@ -109,17 +109,27 @@ export const userService = {
   },
 
 
-  // Get current user's profile
-  getCurrentUserProfile: async () => {
-    try {
-      const config = getAuthConfig();
-      const response = await axios.get(`${API_URL}/me`, config);
+// Get current user's profile
+getCurrentProfile: async () => {
+  try {
+    const config = getAuthConfig();
+    const response = await axios.get(`${API_URL}/me`, config);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch profile');
+  }
+},
 
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to update profile');
-    }
-  },
+// Update current user's profile
+updateProfile: async (profileData) => {
+  try {
+    const config = getAuthConfig();
+    const response = await axios.put(`${API_URL}/profile`, profileData, config);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to update profile');
+  }
+},
 
   
 
