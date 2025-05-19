@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import LoadingSpinner from '../LoadingSpinner';
 
 const EditProfileModal = ({ show, onHide, onSave }) => {
-  const { currentUser, loading, error, updateProfile } = useUser();
+  const { profile, loading, error, updateProfile } = useUser();
   const [formData, setFormData] = useState({
     email: '',
     phone: '',
@@ -18,21 +18,21 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Populate form with currentUser data when it changes
+  // Remplit les champs avec les données du profil
   useEffect(() => {
-    if (currentUser) {
+    if (profile) {
       setFormData({
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        gender: currentUser.gender || '',
-        companyName: currentUser.companyName || '',
-        cin: currentUser.cin || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        firstName: profile.firstName || '',
+        lastName: profile.lastName || '',
+        gender: profile.gender || '',
+        companyName: profile.companyName || '',
+        cin: profile.cin || '',
         newPassword: ''
       });
     }
-  }, [currentUser, show]);
+  }, [profile, show]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,27 +40,23 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
   };
 
   const validateForm = () => {
-    // Common validations for all users
     if (!formData.email) {
       toast.warn('Email is required');
       return false;
     }
 
-    // Email format validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      toast.warn('Please enter a valid email address');
+      toast.warn('Invalid email format');
       return false;
     }
 
-    // Phone validation
     if (formData.phone && !/^\+?[\d\s-]{8,15}$/.test(formData.phone)) {
-      toast.warn('Please enter a valid phone number (8-15 digits)');
+      toast.warn('Phone number must be 8-15 digits');
       return false;
     }
 
-    // Role-specific validations
-    if (currentUser.role === 'COMPANY') {
+    if (profile.role === 'COMPANY') {
       if (!formData.companyName) {
         toast.warn('Company name is required');
         return false;
@@ -79,39 +75,40 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
 
     return true;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-  
+
     setIsSubmitting(true);
     try {
       const updateData = {
         email: formData.email,
         phone: formData.phone,
-        ...(currentUser.role === 'COMPANY'
+        role: profile.role, 
+        ...(profile.role === 'COMPANY'
           ? { companyName: formData.companyName }
           : {
-              firstName: formData.firstName,
-              lastName: formData.lastName,
-              gender: formData.gender,
-              cin: formData.cin
-            }),
-        newPassword: formData.newPassword // Facultatif
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            gender: formData.gender,
+            cin: formData.cin
+          }),
+        password: formData.newPassword && formData.newPassword.trim() !== '' ? formData.newPassword : undefined
       };
-  
-      console.log('Updating profile with data:', updateData);  // Ajoutez un log pour vérifier les données envoyées.
+
+
       await updateProfile(updateData);
       toast.success('Profile successfully updated');
       onSave();
       onHide();
     } catch (error) {
-      console.error('Error updating profile :', error);
-      toast.error("Error updating profile");
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update profile');
     } finally {
       setIsSubmitting(false);
     }
-};
-
+  };
 
   if (error) return (
     <div className="alert alert-danger">
@@ -119,7 +116,7 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
     </div>
   );
 
-  if (!currentUser) return null;
+  if (!profile) return <LoadingSpinner />;
 
   return (
     <Modal show={show} onHide={onHide} centered>
@@ -140,13 +137,13 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="phone">
-            <Form.Label>Phone Number</Form.Label>
+            <Form.Label>Phone</Form.Label>
             <Form.Control
               type="tel"
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              placeholder="+1234567890"
+              placeholder="+123456789"
             />
           </Form.Group>
 
@@ -160,12 +157,10 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
               placeholder="Leave blank to keep current password"
               minLength={8}
             />
-            <Form.Text className="text-muted">
-              Minimum 8 characters
-            </Form.Text>
+            <Form.Text className="text-muted">Min 8 characters</Form.Text>
           </Form.Group>
 
-          {currentUser.role === 'COMPANY' ? (
+          {profile.role === 'COMPANY' ? (
             <Form.Group className="mb-3" controlId="companyName">
               <Form.Label>Company Name *</Form.Label>
               <Form.Control
@@ -198,7 +193,7 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="cin">
-                <Form.Label>ID Number (CIN)</Form.Label>
+                <Form.Label>CIN</Form.Label>
                 <Form.Control
                   name="cin"
                   value={formData.cin}
@@ -208,18 +203,17 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group className="mb-3" controlId="gender">
-              <Form.Label>Gender</Form.Label>
-             <Form.Select
-             name="gender"
-                value={formData.gender}
-              onChange={handleChange}
-                  >
-                <option value="">Select...</option>
-                <option value="MALE">Male</option>
+                <Form.Label>Gender</Form.Label>
+                <Form.Select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                >
+                  <option value="">Select...</option>
+                  <option value="MALE">Male</option>
                   <option value="FEMALE">Female</option>
-                     </Form.Select>
-                  </Form.Group>
-
+                </Form.Select>
+              </Form.Group>
             </>
           )}
 
@@ -227,8 +221,8 @@ const EditProfileModal = ({ show, onHide, onSave }) => {
             <Button variant="secondary" onClick={onHide} className="me-2">
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
+            <Button
+              variant="primary"
               type="submit"
               disabled={isSubmitting}
             >
