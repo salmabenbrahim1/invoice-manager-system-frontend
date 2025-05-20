@@ -1,0 +1,254 @@
+
+.modern-profile-modal .modal-content {
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.modern-modal-header {
+  background-color: #75529e;
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem;
+}
+
+.modern-modal-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.modern-title-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+.modern-modal-body {
+  padding: 2rem;
+}
+
+.modern-form-container {
+  display: flex;
+  gap: 2rem;
+}
+
+.modern-image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 180px;
+}
+
+.modern-image-container {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.modern-profile-image {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border: 3px solid #f0f2f5;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.modern-profile-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.modern-remove-image-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ff4757;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modern-remove-image-btn:hover {
+  background: #ff6b81;
+  transform: scale(1.05);
+}
+
+.modern-image-placeholder {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #e0e0e0;
+}
+
+.modern-placeholder-icon {
+  font-size: 2.5rem;
+  color: #adb5bd;
+}
+
+.modern-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: white;
+  color: #75529e;
+  border-radius: 30px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid #75529e;
+  font-size: 0.9rem;
+}
+
+.modern-upload-btn:hover {
+  background: #75529e;
+  color: white;
+}
+
+.modern-file-input {
+  display: none;
+}
+
+.modern-fields-section {
+  flex: 1;
+}
+
+.modern-name-fields {
+  display: flex;
+  gap: 1rem;
+}
+
+.modern-floating-label {
+  position: relative;
+  margin-bottom: 1.2rem;
+}
+
+.modern-form-control {
+  padding-left: 2.5rem !important;
+  height: calc(3.2rem + 2px);
+  border-radius: 8px !important;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.modern-form-control:focus {
+  border-color: #75529e;
+  box-shadow: 0 0 0 0.2rem rgba(117, 82, 158, 0.25);
+}
+
+.modern-input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #75529e;
+  z-index: 5;
+}
+
+.modern-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #f0f2f5;
+}
+
+.modern-cancel-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  background: white;
+  color: #6c757d;
+  border: 1px solid #6c757d;
+}
+
+.modern-cancel-btn:hover {
+  background: #f8f9fa;
+}
+
+.modern-save-btn {
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  background: #75529e;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.modern-save-btn:hover {
+  background: #5d3f82;
+}
+
+.modern-save-btn:disabled {
+  background: #9e86c0;
+}
+
+.modern-alert-error {
+  padding: 1rem;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 8px;
+  border-left: 4px solid #c62828;
+}
+
+.modern-spinner-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .modern-form-container {
+    flex-direction: column;
+  }
+  
+  .modern-image-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .modern-name-fields {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+.modern-password-label {
+  margin-left: 1.8rem;
+  display: inline-block;
+}
+
+.modern-password-hint {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-left: 0.5rem;
+  font-weight: normal;
+}
+
+.modern-input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #75529e;
+  z-index: 5;
+}
+
+.modern-form-control {
+  padding-left: 2.8rem !important; 
+}

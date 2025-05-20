@@ -120,16 +120,25 @@ getCurrentProfile: async () => {
   }
 },
 
-// Update current user's profile
-updateProfile: async (profileData) => {
+updateProfile: async (formData) => {
   try {
-    const config = getAuthConfig();
-    const response = await axios.put(`${API_URL}/profile`, profileData, config);
+    const token = localStorage.getItem('authToken');
+    if (!token) throw new Error('No token found');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      }
+    };
+
+    const response = await axios.put(`${API_URL}/profile`, formData, config);
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to update profile');
   }
 },
+
 
   
 

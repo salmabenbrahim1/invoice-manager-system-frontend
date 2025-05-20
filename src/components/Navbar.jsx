@@ -2,15 +2,17 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useUser } from '../context/UserContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditProfileModal from './modals/EditProfileModal';
-import { useTranslation } from 'react-i18next'; // Importation du hook useTranslation
-import '../styles/navbar.css'; 
+import { useTranslation } from 'react-i18next';
+import '../styles/navbar.css';
 import invoiceLogo from '../assets/images/invox-logo.png';
 
 const Navbar = () => {
-  const { t, i18n } = useTranslation(); // Initialisation du hook useTranslation
+  const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+  const { profile } = useUser(); 
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -21,9 +23,8 @@ const Navbar = () => {
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen);
   const toggleMobileMenu = () => setMenuOpen(!menuOpen);
 
-  // Changer la langue via le select
   const handleLanguageChange = (language) => {
-    i18n.changeLanguage(language); // Changer la langue
+    i18n.changeLanguage(language);
   };
 
   useEffect(() => {
@@ -50,7 +51,7 @@ const Navbar = () => {
 
         <button className="d-md-none btn" onClick={toggleMobileMenu}>
           {menuOpen ? <FaTimes /> : <FaBars />}
-        </button> 
+        </button>
 
         <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex'} nav-links-container`}>
           <Link to="/home" className="nav-link">{t('home')}</Link>
@@ -62,7 +63,26 @@ const Navbar = () => {
           {user ? (
             <div className="user-profile">
               <div className="user-icon-wrapper" onClick={toggleUserMenu} ref={userIconRef}>
-                <UserIcon className="user-icon" />
+                {profile?.profileImageUrl ? (
+                  <img
+                    src={profile.profileImageUrl}
+                    alt="User profile"
+                    className="user-profile-image"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = '';
+                    }}
+                    style={{
+                      width: 46,
+                      height: 46,
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                      border: '2px solid #fff',
+                    }}
+                  />
+                ) : (
+                  <UserIcon className="user-icon" />
+                )}
               </div>
 
               <AnimatePresence>
@@ -87,9 +107,10 @@ const Navbar = () => {
                           setShowModal(true);
                         }}
                       >
-                        Edit Profile
+                        {t('editProfile') || 'Edit Profile'}
                       </div>
                     )}
+
                     <div
                       className="menu-item logout"
                       onClick={() => {
@@ -97,7 +118,7 @@ const Navbar = () => {
                         setUserMenuOpen(false);
                       }}
                     >
-                      Logout
+                      {t('logout') || 'Logout'}
                     </div>
                   </motion.div>
                 )}
@@ -110,7 +131,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Sélecteur de langue */}
         <div className="language-selector">
           <select onChange={(e) => handleLanguageChange(e.target.value)} defaultValue="en">
             <option value="en">English</option>
@@ -122,10 +142,7 @@ const Navbar = () => {
       <EditProfileModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        onSave={(updatedUser) => {
-          console.log(updatedUser);
-          setShowModal(false);
-        }}
+        onSave={() => setShowModal(false)} 
       />
     </nav>
   );
