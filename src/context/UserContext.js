@@ -11,6 +11,8 @@ export const UserProvider = ({ children }) => {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [profile, setProfile] = useState(null);
+
 
   const { user: currentUser } = useAuth();
 
@@ -152,6 +154,35 @@ export const UserProvider = ({ children }) => {
       setLoading(false);
     }
   };
+const loadProfile = async () => {
+  try {
+    setLoading(true);
+    const data = await userService.getCurrentProfile();
+    setProfile(data);
+    setError(null);
+  } catch (err) {
+    console.error("Failed to load profile", err);
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
+const updateProfile = async (profileData) => {
+  try {
+    const updated = await userService.updateProfile(profileData);
+    setProfile(updated); 
+    return updated;
+  } catch (err) {
+    console.error("Update profile error:", err);
+    throw err;
+  }
+};
+useEffect(() => {
+  if (currentUser) {
+    loadProfile();
+  }
+}, [currentUser]);
+
 
   // Fetch users and stats when the component mounts or when currentUser changes
   useEffect(() => {
@@ -174,6 +205,9 @@ export const UserProvider = ({ children }) => {
       refreshUsers: fetchUsers,
       refreshStats: fetchStats,
       checkEmailExists,
+      profile,
+      loadProfile,         
+    updateProfile,
 
       getInternalAccountants
       
