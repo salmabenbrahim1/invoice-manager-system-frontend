@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { FaUserPlus, FaEdit, FaUser, FaBuilding, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
 import UserModal from "../../components/modals/UserModal";

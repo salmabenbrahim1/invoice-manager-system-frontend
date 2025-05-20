@@ -39,15 +39,21 @@ import ViewInvoices from './pages/company/ViewInvoices';
 import CompanyHistoryPage from './pages/company/CompanyEmailHistoryPage';
 import ArchivedInvoiceList from './pages/invoice/ArchivedInvoiceList';
 import FavoriteInvoiceList from './pages/invoice/FavoriteInvoiceList';
+import { EngineProvider } from './context/EngineContext';
+import EngineSelector from './pages/admin/EngineSelector';
+
+
 function App() {
   return (
     <div>
       <ForgotPasswordProvider>
         <AuthProvider>
+           <EngineProvider>
           <UserProvider>
             <ClientProvider>
               <FolderProvider>
                 <InvoiceProvider>
+                  
                   <ToastContainer />
                   <Navbar />
                   <div className="main-content">
@@ -64,6 +70,9 @@ function App() {
                       <Route path="/admin/dashboard" element={<AdminDashboard />} />
                       <Route path="/users" element={<UsersPage />} />
                       <Route path="/admin/email-history" element={<EmailHistoryPage />} />
+                       <Route path="/admin/ai-model" element={<EngineSelector />} />
+
+
 
 
                       {/* Company Routes */}
@@ -198,10 +207,12 @@ function App() {
                       />
                     </Routes>
                   </div>
+                  
                 </InvoiceProvider>
               </FolderProvider>
             </ClientProvider>
           </UserProvider>
+          </EngineProvider>
         </AuthProvider>
       </ForgotPasswordProvider>
     </div>

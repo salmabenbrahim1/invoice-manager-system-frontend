@@ -5,6 +5,7 @@ import invoiceService from '../../services/InvoiceService';
 import ZoomableImage from '../ZoomableImage';
 import { toast } from 'react-toastify';
 import { useInvoice } from '../../context/InvoiceContext';
+import { useRef } from 'react';
 
 const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [extractedData, setExtractedData] = useState(null);
@@ -76,9 +77,15 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
     }
   };
 
+  const didFetch = useRef(false);
+
+  //
   useEffect(() => {
+    if (didFetch.current) return; 
+    didFetch.current = true;
     fetchData();
   }, [invoice]);
+
 
   const handleEditClick = () => setIsEditing(true);
 

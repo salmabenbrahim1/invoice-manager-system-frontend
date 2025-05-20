@@ -101,56 +101,91 @@ const invoiceService = {
 
 };
 
-const API_AI_URL= 'http://localhost:5000/extract';
-export const extractInvoiceData = async (imagePath) => {
+
+
+export const extractInvoiceData = async (imagePath, selectedEngine) => {
   try {
-    const response = await axios.post(API_AI_URL, {
+    const response = await axios.post('http://localhost:5000/extract', {
       imageUrl: `http://localhost:9090${imagePath}`,
+      engine: selectedEngine,
     });
 
     const extracted = response.data || {};
+    if (!extracted) {
+      throw new Error('No data returned from extraction');
+    }
 
-    // We deconstruct the 4 internal objects
-    const {
-      invoiceMetadata = {},
-      sellerInformation = {},
-      customerInformation = {},
-      amounts = {},
-    } = extracted;
+    //  (DeepSeek)
+    const isFlatStructure = extracted.hasOwnProperty('invoiceNumber');
 
-    // Reconstruct a single flat object from sub-objects
-    const structuredData = {
-      sellerSiretNumber: sellerInformation.sellerSiretNumber || 'null',
-      sellerName: sellerInformation.sellerName || 'null',
-      sellerAddress: sellerInformation.sellerAddress || 'null',
-      sellerPhone: sellerInformation.sellerPhone || 'null',
+    let structuredData;
 
-      customerName: customerInformation.customerName || 'null',
-      customerAddress: customerInformation.customerAddress || 'null',
-      customerPhone: customerInformation.customerPhone || 'null',
+    if (isFlatStructure) {
+      structuredData = {
+        sellerSiretNumber: extracted.sellerSiretNumber || 'null',
+        sellerName: extracted.sellerName || 'null',
+        sellerAddress: extracted.sellerAddress || 'null',
+        sellerPhone: extracted.sellerPhone || 'null',
 
-      invoiceNumber: invoiceMetadata.invoiceNumber || 'null',
-      invoiceDate: invoiceMetadata.invoiceDate || 'null',
-      dueDate: invoiceMetadata.dueDate || 'null',
-      currency: invoiceMetadata.currency || 'null',
+        customerName: extracted.customerName || 'null',
+        customerAddress: extracted.customerAddress || 'null',
+        customerPhone: extracted.customerPhone || 'null',
 
-      tva: amounts.tva || 'null',
-      tvaNumber: amounts.tvaNumber || 'null',
-      tvaRate: amounts.tvaRate || 'null',
-      ht: amounts.ht || 'null',
-      ttc: amounts.ttc || 'null',
-      discount: amounts.discount || 'null',
-    };
+        invoiceNumber: extracted.invoiceNumber || 'null',
+        invoiceDate: extracted.invoiceDate || 'null',
+        dueDate: extracted.dueDate || 'null',
+        currency: extracted.currency || 'null',
+
+        tva: extracted.tva || 'null',
+        tvaNumber: extracted.tvaNumber || 'null',
+        tvaRate: extracted.tvaRate || 'null',
+        ht: extracted.ht || 'null',
+        ttc: extracted.ttc || 'null',
+        discount: extracted.discount || 'null',
+      };
+    } else {
+      // (Gemini)
+      const {
+        invoiceMetadata = {},
+        sellerInformation = {},
+        customerInformation = {},
+        amounts = {},
+      } = extracted;
+
+      structuredData = {
+        sellerSiretNumber: sellerInformation.sellerSiretNumber || 'null',
+        sellerName: sellerInformation.sellerName || 'null',
+        sellerAddress: sellerInformation.sellerAddress || 'null',
+        sellerPhone: sellerInformation.sellerPhone || 'null',
+
+        customerName: customerInformation.customerName || 'null',
+        customerAddress: customerInformation.customerAddress || 'null',
+        customerPhone: customerInformation.customerPhone || 'null',
+
+        invoiceNumber: invoiceMetadata.invoiceNumber || 'null',
+        invoiceDate: invoiceMetadata.invoiceDate || 'null',
+        dueDate: invoiceMetadata.dueDate || 'null',
+        currency: invoiceMetadata.currency || 'null',
+
+        tva: amounts.tva || 'null',
+        tvaNumber: amounts.tvaNumber || 'null',
+        tvaRate: amounts.tvaRate || 'null',
+        ht: amounts.ht || 'null',
+        ttc: amounts.ttc || 'null',
+        discount: amounts.discount || 'null',
+      };
+    }
 
     const isEmpty = Object.values(structuredData).every(val => val === 'null');
     if (isEmpty) throw new Error('No usable data returned from extraction');
 
     return structuredData;
   } catch (error) {
-    console.error("Error in extractInvoiceData:", error);
+    console.error(" Error in extractInvoiceData:", error);
     throw error;
   }
 };
+
 
 
 

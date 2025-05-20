@@ -1,5 +1,5 @@
 import AdminLayout from '../../components/admin/AdminLayout';
-import React, { useEffect, useRef } from "react";
+import { useRef } from "react";
 import {
   FaBuilding,
   FaUserTie,
