@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { validatePhoneNumber, validateCIN } from "../../utils/validation";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 
 
 

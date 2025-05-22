@@ -5,9 +5,9 @@ import { FaFolder, FaStar, FaSearch, FaRegCalendarAlt } from 'react-icons/fa';
 import { ContextMenu, ContextMenuTrigger } from '@radix-ui/react-context-menu';
 import { toast } from 'react-toastify';
 
-import { useFolder } from '../../context/FolderContext';
-import { useClient } from '../../context/ClientContext';
-import { useAuth } from '../../context/AuthContext';
+import { useFolder } from '../../contexts/FolderContext';
+import { useClient } from '../../contexts/ClientContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import AddFolderForm from '../../components/folder/AddFolderForm';

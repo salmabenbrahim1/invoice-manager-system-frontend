@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import imagesWebsite from '../assets/images/imagesWebsite.png';
 import InfoModal from '../components/modals/InfoModal';
-import { useForgotPassword } from '../context/ForgotPasswordContext';
+import { useForgotPassword } from '../contexts/ForgotPasswordContext';
 
 const ForgotPassword = () => {
   const navigate = useNavigate();

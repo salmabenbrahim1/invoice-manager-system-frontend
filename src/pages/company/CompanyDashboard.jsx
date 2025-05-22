@@ -9,7 +9,7 @@ import {
   FaExclamationTriangle,
   FaDownload
 } from "react-icons/fa";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import {
   LineChart,

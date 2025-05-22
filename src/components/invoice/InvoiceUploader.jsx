@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaFileUpload, FaTimes } from 'react-icons/fa';
-import { useInvoice } from '../../context/InvoiceContext';
+import { useInvoice } from '../../contexts/InvoiceContext';
 import { useParams } from 'react-router-dom';
 
 const InvoiceUploader = ({ onClose }) => {

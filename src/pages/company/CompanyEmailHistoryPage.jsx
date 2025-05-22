@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CompanyLayout from "../../components/company/CompanyLayout";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 import { getCompanyEmailLogs, deleteCompanyEmail } from "../../services/emailService";
 import { FaTrash, FaSearch, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import ConfirmModal from "../../components/modals/ConfirmModal";

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 import { FaUser, FaStar, FaFolder, FaSignOutAlt, FaUserTie, FaChartBar } from 'react-icons/fa';
 import { GoArchive } from 'react-icons/go';

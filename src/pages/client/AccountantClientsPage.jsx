@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import AddClientForm from '../../components/client/AddClientForm';
 import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch, FaSync } from 'react-icons/fa';
-import { useClient } from '../../context/ClientContext';
-import { useAuth } from '../../context/AuthContext'; // Import useAuth
+import { useClient } from '../../contexts/ClientContext';
+import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
 import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/modals/ConfirmModal';

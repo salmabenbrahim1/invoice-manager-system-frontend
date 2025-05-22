@@ -23,7 +23,7 @@ import {
   CartesianGrid
 } from "recharts";
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../contexts/UserContext';
 import { exportDashboardAsPDF } from "../../utils/pdfUtils";
 
 const AdminDashboard = () => {

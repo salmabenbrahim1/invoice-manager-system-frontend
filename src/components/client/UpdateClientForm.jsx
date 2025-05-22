@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { useClient } from '../../context/ClientContext';
+import { useClient } from '../../contexts/ClientContext';
 
 const UpdateClientForm = ({ show, onHide, clientData }) => {
   const { updateClient } = useClient(); 

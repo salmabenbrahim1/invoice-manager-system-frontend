@@ -3,12 +3,12 @@ import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 // Context Providers
-import { AuthProvider } from './context/AuthContext';
-import { UserProvider } from './context/UserContext';
-import { ClientProvider } from './context/ClientContext';
-import { FolderProvider } from './context/FolderContext';
-import { InvoiceProvider } from './context/InvoiceContext';
-import { ForgotPasswordProvider } from './context/ForgotPasswordContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { UserProvider } from './contexts/UserContext';
+import { ClientProvider } from './contexts/ClientContext';
+import { FolderProvider } from './contexts/FolderContext';
+import { InvoiceProvider } from './contexts/InvoiceContext';
+import { ForgotPasswordProvider } from './contexts/ForgotPasswordContext';
 
 
 // Components
@@ -39,7 +39,7 @@ import ViewInvoices from './pages/company/ViewInvoices';
 import CompanyHistoryPage from './pages/company/CompanyEmailHistoryPage';
 import ArchivedInvoiceList from './pages/invoice/ArchivedInvoiceList';
 import FavoriteInvoiceList from './pages/invoice/FavoriteInvoiceList';
-import { EngineProvider } from './context/EngineContext';
+import { EngineProvider } from './contexts/EngineContext';
 import EngineSelector from './pages/admin/EngineSelector';
 
 

@@ -4,7 +4,7 @@ import { extractInvoiceData } from '../../services/InvoiceService';
 import invoiceService from '../../services/InvoiceService';
 import ZoomableImage from '../ZoomableImage';
 import { toast } from 'react-toastify';
-import { useInvoice } from '../../context/InvoiceContext';
+import { useInvoice } from '../../contexts/InvoiceContext';
 import { useRef } from 'react';
 
 const InvoiceScanEditor = ({ invoice, onClose }) => {

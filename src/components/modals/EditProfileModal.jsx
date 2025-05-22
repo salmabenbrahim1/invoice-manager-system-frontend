@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, FloatingLabel, Spinner, Image } from 'react-bootstrap';
-import { useUser } from '../../context/UserContext';
+import { useUser } from '../../contexts/UserContext';
 import { toast } from 'react-toastify';
 import { FiUser, FiCamera, FiX, FiEdit2, FiPhone, FiMail, FiLock, FiBriefcase } from 'react-icons/fi';
 import '../../styles/EditProfileModal.css';

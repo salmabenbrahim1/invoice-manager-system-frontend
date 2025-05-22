@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { useFolder } from '../../context/FolderContext';
+import { useFolder } from '../../contexts/FolderContext';
 
 const InternalAddFolderForm = ({ show, onHide, onSave, clients }) => {
   const { createFolder } = useFolder();

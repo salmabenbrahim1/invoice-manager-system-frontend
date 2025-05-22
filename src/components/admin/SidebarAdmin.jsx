@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { FaUsers, FaChartBar, FaSignOutAlt, FaUserShield,  FaEnvelope,FaRobot } from 'react-icons/fa';
 import '../../styles/sidebar.css';
 
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const SidebarAdmin = () => {
   const { logout } = useAuth();

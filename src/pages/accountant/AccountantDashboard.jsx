@@ -9,7 +9,7 @@ import {
   FaChartLine,
   FaCalendar, FaCalendarAlt
 } from "react-icons/fa";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 import AccountantLayout from "../../components/accountant/AccountantLayout";
 import {
   LineChart,

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useUser } from '../context/UserContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useUser } from '../contexts/UserContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import EditProfileModal from './modals/EditProfileModal';
 import { useTranslation } from 'react-i18next';

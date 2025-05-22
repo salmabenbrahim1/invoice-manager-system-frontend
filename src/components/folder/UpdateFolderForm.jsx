@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { useFolder } from '../../context/FolderContext';
+import { useFolder } from '../../contexts/FolderContext';
 
 const UpdateFolderForm = ({ show, onHide, folderData }) => {
   const { updateFolder } = useFolder(); 

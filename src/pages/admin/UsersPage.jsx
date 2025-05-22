@@ -3,7 +3,7 @@ import AdminLayout from "../../components/admin/AdminLayout";
 import { FaUserPlus, FaEdit, FaUser, FaBuilding, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
 import UserModal from "../../components/modals/UserModal";
 import Pagination from "../../components/Pagination";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 import ConfirmModal from "../../components/modals/ConfirmModal";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { toast } from "react-toastify";

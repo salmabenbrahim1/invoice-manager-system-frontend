@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import AdminLayout from '../../components/admin/AdminLayout';
 import deepseekLogo from '../../assets/images/deepseek-logo.png';
 import geminiLogo from '../../assets/images/gemini-logo.png';
-import { useEngine } from '../../context/EngineContext';
+import { useEngine } from '../../contexts/EngineContext';
 
 const EngineSelector = () => {
   const { selectedEngine, setSelectedEngine, loading } = useEngine();

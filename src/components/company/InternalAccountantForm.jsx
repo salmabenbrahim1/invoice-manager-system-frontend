@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { Modal, Form, Button } from "react-bootstrap";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 import { validateEmail, validatePhoneNumber, validateCIN, areRequiredFieldsFilled } from "../../utils/validation";
 
 const InternalAccountantForm = ({ show, onHide, userToEdit }) => {

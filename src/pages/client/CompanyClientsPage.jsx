@@ -5,8 +5,8 @@ import AddClientForm from "../../components/client/AddClientForm";
 import UpdateClientForm from "../../components/client/UpdateClientForm";
 import Pagination from '../../components/Pagination';
 import ConfirmModal from "../../components/modals/ConfirmModal";
-import { useClient } from "../../context/ClientContext";
-import { useUser } from '../../context/UserContext';
+import { useClient } from "../../contexts/ClientContext";
+import { useUser } from '../../contexts/UserContext';
 import { toast } from "react-toastify";
 import CompanyLayout from "../../components/company/CompanyLayout";
 

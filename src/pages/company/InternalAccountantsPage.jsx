@@ -4,7 +4,7 @@ import InternalAccountantForm from "../../components/company/InternalAccountantF
 import Pagination from "../../components/Pagination";
 import ConfirmModal from "../../components/modals/ConfirmModal";
 import CompanyLayout from "../../components/company/CompanyLayout";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../contexts/UserContext";
 
 import { toast } from "react-toastify";
 import LoadingSpinner from "../../components/LoadingSpinner";

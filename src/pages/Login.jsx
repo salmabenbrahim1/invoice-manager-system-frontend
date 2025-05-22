@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import imagesWebsite from '../assets/images/imagesWebsite.png';
 
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import InfoModal from '../components/modals/InfoModal';
 
 const Login = () => {
