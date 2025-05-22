@@ -169,14 +169,17 @@ const loadProfile = async () => {
 };
 const updateProfile = async (profileData) => {
   try {
-    const updated = await userService.updateProfile(profileData);
-    setProfile(updated); 
-    return updated;
+    await userService.updateProfile(profileData);
+    const freshProfile = await userService.getCurrentProfile(); 
+    setProfile(freshProfile);
+    return freshProfile;
   } catch (err) {
     console.error("Update profile error:", err);
     throw err;
   }
 };
+
+
 useEffect(() => {
   if (currentUser) {
     loadProfile();
