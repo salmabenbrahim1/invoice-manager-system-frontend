@@ -154,6 +154,19 @@ export const FolderProvider = ({ children }) => {
   const setFolderList = (folderList) => {
     setFolders(folderList);
   };
+  const fetchFoldersByAccountant = async (accountantId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await folderService.getFoldersByAccountant(accountantId);
+      setFolders(data);
+    } catch (err) {
+      setError(err.message);
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <FolderContext.Provider
@@ -170,6 +183,7 @@ export const FolderProvider = ({ children }) => {
         favoriteFolders,
         archiveFolder,
         unarchiveFolder,
+        fetchFoldersByAccountant,
 
 
 

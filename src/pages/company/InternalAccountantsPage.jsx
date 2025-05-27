@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch, FaEye, FaUser } from "react-icons/fa"; // Ajout de FaUser
+import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch, FaUser } from "react-icons/fa"; 
 import InternalAccountantForm from "../../components/company/InternalAccountantForm";
 import Pagination from "../../components/Pagination";
 import ConfirmModal from "../../components/modals/ConfirmModal";
@@ -112,12 +112,6 @@ const InternalAccountantsPage = () => {
     setSelectedUser(user);
     setIsModalOpen(true);
   };
-
- const handleViewClick = (user) => {
-navigate(`/view-accountant-folder/${user.id}`, {
-  state: { accountantName: `${user.firstName} ${user.lastName}` }
-});
-};
 
 
   return (
@@ -236,13 +230,6 @@ navigate(`/view-accountant-folder/${user.id}`, {
                             title={user.active ? "Deactivate" : "Activate"}
                           >
                             {user.active ? <FaToggleOn /> : <FaToggleOff />}
-                          </button>
-                          <button
-                            onClick={() => handleViewClick(user)}
-                            className="text-blue-600 hover:text-blue-900"
-                            title="View Folders"
-                          >
-                            <FaEye className="text-lg" />
                           </button>
                         </div>
                       </td>
