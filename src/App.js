@@ -41,7 +41,7 @@ import ArchivedInvoiceList from './pages/invoice/ArchivedInvoiceList';
 import FavoriteInvoiceList from './pages/invoice/FavoriteInvoiceList';
 import { EngineProvider } from './contexts/EngineContext';
 import EngineSelector from './pages/admin/EngineSelector';
-
+import MyAccountantsOversight from './pages/company/MyAccountantsOversight';
 
 function App() {
   return (
@@ -121,7 +121,17 @@ function App() {
                           </PrivateRoute>
                         }
                       />
-
+                        <Route
+                        path="/my-accountants-oversight"
+                        element={
+                          <PrivateRoute allowedRoles={['COMPANY']}>
+                           <MyAccountantsOversight />
+                           </PrivateRoute>
+                        }
+                      />
+                      
+                    
+                    
                       {/* Independent/Internal Accountant Routes */}
                       <Route
                         path="/accountant/dashboard"

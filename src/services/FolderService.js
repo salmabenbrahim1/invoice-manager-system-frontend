@@ -133,5 +133,17 @@ unmarkAsFavorite: async (folderId) => {
     throw new Error(message);
   }
 },
+ // Get folders by internal accountant ID
+  getFoldersByAccountant: async (accountantId) => {
+    try {
+      const config = getAuthConfig();
+      const response = await axios.get(`${API_URL}/by-internal-accountant/${accountantId}`, config);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Failed to fetch folders';
+      throw new Error(message);
+    }
+  },
+
 
 };

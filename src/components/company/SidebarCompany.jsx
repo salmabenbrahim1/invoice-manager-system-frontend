@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie,FaEnvelope } from 'react-icons/fa';
+import { FaBuilding, FaUsers, FaChartBar, FaSignOutAlt, FaUserTie, FaEnvelope,FaFolder  } from 'react-icons/fa';
 import '../../styles/sidebar.css';
 
 
 const SidebarCompany = () => {
-    const { logout } = useAuth(); 
-  
+  const { logout } = useAuth();
+
   return (
     <div className="sidebar-container">
       <hr className="sidebar-divider" />
@@ -36,16 +36,21 @@ const SidebarCompany = () => {
           <span className="text-md">My Clients</span>
         </NavLink>
         <NavLink to="/company/history" className="sidebar-link">
-          <FaEnvelope className="mr-3 text-lg" /> 
+          <FaEnvelope className="mr-3 text-lg" />
           <span className="text-md">Email History</span>
         </NavLink>
+        <NavLink to="/my-accountants-oversight" className="sidebar-link">
+          <FaFolder className="mr-3 text-lg" />
+          <span className="text-md">My accountants Oversight</span>
+        </NavLink>
+
         <hr />
 
-          {/* Logout Button */}
-                <button onClick={logout} className="sidebar-link">
-                  <FaSignOutAlt className="mr-3 text-lg" />
-                  <span className="text-md">Logout</span>
-                </button>
+        {/* Logout Button */}
+        <button onClick={logout} className="sidebar-link">
+          <FaSignOutAlt className="mr-3 text-lg" />
+          <span className="text-md">Logout</span>
+        </button>
       </nav>
 
 
