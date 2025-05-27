@@ -6,12 +6,36 @@ import geminiLogo from '../../assets/images/gemini-logo.png';
 import { useEngine } from '../../contexts/EngineContext';
 
 const EngineSelector = () => {
-  const { selectedEngine, setSelectedEngine, loading } = useEngine();
+  const { selectedEngine, setSelectedEngine, loading, saveEngine, engineConfig, setEngineConfig } = useEngine();
   const [error, setError] = useState(null);
 
+  // Local state pour formulaire de config
+  const [config, setConfig] = useState({
+    geminiApiKey: '',
+    geminiModelVersion: '',
+    deepseekApiKey: '',
+    deepseekEndpoint: '',
+  });
+
+  // Sync avec engineConfig du contexte au chargement / changement
+  useEffect(() => {
+    if (engineConfig) {
+      setConfig(engineConfig);
+    }
+  }, [engineConfig]);
+
+  // Gestion des inputs
+  const handleChange = (e) => {
+    setConfig((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  // Save with config
   const handleSave = async () => {
     try {
-      // await saveEngineSetting({ engine });
+      await saveEngine(selectedEngine, config);
       toast.success('AI engine updated successfully!', {
         position: "top-center",
         autoClose: 3000,
@@ -26,11 +50,73 @@ const EngineSelector = () => {
     }
   };
 
+  // Formulaire selon moteur sélectionné
+  const renderConfigForm = () => {
+    if (selectedEngine === 'gemini') {
+      return (
+        <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">Gemini Configuration</h3>
+          <label className="block mb-3">
+            API Key:
+            <input
+              type="text"
+              name="geminiApiKey"
+              value={config.geminiApiKey}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder="Enter Gemini API Key"
+            />
+          </label>
+          <label className="block mb-3">
+            Model Version:
+            <input
+              type="text"
+              name="geminiModelVersion"
+              value={config.geminiModelVersion}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder="Enter Model Version"
+            />
+          </label>
+        </div>
+      );
+    } else if (selectedEngine === 'deepseek') {
+      return (
+        <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">DeepSeek Configuration</h3>
+          <label className="block mb-3">
+            API Key:
+            <input
+              type="text"
+              name="deepseekApiKey"
+              value={config.deepseekApiKey}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder="Enter DeepSeek API Key"
+            />
+          </label>
+          <label className="block mb-3">
+            Endpoint URL:
+            <input
+              type="text"
+              name="deepseekEndpoint"
+              value={config.deepseekEndpoint}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder="Enter DeepSeek Endpoint URL"
+            />
+          </label>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <AdminLayout>
       <div className="p-8 max-w-3xl mx-auto min-h-screen" style={{ backgroundColor: '#f5f0ff' }}>
         <h2 className="text-3xl font-bold mb-8 text-purple-900">Select AI Extraction Engine</h2>
-        
+
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -71,11 +157,7 @@ const EngineSelector = () => {
                 style={{ width: '180px' }}
               >
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex items-center justify-center bg-white p-2">
-                  <img
-                    src={geminiLogo}
-                    alt="Gemini"
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={geminiLogo} alt="Gemini" className="w-full h-full object-contain" />
                 </div>
                 <span className="font-semibold text-lg text-gray-800">Gemini</span>
                 {selectedEngine === 'gemini' && (
@@ -96,11 +178,7 @@ const EngineSelector = () => {
                 style={{ width: '180px' }}
               >
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex items-center justify-center bg-white p-2">
-                  <img
-                    src={deepseekLogo}
-                    alt="DeepSeek"
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={deepseekLogo} alt="DeepSeek" className="w-full h-full object-contain" />
                 </div>
                 <span className="font-semibold text-lg text-gray-800">DeepSeek</span>
                 {selectedEngine === 'deepseek' && (
@@ -110,6 +188,9 @@ const EngineSelector = () => {
                 )}
               </div>
             </div>
+
+            {/* Formulaire config */}
+            {renderConfigForm()}
 
             <div className="flex justify-center">
               <button

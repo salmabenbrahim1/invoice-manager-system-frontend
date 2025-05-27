@@ -49,7 +49,7 @@ const FolderContextMenu = ({ folderId, onAction }) => {
       </ContextMenuItem>
       <ContextMenuSeparator className="context-menu-separator" />
       <ContextMenuItem 
-        className="react-contextmenu-item danger-item"
+        className="react-contextmenu-delete-item danger-item"
         onSelect={() => onAction('delete', folderId)}
       >
         <FaTrash className="menu-icon" /> Delete

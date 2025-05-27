@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Card, Row, Col } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useClient } from '../../contexts/ClientContext';
 import { useFolder } from '../../contexts/FolderContext'; 
+import '../../styles/clients.css';
 
 const AddFolderForm = ({ show, onHide, onSave }) => {
   const { clients, addClient } = useClient();
@@ -108,96 +109,116 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
       <Modal.Body>
         {step === 1 && (
           <>
-            <h5>1. Choose Client</h5>
-            <Form>
-              <Form.Group className="mb-3">
-                <Form.Check
-                  type="radio"
-                  label="Existing Client"
-                  name="clientType"
-                  id="clientTypeExisting"
-                  checked={clientType === 'existing'}
-                  onChange={() => setClientType('existing')}
-                />
-                {clientType === 'existing' && (
-                  <Form.Control
-                    as="select"
-                    id="existingClientSelect"
-                    name="existingClientSelect"
-                    value={selectedClientId}
-                    onChange={(e) => setSelectedClientId(e.target.value)}
-                  >
-                    <option value="">Select a client</option>
-                    {clients.map((client) => (
-                      <option key={client.id} value={client.id}>
-                        {client.name}
-                      </option>
-                    ))}
-                  </Form.Control>
-                )}
-              </Form.Group>
+            <h5 className="mb-4">1. Choose Client</h5>
+            <Row className="mb-4">
+              <Col md={6}>
+                <Card 
+                  className={`client-selection-card ${clientType === 'existing' ? 'active' : ''}`}
+                  onClick={() => setClientType('existing')}
+                >
+                  <Card.Body className="text-center">
+                    <div className="mb-3">
+                      <i className="bi bi-people-fill" style={{ fontSize: '2rem', color: clientType === 'existing' ? '#0d6efd' : '#6c757d' }}></i>
+                    </div>
+                    <Card.Title>Existing Client</Card.Title>
+                    <Card.Text className="text-muted">
+                      Select from your existing clients list
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={6}>
+                <Card 
+                  className={`client-selection-card ${clientType === 'new' ? 'active' : ''}`}
+                  onClick={() => setClientType('new')}
+                >
+                  <Card.Body className="text-center">
+                    <div className="mb-3">
+                      <i className="bi bi-person-plus-fill" style={{ fontSize: '2rem', color: clientType === 'new' ? '#0d6efd' : '#6c757d' }}></i>
+                    </div>
+                    <Card.Title>New Client</Card.Title>
+                    <Card.Text className="text-muted">
+                      Add a new client to your system
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
+              </Col>
+            </Row>
 
-              <Form.Group className="mb-3">
-                <Form.Check
-                  type="radio"
-                  label="New Client"
-                  name="clientType"
-                  id="clientTypeNew"
-                  checked={clientType === 'new'}
-                  onChange={() => setClientType('new')}
-                />
-                {clientType === 'new' && (
-                  <>
+            {clientType === 'existing' && (
+              <div className="mt-4">
+                <h6 className="mb-3">Select Client</h6>
+                <Form.Select
+                  size="lg"
+                  value={selectedClientId}
+                  onChange={(e) => setSelectedClientId(e.target.value)}
+                >
+                  <option value="">Select a client...</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+            )}
+
+            {clientType === 'new' && (
+              <div className="mt-4">
+                <h6 className="mb-3">Client Details</h6>
+                <Form>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Full Name</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Client Name"
-                      id="clientName"
-                      name="clientName"
-                      autoComplete="name"
+                      placeholder="Enter client name"
                       value={newClient.name}
                       onChange={(e) => setNewClient({ ...newClient, name: e.target.value })}
-                      className="mb-2"
                     />
-                    <Form.Control
-                      type="email"
-                      placeholder="Email Address"
-                      id="clientEmail"
-                      name="clientEmail"
-                      autoComplete="email"
-                      value={newClient.email}
-                      onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
-                      className="mb-2"
-                    />
-                    <Form.Control
-                      type="text"
-                      placeholder="Phone Number"
-                      id="clientPhone"
-                      name="clientPhone"
-                      autoComplete="tel"
-                      value={newClient.phone}
-                      onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
-                      className="mb-2"
-                    />
-                  </>
-                )}
-              </Form.Group>
-
-            </Form>
+                  </Form.Group>
+                  
+                  <Row>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Email</Form.Label>
+                        <Form.Control
+                          type="email"
+                          placeholder="Enter email address"
+                          value={newClient.email}
+                          onChange={(e) => setNewClient({ ...newClient, email: e.target.value })}
+                        />
+                      </Form.Group>
+                    </Col>
+                    <Col md={6}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>Phone</Form.Label>
+                        <Form.Control
+                          type="tel"
+                          placeholder="Enter phone number"
+                          value={newClient.phone}
+                          onChange={(e) => setNewClient({ ...newClient, phone: e.target.value })}
+                        />
+                      </Form.Group>
+                    </Col>
+                  </Row>
+                </Form>
+              </div>
+            )}
           </>
         )}
 
         {step === 2 && (
           <>
-            <h5>2. Folder Informations</h5>
+            <h5 className="mb-4">2. Folder Information</h5>
             <Form>
-              <Form.Group className="mb-3">
+              <Form.Group className="mb-4">
                 <Form.Label htmlFor="folderName">
-                  Folder Name <span style={{ color: 'red' }}>*</span>
+                  Folder Name <span className="text-danger">*</span>
                 </Form.Label>
                 <Form.Control
                   type="text"
                   id="folderName"
-                  name="folderName"
+                  size="lg"
                   placeholder="Enter folder name"
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
@@ -206,35 +227,33 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
               </Form.Group>
 
               <Form.Group className="mb-3">
-                <Form.Label htmlFor="folderDescription">Folder Description</Form.Label>
+                <Form.Label htmlFor="folderDescription">Description</Form.Label>
                 <Form.Control
                   as="textarea"
                   id="folderDescription"
-                  name="folderDescription"
-                  rows={3}
+                  rows={4}
                   placeholder="Enter folder description (optional)"
                   value={folderDescription}
                   onChange={(e) => setFolderDescription(e.target.value)}
                 />
               </Form.Group>
-
             </Form>
           </>
         )}
       </Modal.Body>
       <Modal.Footer>
         {step === 1 && ( 
-          <Button variant="primary" onClick={handleNext}>
-            Next
+          <Button variant="primary" size="lg" onClick={handleNext}>
+            Next <i className="bi bi-arrow-right ms-2"></i>
           </Button>
         )}
         {step === 2 && (
           <>
-            <Button variant="secondary" onClick={() => setStep(1)}>
-              Back
+            <Button variant="outline-secondary" size="lg" onClick={() => setStep(1)}>
+              <i className="bi bi-arrow-left me-2"></i> Back
             </Button>
-            <Button variant="primary" onClick={handleSave}>
-              Save Folder
+            <Button variant="primary" size="lg" onClick={handleSave}>
+              Save Folder <i className="bi bi-check-lg ms-2"></i>
             </Button>
           </>
         )}
@@ -244,3 +263,4 @@ const AddFolderForm = ({ show, onHide, onSave }) => {
 };
 
 export default AddFolderForm;
+

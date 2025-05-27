@@ -26,6 +26,8 @@ const AuthProvider = ({ children }) => {
           token,
           role: localStorage.getItem("role"),
           email: localStorage.getItem("email"),
+         
+
           ...userData,
         });
       } else {
@@ -39,6 +41,8 @@ const AuthProvider = ({ children }) => {
               token: newToken,
               role: localStorage.getItem("role"),
               email: localStorage.getItem("email"),
+              
+
               ...refreshedUserData,
             });
           } else {

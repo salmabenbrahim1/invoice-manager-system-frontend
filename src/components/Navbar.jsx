@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaUserCircle, FaBars, FaTimes, FaBuilding } from 'react-icons/fa';
+import { FaUserCircle, FaBars, FaTimes, FaBuilding, FaSignOutAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
@@ -9,10 +9,11 @@ import { useTranslation } from 'react-i18next';
 import '../styles/navbar.css';
 import invoiceLogo from '../assets/images/invox-logo.png';
 
+
 const Navbar = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
-  const { profile } = useUser(); 
+  const { profile } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -95,13 +96,17 @@ const Navbar = () => {
                     transition={{ duration: 0.2 }}
                   >
                     <div className="user-info">
-                      <div className="user-name">{user.name || user.email}</div>
-                      <small>({user.role})</small>
+                      <div className="user-name">
+                        {profile?.role === 'COMPANY'
+                          ? profile?.companyName
+                          : `${profile?.firstName || ''} ${profile?.lastName || ''}`}
+                      </div>
+
                     </div>
 
                     {user.role !== 'ADMIN' && (
                       <div
-                        className="menu-item"
+                        className="menu-item  flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
                           setUserMenuOpen(false);
                           setShowModal(true);
@@ -112,14 +117,16 @@ const Navbar = () => {
                     )}
 
                     <div
-                      className="menu-item logout"
+                      className="logout flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                       onClick={() => {
                         logout();
                         setUserMenuOpen(false);
                       }}
                     >
-                      {t('logout') || 'Logout'}
+                      <FaSignOutAlt className="text-lg mr-2" />
+                      <span>{t('logout') || 'Logout'}</span>
                     </div>
+
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -142,7 +149,7 @@ const Navbar = () => {
       <EditProfileModal
         show={showModal}
         onHide={() => setShowModal(false)}
-        onSave={() => setShowModal(false)} 
+        onSave={() => setShowModal(false)}
       />
     </nav>
   );

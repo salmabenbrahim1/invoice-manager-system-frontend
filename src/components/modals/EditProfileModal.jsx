@@ -219,6 +219,7 @@ const handleSubmit = async (e) => {
                     value={formData.email}
                     onChange={handleChange}
                     required
+                    readOnly
                     placeholder=" "
                     className="modern-form-control"
                   />
@@ -231,8 +232,10 @@ const handleSubmit = async (e) => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder=" "
+                    placeholder=""
                     className="modern-form-control"
+                    maxLength={15}
+
                   />
                   <FiPhone className="modern-input-icon" />
                 </FloatingLabel>
@@ -252,7 +255,7 @@ const handleSubmit = async (e) => {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleChange}
-                    placeholder=" "
+                    placeholder=""
                     minLength={8}
                     className="modern-form-control"
                   />
@@ -317,7 +320,7 @@ const handleSubmit = async (e) => {
                         onChange={handleChange}
                         className="modern-form-control"
                       >
-                        <option value="">Select gender</option>
+                        <option value="gender">Select gender</option>
                         <option value="MALE">Male</option>
                         <option value="FEMALE">Female</option>
                       </Form.Select>

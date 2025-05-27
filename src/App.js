@@ -13,7 +13,7 @@ import { ForgotPasswordProvider } from './contexts/ForgotPasswordContext';
 
 // Components
 import Navbar from './components/Navbar';
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './utils/PrivateRoute';
 
 // Pages
 import Home from './pages/Home';

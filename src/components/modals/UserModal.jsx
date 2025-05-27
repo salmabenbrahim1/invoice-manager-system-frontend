@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { validatePhoneNumber, validateCIN } from "../../utils/validation";
 import { useUser } from "../../contexts/UserContext";
@@ -127,6 +127,7 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                                         className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e] transition-all duration-200"
                                         placeholder="Enter your CIN"
                                         defaultValue={user?.cin}
+                                         maxLength={8}
                                     />
                                 </div>
                                 <div className="col-span-1">
@@ -213,6 +214,8 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e] transition-all duration-200"
                                 placeholder="Phone number (8-15 digits)"
                                 defaultValue={user?.phone}
+                                maxLength={15}
+
                             />
                         </div>
 

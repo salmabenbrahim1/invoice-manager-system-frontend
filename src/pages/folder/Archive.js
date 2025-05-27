@@ -118,7 +118,7 @@ const Archive = () => {
                     }`}
                 >
                   <div className="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
-                    <FaFolder className="text-violet-800 mt-1 sm:mt-0" size={45} />
+                    <FaFolder className="text-gray-500 mt-1 sm:mt-0" size={45} />
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-800">
                         {folder.folderName || "Unnamed folder"}

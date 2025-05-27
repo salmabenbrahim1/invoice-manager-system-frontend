@@ -22,7 +22,7 @@ const AccountantClientsPage = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [operationLoading, setOperationLoading] = useState(false);
 
-  const clientsPerPage = 10;
+  const clientsPerPage = 6;
   
  
 const handleRefresh = useCallback(async () => {
@@ -222,13 +222,9 @@ const handleRefresh = useCallback(async () => {
         </div>
 
 
-        {filteredClients.length > clientsPerPage && (
-          <div className="mt-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="text-sm text-gray-500">
-              Showing {(currentPage - 1) * clientsPerPage + 1} to{' '}
-              {Math.min(currentPage * clientsPerPage, filteredClients.length)} of{' '}
-              {filteredClients.length} clients
-            </div>
+        {filteredClients.length >= clientsPerPage && (
+          <div >
+           
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

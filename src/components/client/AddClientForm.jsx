@@ -27,7 +27,7 @@ const AddClientForm = ({ show, onHide }) => {
     }
     if (!newClient.phone.trim()) {
       errors.phone = 'Phone number is required';
-    } else if (!phoneRegex.test(newClient.phone.replace(/[\s-]/g, ''))) {
+    } else if (!phoneRegex.test(newClient.phone)) {
       errors.phone = '8-15 digits, optional "+" prefix';
     }
 
@@ -140,6 +140,8 @@ const AddClientForm = ({ show, onHide }) => {
               onChange={handleChange}
               onBlur={handlePhoneInput}
               isInvalid={!!formErrors.phone}
+              maxLength={15}
+
             />
             <Form.Control.Feedback type="invalid">
               {formErrors.phone}

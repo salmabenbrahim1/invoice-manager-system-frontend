@@ -257,7 +257,7 @@ const CompanyClientsPage = () => {
             </table>
           </div>
 
-          {filteredClients.length > 6 && (
+          {filteredClients.length >= clientsPerPage && (
             <div className="mt-6">
               <Pagination
                 currentPage={currentPage}
