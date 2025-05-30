@@ -199,7 +199,6 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e] transition-all duration-200"
                                 placeholder="Email"
                                 value={user?.email}
-
                                 required
                             />
                         </div>

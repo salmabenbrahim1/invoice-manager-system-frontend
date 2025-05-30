@@ -5,13 +5,18 @@ const EngineContext = createContext();
 
 export const EngineProvider = ({ children }) => {
   const [selectedEngine, setSelectedEngine] = useState('gemini');
+  const [engineConfig, setEngineConfig] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchEngine = async () => {
     try {
       setLoading(true);
-const response = await axios.get('http://localhost:9090/api/engine');
-      setSelectedEngine(response.data.engine);
+      const response = await axios.get('http://localhost:9090/api/admin/engine');
+      setSelectedEngine(response.data.selectedEngine);
+      setEngineConfig({
+        ...response.data.config,
+        deepseekModelVersion: response.data.config?.deepseekModelVersion || '',
+      });
     } catch (err) {
       console.error('Error fetching engine:', err);
     } finally {
@@ -19,13 +24,14 @@ const response = await axios.get('http://localhost:9090/api/engine');
     }
   };
 
-  const saveEngine = async () => {
-    try {
-      await axios.post('http://localhost:9090/api/engine', { engine: selectedEngine }); // Spring Boot endpoint
-    } catch (err) {
-      console.error('Error saving engine:', err);
-      throw err;
-    }
+  const saveEngine = async (selectedEngine, config) => {
+    const payload = { selectedEngine, ...config };
+    await axios.post('http://localhost:9090/api/admin/engine/config', payload);
+    setSelectedEngine(selectedEngine);
+    setEngineConfig({
+      ...config,
+      deepseekModelVersion: config?.deepseekModelVersion || '',
+    });
   };
 
   useEffect(() => {
@@ -39,6 +45,8 @@ const response = await axios.get('http://localhost:9090/api/engine');
         setSelectedEngine,
         loading,
         saveEngine,
+        engineConfig,
+        setEngineConfig,
       }}
     >
       {children}
@@ -46,5 +54,4 @@ const response = await axios.get('http://localhost:9090/api/engine');
   );
 };
 
-// Custom hook to use the context
 export const useEngine = () => useContext(EngineContext);

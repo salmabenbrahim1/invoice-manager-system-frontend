@@ -15,6 +15,7 @@ const EngineSelector = () => {
     geminiModelVersion: '',
     deepseekApiKey: '',
     deepseekEndpoint: '',
+    deepseekModelVersion: '', 
   });
 
   // Sync avec engineConfig du contexte au chargement / changement
@@ -33,22 +34,34 @@ const EngineSelector = () => {
   };
 
   // Save with config
-  const handleSave = async () => {
-    try {
+ const handleSave = async () => {
+  try {
+    const currentConfig = JSON.stringify(engineConfig || {});
+    const newConfig = JSON.stringify(config);
+
+    if (selectedEngine !== selectedEngine || currentConfig !== newConfig) {
       await saveEngine(selectedEngine, config);
       toast.success('AI engine updated successfully!', {
         position: "top-center",
         autoClose: 3000,
         theme: "light",
       });
-    } catch {
-      toast.error('Failed to save AI engine', {
+    } else {
+      toast.info('No changes detected.', {
         position: "top-center",
         autoClose: 3000,
         theme: "light",
       });
     }
-  };
+  } catch {
+    toast.error('Failed to save AI engine', {
+      position: "top-center",
+      autoClose: 3000,
+      theme: "light",
+    });
+  }
+};
+
 
   // Formulaire selon moteur sélectionné
   const renderConfigForm = () => {
@@ -80,35 +93,47 @@ const EngineSelector = () => {
           </label>
         </div>
       );
-    } else if (selectedEngine === 'deepseek') {
-      return (
-        <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
-          <h3 className="text-xl font-semibold mb-4 text-purple-900">DeepSeek Configuration</h3>
-          <label className="block mb-3">
-            API Key:
-            <input
-              type="text"
-              name="deepseekApiKey"
-              value={config.deepseekApiKey}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-              placeholder="Enter DeepSeek API Key"
-            />
-          </label>
-          <label className="block mb-3">
-            Endpoint URL:
-            <input
-              type="text"
-              name="deepseekEndpoint"
-              value={config.deepseekEndpoint}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-              placeholder="Enter DeepSeek Endpoint URL"
-            />
-          </label>
-        </div>
-      );
-    }
+    }  else if (selectedEngine === 'deepseek') {
+  return (
+    <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
+      <h3 className="text-xl font-semibold mb-4 text-purple-900">DeepSeek Configuration</h3>
+      <label className="block mb-3">
+        API Key:
+        <input
+          type="text"
+          name="deepseekApiKey"
+          value={config.deepseekApiKey}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+          placeholder="Enter DeepSeek API Key"
+        />
+      </label>
+      <label className="block mb-3">
+        Endpoint URL:
+        <input
+          type="text"
+          name="deepseekEndpoint"
+          value={config.deepseekEndpoint}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+          placeholder="Enter DeepSeek Endpoint URL"
+        />
+      </label>
+      <label className="block mb-3">
+        Model Version:
+        <input
+          type="text"
+          name="deepseekModelVersion"
+          value={config.deepseekModelVersion || ''}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+          placeholder="e.g., deepseek-chat"
+        />
+      </label>
+    </div>
+  );
+}
+
     return null;
   };
 
