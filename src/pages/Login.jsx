@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import imagesWebsite from '../assets/images/imagesWebsite.png';
-
+//import imagesWebsite from '../assets/images/imagesWebsite.png';
+import imagesWebsite from '../assets/images/login.png';
 import { useAuth } from '../contexts/AuthContext';
 import InfoModal from '../components/modals/InfoModal';
 
@@ -65,12 +65,12 @@ const Login = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full md:w-5/12 bg-[#75529e] p-6 sm:p-10 md:p-16 flex items-center justify-center"
+        className="w-full md:w-5/12 bg-[#6d33a7] p-6 sm:p-10 md:p-16 flex items-center justify-center"
       >
         <img
           src={imagesWebsite}
           alt="MyInvoice App Preview"
-          className="w-full h-auto max-w-md"
+          className="w-full h-auto max-w-600"
         />
       </motion.div>
 
@@ -83,8 +83,8 @@ const Login = () => {
       >
         <div className="w-full max-w-md">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Login</h2>
-          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600 dark:text-gray-400">
-            Welcome! Please enter your details.
+          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600 font-medium">
+            Welcome back! Please enter your login details.
           </p>
 
           <form onSubmit={handleSubmit}>
@@ -111,13 +111,7 @@ const Login = () => {
                 <label htmlFor="password" className="text-base font-medium">
                   Password
                 </label>
-                <button
-                  type="button"
-                  onClick={() => navigate('/forgot-password')}
-                  className="text-sm text-[#75529e] hover:underline"
-                >
-                  Forgot password?
-                </button>
+                
               </div>
 
               <input
@@ -130,6 +124,13 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <button
+                  type="button"
+                  onClick={() => navigate('/forgot-password')}
+                  className="text-sm text-[#75529e] hover:underline"
+                >
+                  Forgot password?
+                </button>
             </div>
 
             {/* Error Message */}
