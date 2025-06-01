@@ -8,7 +8,8 @@ import EditProfileModal from './modals/EditProfileModal';
 import { useTranslation } from 'react-i18next';
 import '../styles/navbar.css';
 import invoiceLogo from '../assets/images/invox-logo.png';
-
+import 'flag-icon-css/css/flag-icon.min.css';
+import LanguageDropdown from './LanguageDropdown';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
@@ -55,9 +56,15 @@ const Navbar = () => {
         </button>
 
         <div className={`me-auto ${menuOpen ? '' : 'd-none d-md-flex'} nav-links-container`}>
-          <Link to="/home" className="nav-link">{t('home')}</Link>
-          <Link to="/manage-invoices" className="nav-link">{t('manageInvoices')}</Link>
-          <Link to="/contact-us" className="nav-link">{t('contactUs')}</Link>
+          <Link to="/home" className="nav-link">
+            {t('home')}
+          </Link>
+          <Link to="/manage-invoices" className="nav-link">
+            {t('manageInvoices')}
+          </Link>
+          <Link to="/contact-us" className="nav-link">
+            {t('contactUs')}
+          </Link>
         </div>
 
         <div className="user-section" ref={menuRef}>
@@ -101,12 +108,11 @@ const Navbar = () => {
                           ? profile?.companyName
                           : `${profile?.firstName || ''} ${profile?.lastName || ''}`}
                       </div>
-
                     </div>
 
                     {user.role !== 'ADMIN' && (
                       <div
-                        className="menu-item  flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        className="menu-item flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
                           setUserMenuOpen(false);
                           setShowModal(true);
@@ -126,7 +132,6 @@ const Navbar = () => {
                       <FaSignOutAlt className="text-lg mr-2" />
                       <span>{t('logout') || 'Logout'}</span>
                     </div>
-
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -138,11 +143,8 @@ const Navbar = () => {
           )}
         </div>
 
-        <div className="language-selector">
-          <select onChange={(e) => handleLanguageChange(e.target.value)} defaultValue="en">
-            <option value="en">English</option>
-            <option value="fr">Français</option>
-          </select>
+        <div>
+          <LanguageDropdown currentLang={i18n.language} onChange={handleLanguageChange} />
         </div>
       </div>
 
