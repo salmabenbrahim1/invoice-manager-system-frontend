@@ -46,6 +46,10 @@ import UserOversight from './pages/admin/UserOversight';
 import AccountantOversight from './pages/admin/AccountantOversight';
 import CompanyOversight from './pages/admin/CompanyOversight';
 import ViewAccountantIndependentFolder from './pages/admin/ViewAccountantIndependentFolder';
+import ViewInvoicesForAdmin from './pages/admin/ViewInvoicesForAdmin';
+import SavedInvoiceViewerForAccountant from './pages/company/SavedInvoiceViewerForAccountant';
+import ViewCompanyAccountants from './pages/admin/ViewCompanyAccountants';
+import ViewInternalAccountantFolders from './pages/admin/ViewInternalAccountantFolders';
 function App() {
   return (
     <div>
@@ -78,11 +82,21 @@ function App() {
                         <Route path="/user-oversight/accountant" element={<AccountantOversight />} />
                         <Route path="/user-oversight/company" element={<CompanyOversight />} />
 
+                        <Route
+                          path="/admin/company/:id/accountants"
+                          element={<ViewCompanyAccountants />}
+                        />
+                       <Route
+                          path="/view-internal-accountant-folders/:accountantId"
+                          element={<ViewInternalAccountantFolders />}
+                        />
 
                         <Route
-                          path="/view-independent-accountant-folder/:id"
+                          path="/view-independent-accountant-folder/:accountantId"
                           element={<ViewAccountantIndependentFolder />}
                         />
+                        <Route path="/admin/folders/:folderId/invoices" element={<ViewInvoicesForAdmin />} />
+
 
 
 

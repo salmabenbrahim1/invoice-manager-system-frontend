@@ -1,32 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 import { FaFolder, FaSearch, FaRegCalendarAlt, FaEye, FaArrowLeft } from "react-icons/fa";
 
 import AdminLayout from "../../components/admin/AdminLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Pagination from "../../components/Pagination";
-import { useFolder } from '../../contexts/FolderContext'; 
 
-const ViewAccountantIndependentFolder = () => {
+import { useFolder } from "../../contexts/FolderContext";
+
+const ViewInternalAccountantFolders = () => {
   const { accountantId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const accountantName = location.state?.accountantName || "INDEPENDENT_ACCOUNTANT";
+  const accountantName = location.state?.accountantName || "Internal Accountant";
 
-  const { folders, loading, fetchIndependentAccountantFolders } = useFolder();
+  const { folders, loading, error, fetchFoldersByAccountant } = useFolder();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
   const foldersPerPage = 7;
+  const totalPages = Math.ceil(folders.length / foldersPerPage);
 
-  useEffect(() => {
-    if (accountantId) {
-      fetchIndependentAccountantFolders(accountantId);
-    }
-  }, [accountantId]);
-
-  const filteredFolders = folders.filter((folder) => {
+  const filteredFolders = folders.filter(folder => {
     const query = searchQuery.toLowerCase();
     return (
       folder.folderName?.toLowerCase().includes(query) ||
@@ -34,20 +32,18 @@ const ViewAccountantIndependentFolder = () => {
     );
   });
 
-  const totalPages = Math.ceil(filteredFolders.length / foldersPerPage);
-
   const currentFolders = filteredFolders.slice(
     (currentPage - 1) * foldersPerPage,
     currentPage * foldersPerPage
   );
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  useEffect(() => {
+    fetchFoldersByAccountant(accountantId);
+  }, [accountantId]);
+
+  const handleFolderClick = (folderId, e) => {
+    if (e && e.target.closest("button")) return;
+    navigate(`/admin/folders/${folderId}/invoices`);
   };
 
   const handleSearchChange = (e) => {
@@ -55,17 +51,27 @@ const ViewAccountantIndependentFolder = () => {
     setCurrentPage(1);
   };
 
-  const handleFolderClick = (folderId, e) => {
-    if (e?.target.closest("button")) return;
-    navigate(`/admin/folders/${folderId}/invoices`);
+  const formatDate = (dateString) => {
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
+    return new Date(dateString).toLocaleDateString("en-GB", options);
   };
 
   if (loading) {
     return (
       <AdminLayout>
-        <LoadingSpinner text="Loading folders..." fullScreen />
+        <LoadingSpinner size="lg" color="primary" fullScreen text="Loading folders..." />
       </AdminLayout>
     );
+  }
+
+  if (error) {
+    toast.error(error);
   }
 
   return (
@@ -77,7 +83,7 @@ const ViewAccountantIndependentFolder = () => {
             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
           >
             <FaArrowLeft className="mr-2" />
-            Back to Independent Accountants 
+            Back to Internal Accountants
           </button>
         </div>
 
@@ -90,7 +96,7 @@ const ViewAccountantIndependentFolder = () => {
             </div>
             <input
               type="text"
-              placeholder="Search by folder name or client..."
+              placeholder="Search for a folder or client..."
               value={searchQuery}
               onChange={handleSearchChange}
               className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -108,29 +114,43 @@ const ViewAccountantIndependentFolder = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Folder</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created On</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Folder
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Client
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created At
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {currentFolders.map((folder) => (
-                    <tr key={folder.id} className="hover:bg-gray-50 cursor-pointer" onClick={(e) => handleFolderClick(folder.id, e)}>
+                    <tr
+                      key={folder.id}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={(e) => handleFolderClick(folder.id, e)}
+                    >
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <FaFolder className="mr-2 text-purple-600" size={20} />
-                          <div className="font-medium text-gray-900">{folder.folderName || "No Name"}</div>
+                          <FaFolder className="mr-2 text-violet-700" size={20} />
+                          <div className="font-medium text-gray-900">{folder.folderName || "Unnamed"}</div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">{folder.client?.name || "No Client"}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      <td className="px-6 py-4 text-gray-500">
+                        {folder.client?.name || "Unknown client"}
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">
                         <div className="flex items-center">
                           <FaRegCalendarAlt className="mr-2 text-gray-400" />
                           {formatDate(folder.createdAt)}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 text-sm font-medium">
                         <button
                           onClick={() => handleFolderClick(folder.id)}
                           className="text-blue-600 hover:text-blue-900 flex items-center"
@@ -162,4 +182,4 @@ const ViewAccountantIndependentFolder = () => {
   );
 };
 
-export default ViewAccountantIndependentFolder;
+export default ViewInternalAccountantFolders;

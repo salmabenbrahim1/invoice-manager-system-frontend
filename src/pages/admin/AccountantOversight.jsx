@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaEye, FaUser } from "react-icons/fa";
+import { FaEye, FaUser,FaArrowLeft } from "react-icons/fa";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { useUser } from "../../contexts/UserContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -55,10 +55,20 @@ const AccountantOversight = () => {
 
   return (
     <AdminLayout>
+         
       <div className="h-screen overflow-y-auto p-10">
+        <div className="flex items-center mb-6">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
+                >
+                  <FaArrowLeft className="mr-2" />
+                  Back to User Oversight
+                </button>
+              </div>
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-semibold">Independent Accountants Oversight</h2>
-          <div className="relative w-full md:w-1/4">
+        <div className="relative w-full md:w-1/3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaUser className="text-gray-400" />
             </div>

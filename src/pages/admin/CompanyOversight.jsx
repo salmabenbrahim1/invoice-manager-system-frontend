@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaBuilding,FaEye } from "react-icons/fa";
+import { FaBuilding, FaEye, FaArrowLeft } from "react-icons/fa";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { useUser } from "../../contexts/UserContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -16,7 +16,8 @@ const CompanyOversight = () => {
     (user) =>
       user.role === "COMPANY" &&
       (user.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()))
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.companyName?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const companiesPerPage = 7;
@@ -30,9 +31,9 @@ const CompanyOversight = () => {
     if (currentPage > totalPages) setCurrentPage(1);
   }, [searchQuery, totalPages, currentPage]);
 
-  const handleViewClick = (user) => {
-    navigate(`/view-company-folder/${user.id}`, {
-      state: { companyName: `${user.firstName} ${user.lastName}` },
+  const handleViewClick = (company) => {
+    navigate(`/admin/company/${company.id}/accountants`, {
+      state: { companyName: `${company.companyName}` },
     });
   };
 
@@ -55,9 +56,19 @@ const CompanyOversight = () => {
   return (
     <AdminLayout>
       <div className="h-screen overflow-y-auto p-10">
+        <div className="flex items-center mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
+          >
+            <FaArrowLeft className="mr-2" />
+            Back to User Oversight
+          </button>
+        </div>
+
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
           <h2 className="text-2xl font-semibold">Company Oversight</h2>
-          <div className="relative w-full md:w-1/4">
+          <div className="relative w-full md:w-1/3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaBuilding className="text-gray-400" />
             </div>
@@ -93,15 +104,17 @@ const CompanyOversight = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <FaBuilding className="mr-2 text-purple-600" />
-                        <span>{user.firstName} {user.lastName}</span>
+                        <span>{user.companyName}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-500">{user.email}</td>
                     <td className="px-6 py-4 text-gray-500">{user.phone || "-"}</td>
                     <td className="px-6 py-4">
-                      <span className={`px-2 inline-flex text-xs font-semibold rounded-full ${
-                        user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                      }`}>
+                      <span
+                        className={`px-2 inline-flex text-xs font-semibold rounded-full ${
+                          user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }`}
+                      >
                         {user.active ? "Active" : "Inactive"}
                       </span>
                     </td>
@@ -109,7 +122,7 @@ const CompanyOversight = () => {
                       <button
                         onClick={() => handleViewClick(user)}
                         className="text-blue-600 hover:text-blue-900"
-                        title="View Folders"
+                        title="View Internal Accountants "
                       >
                         <FaEye />
                       </button>
