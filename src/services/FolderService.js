@@ -144,6 +144,16 @@ unmarkAsFavorite: async (folderId) => {
       throw new Error(message);
     }
   },
+getFoldersByIndependentAccountant: async (accountantId) => {
+  try {
+    const config = getAuthConfig();
+    const response = await axios.get(`${API_URL}/by-independent-accountant/${accountantId}`, config);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Failed to fetch folders';
+    throw new Error(message);
+  }
+},
 
 
 };

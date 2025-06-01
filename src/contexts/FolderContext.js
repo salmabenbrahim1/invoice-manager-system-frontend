@@ -167,6 +167,18 @@ export const FolderProvider = ({ children }) => {
       setLoading(false);
     }
   };
+    const fetchIndependentAccountantFolders = async (accountantId) => {
+    setLoading(true);
+    try {
+      const data = await folderService.getFoldersByIndependentAccountant(accountantId);
+      setFolders(data);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <FolderContext.Provider
@@ -184,6 +196,8 @@ export const FolderProvider = ({ children }) => {
         archiveFolder,
         unarchiveFolder,
         fetchFoldersByAccountant,
+                fetchIndependentAccountantFolders,
+
 
 
 

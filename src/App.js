@@ -42,186 +42,211 @@ import FavoriteInvoiceList from './pages/invoice/FavoriteInvoiceList';
 import { EngineProvider } from './contexts/EngineContext';
 import EngineSelector from './pages/admin/EngineSelector';
 import MyAccountantsOversight from './pages/company/MyAccountantsOversight';
-
+import UserOversight from './pages/admin/UserOversight';
+import AccountantOversight from './pages/admin/AccountantOversight';
+import CompanyOversight from './pages/admin/CompanyOversight';
+import ViewAccountantIndependentFolder from './pages/admin/ViewAccountantIndependentFolder';
+import ViewInvoicesForAdmin from './pages/admin/ViewInvoicesForAdmin';
+import SavedInvoiceViewerForAccountant from './pages/company/SavedInvoiceViewerForAccountant';
+import ViewCompanyAccountants from './pages/admin/ViewCompanyAccountants';
+import ViewInternalAccountantFolders from './pages/admin/ViewInternalAccountantFolders';
 function App() {
   return (
     <div>
       <ForgotPasswordProvider>
         <AuthProvider>
-           <EngineProvider>
-          <UserProvider>
-            <ClientProvider>
-              <FolderProvider>
-                <InvoiceProvider>
-                  
-                  <ToastContainer />
-                  <Navbar />
-                  <div className="main-content">
-                    <Routes>
-                      {/* Public Routes */}
-                      <Route path="/" element={<Home />} />
-                      <Route path="/home" element={<Home />} />
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <EngineProvider>
+            <UserProvider>
+              <ClientProvider>
+                <FolderProvider>
+                  <InvoiceProvider>
 
-                      <Route path="/unauthorized" element={<Unauthorized />} />
+                    <ToastContainer />
+                    <Navbar />
+                    <div className="main-content">
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<Home />} />
+                        <Route path="/home" element={<Home />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-                      {/* Admin Routes */}
-                      <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                      <Route path="/users" element={<UsersPage />} />
-                      <Route path="/admin/email-history" element={<EmailHistoryPage />} />
-                       <Route path="/admin/ai-model" element={<EngineSelector />} />
+                        <Route path="/unauthorized" element={<Unauthorized />} />
 
+                        {/* Admin Routes */}
+                        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                        <Route path="/users" element={<UsersPage />} />
+                        <Route path="/admin/email-history" element={<EmailHistoryPage />} />
+                        <Route path="/admin/ai-model" element={<EngineSelector />} />
+                        <Route path="/admin/user-oversight" element={<UserOversight />} />
+                        <Route path="/user-oversight/accountant" element={<AccountantOversight />} />
+                        <Route path="/user-oversight/company" element={<CompanyOversight />} />
 
-
-
-                      {/* Company Routes */}
-                      <Route path="/company/dashboard" element={<CompanyDashboard />} />
-                      <Route
-                        path="/manage-clients"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                            <CompanyClientsPage />
-                          </PrivateRoute>
-                        }
-
-                      />
-                      <Route
-                        path="/company/history"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                           <CompanyHistoryPage/>
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/view-accountant-folder/:id"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                            <ViewAccountantFolder />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/folders/:folderId/invoices"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                            <ViewInvoices />
-                          </PrivateRoute>
-                        }
-                      />
-
-
-
-                      <Route
-                        path="/my-accountants"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                            <InternalAccountantsPage />
-                          </PrivateRoute>
-                        }
-                      />
                         <Route
-                        path="/my-accountants-oversight"
-                        element={
-                          <PrivateRoute allowedRoles={['COMPANY']}>
-                           <MyAccountantsOversight />
-                           </PrivateRoute>
-                        }
-                      />
-                      
-                    
-                    
-                      {/* Independent/Internal Accountant Routes */}
-                      <Route
-                        path="/accountant/dashboard"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <AccountantDashboard />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/my-clients"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
-                            <AccountantClientsPage />
-                          </PrivateRoute>
-                        }
-                      />
+                          path="/admin/company/:id/accountants"
+                          element={<ViewCompanyAccountants />}
+                        />
+                       <Route
+                          path="/view-internal-accountant-folders/:accountantId"
+                          element={<ViewInternalAccountantFolders />}
+                        />
 
-                      <Route
-                        path="/my-assigned-clients"
-                        element={
-                          <PrivateRoute allowedRoles={['INTERNAL_ACCOUNTANT']}>
-                            <InternalAccountantClientsPage />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/my-folders"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <FolderList />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/manage-invoices"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <FolderList />
-                          </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/my-folders/:folderId/invoices"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <InvoiceList />
-                          </PrivateRoute>
-                        }
-                      />
-                          <Route
-                        path="/archive/:folderId/invoices"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                               <ArchivedInvoiceList/>
-                           </PrivateRoute>
-                        }
-                      />
-                      <Route
-                        path="/favorites"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <Favorite />
-                          </PrivateRoute>
-                        }
-                      />
-                            <Route
-                        path="/favorites/:folderId/invoices"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <FavoriteInvoiceList/>
-                          </PrivateRoute>
-                        }
-                      />
+                        <Route
+                          path="/view-independent-accountant-folder/:accountantId"
+                          element={<ViewAccountantIndependentFolder />}
+                        />
+                        <Route path="/admin/folders/:folderId/invoices" element={<ViewInvoicesForAdmin />} />
 
-                      <Route
-                        path="/archive"
-                        element={
-                          <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
-                            <Archive />
-                          </PrivateRoute>
-                        }
-                      />
-                    </Routes>
-                  </div>
-                  
-                </InvoiceProvider>
-              </FolderProvider>
-            </ClientProvider>
-          </UserProvider>
+
+
+
+                        {/* Company Routes */}
+                        <Route path="/company/dashboard" element={<CompanyDashboard />} />
+                        <Route
+                          path="/manage-clients"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <CompanyClientsPage />
+                            </PrivateRoute>
+                          }
+
+                        />
+                        <Route
+                          path="/company/history"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <CompanyHistoryPage />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/view-accountant-folder/:id"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <ViewAccountantFolder />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/folders/:folderId/invoices"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <ViewInvoices />
+                            </PrivateRoute>
+                          }
+                        />
+
+
+
+                        <Route
+                          path="/my-accountants"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <InternalAccountantsPage />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/my-accountants-oversight"
+                          element={
+                            <PrivateRoute allowedRoles={['COMPANY']}>
+                              <MyAccountantsOversight />
+                            </PrivateRoute>
+                          }
+                        />
+
+
+
+                        {/* Independent/Internal Accountant Routes */}
+                        <Route
+                          path="/accountant/dashboard"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <AccountantDashboard />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/my-clients"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT']}>
+                              <AccountantClientsPage />
+                            </PrivateRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/my-assigned-clients"
+                          element={
+                            <PrivateRoute allowedRoles={['INTERNAL_ACCOUNTANT']}>
+                              <InternalAccountantClientsPage />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/my-folders"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <FolderList />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/manage-invoices"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <FolderList />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/my-folders/:folderId/invoices"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <InvoiceList />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/archive/:folderId/invoices"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <ArchivedInvoiceList />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/favorites"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <Favorite />
+                            </PrivateRoute>
+                          }
+                        />
+                        <Route
+                          path="/favorites/:folderId/invoices"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <FavoriteInvoiceList />
+                            </PrivateRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/archive"
+                          element={
+                            <PrivateRoute allowedRoles={['INDEPENDENT_ACCOUNTANT', 'INTERNAL_ACCOUNTANT']}>
+                              <Archive />
+                            </PrivateRoute>
+                          }
+                        />
+                      </Routes>
+                    </div>
+
+                  </InvoiceProvider>
+                </FolderProvider>
+              </ClientProvider>
+            </UserProvider>
           </EngineProvider>
         </AuthProvider>
       </ForgotPasswordProvider>
