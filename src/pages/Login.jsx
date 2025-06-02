@@ -83,7 +83,7 @@ const Login = () => {
       >
         <div className="w-full max-w-md">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Login</h2>
-          <p className="mb-6 sm:mb-8 text-sm sm:text-base text-gray-600 font-medium">
+          <p className="mb-6 sm:mb-8 text-sm sm:text-base  sm:text-lg text-gray-600 font-medium">
             Welcome back! Please enter your login details.
           </p>
 
