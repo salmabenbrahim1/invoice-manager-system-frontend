@@ -1,5 +1,4 @@
 import React from "react";
-import { exportInvoiceToCSV } from "../../utils/exportToCSV";
 
 const InvoiceSavedViewer = ({ invoice, onClose }) => {
   if (!invoice) return null;
@@ -88,15 +87,7 @@ const InvoiceSavedViewer = ({ invoice, onClose }) => {
             </div>
           </div>
 
-          {/* Footer */}
-          <div className="sticky bottom-0 bg-white p-2 border-t border-gray-200 flex justify-end">
-            <button
-              onClick={() => exportInvoiceToCSV(invoice)}
-              className="px-4 py-2 bg-violet-600 text-white rounded hover:bg-violet-700 transition"
-            >
-              Export CSV
-            </button>
-          </div>
+        
         </div>
       </div>
     </div>
