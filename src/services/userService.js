@@ -138,6 +138,16 @@ updateProfile: async (formData) => {
     throw new Error(error.response?.data?.message || 'Failed to update profile');
   }
 },
+getInternalAccountantsByCompanyId: async (companyId) => {
+  try {
+    const config = getAuthConfig();
+    const response = await axios.get(`${API_URL}/companies/${companyId}/accountants`, config);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to fetch accountants');
+  }
+},
+
 
 
   

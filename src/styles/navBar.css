@@ -79,10 +79,15 @@
 }
 
 .login-button {
+  padding: 8px 16px;        
+  border-radius: 4px;      
+  min-width: auto;          
+  height: 40px;             
+  line-height: 1.5;        
+  box-sizing: border-box;   
+
   border: 1px solid #75529e;
   color: #75529e;
-  padding: 8px 16px;
-  border-radius: 4px;
   text-decoration: none;
   transition: all 0.3s ease;
 }
@@ -163,22 +168,8 @@
     left: 0;
   }
 }
-.language-selector select {
-  border: 1px solid #75529e;
-  color: #6d33a7;
-  padding: 8px 16px;
-  border-radius: 4px;
-  background-color: white;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
 
-.language-selector select:hover {
-  background-color: #6d33a7;
-  color: white;
-}
-.language-selector {
-  margin-left: 15px;} 
+
 .navbar-profile-image {
   width: 32px;
   height: 32px;

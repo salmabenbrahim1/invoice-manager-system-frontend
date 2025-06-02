@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import imagesWebsite from '../assets/images/imagesWebsite.png';
+import imagesWebsite from '../assets/images/login.png';
 import InfoModal from '../components/modals/InfoModal';
 import { useForgotPassword } from '../contexts/ForgotPasswordContext';
 
@@ -35,14 +35,15 @@ const ForgotPassword = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="w-full md:w-5/12 bg-[#75529e] p-6 sm:p-10 md:p-16 flex items-center justify-center"
+        className="w-full md:w-5/12 bg-[#6d33a7] p-6 sm:p-10 md:p-16 flex items-center justify-center"
       >
         <img
           src={imagesWebsite}
           alt="MyInvoice App Preview"
-          className="w-full h-auto max-w-md"
+          className="w-full h-auto max-w-600"
         />
       </motion.div>
+
 
       {/* Right Side (Form) */}
       <motion.div

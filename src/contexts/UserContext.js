@@ -178,6 +178,15 @@ const updateProfile = async (profileData) => {
     throw err;
   }
 };
+// UserContext.js
+const fetchCompanyAccountants = async (companyId) => {
+  try {
+    return await userService.getInternalAccountantsByCompanyId(companyId);
+  } catch (error) {
+    console.error('Failed to fetch accountants:', error);
+    throw error;
+  }
+};
 
 
 useEffect(() => {
@@ -212,7 +221,8 @@ useEffect(() => {
       loadProfile,         
     updateProfile,
 
-      getInternalAccountants
+      getInternalAccountants,
+      fetchCompanyAccountants
       
     }}>
       {children}

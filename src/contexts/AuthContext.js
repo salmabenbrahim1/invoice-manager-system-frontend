@@ -20,13 +20,13 @@ const AuthProvider = ({ children }) => {
       }
 
       const userData = await validateToken(token);
-      
+
       if (userData) {
         setUser({
           token,
           role: localStorage.getItem("role"),
           email: localStorage.getItem("email"),
-         
+
 
           ...userData,
         });
@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
               token: newToken,
               role: localStorage.getItem("role"),
               email: localStorage.getItem("email"),
-              
+
 
               ...refreshedUserData,
             });
@@ -74,6 +74,9 @@ const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const userData = await authLogin(email, password);
+      localStorage.setItem("authToken", userData.token);
+      localStorage.setItem("role", userData.role);
+      localStorage.setItem("email", userData.email);
       setUser(userData);
       navigate('/dashboard'); // Navigate to the dashboard 
       return userData;
@@ -84,7 +87,10 @@ const AuthProvider = ({ children }) => {
 
   const logout = () => {
     try {
-      authLogout();  
+      authLogout();
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("email");
       setUser(null);  // Clear user state
       navigate('/login');  // Navigate to login page
     } catch (error) {
