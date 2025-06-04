@@ -10,7 +10,7 @@ import '../styles/navbar.css';
 import invoiceLogo from '../assets/images/invox-logo.png';
 import 'flag-icon-css/css/flag-icon.min.css';
 import LanguageDropdown from './LanguageDropdown';
-
+import InternalAccountantNotification from './accountant/InternalAccountantNotification';
 const Navbar = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
@@ -67,80 +67,96 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="user-section" ref={menuRef}>
-          {user ? (
-            <div className="user-profile">
-              <div className="user-icon-wrapper" onClick={toggleUserMenu} ref={userIconRef}>
-                {profile?.profileImageUrl ? (
-                  <img
-                    src={profile.profileImageUrl}
-                    alt="User profile"
-                    className="user-profile-image"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = '';
-                    }}
-                    style={{
-                      width: 46,
-                      height: 46,
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                      border: '2px solid #fff',
-                    }}
-                  />
-                ) : (
-                  <UserIcon className="user-icon" />
-                )}
-              </div>
+        <div
+          className="user-section"
+          ref={menuRef}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          {user?.role === 'INTERNAL_ACCOUNTANT' && (
+            <InternalAccountantNotification />
+          )}
 
-              <AnimatePresence>
-                {userMenuOpen && (
-                  <motion.div
-                    className="custom-user-menu"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="user-info">
-                      <div className="user-name">
-                        {profile?.role === 'COMPANY'
-                          ? profile?.companyName
-                          : `${profile?.firstName || ''} ${profile?.lastName || ''}`}
+          <div className="user-profile">
+
+            {user ? (
+              <div className="user-profile">
+                <div className="user-icon-wrapper" onClick={toggleUserMenu} ref={userIconRef}>
+                  {profile?.profileImageUrl ? (
+                    <img
+                      src={profile.profileImageUrl}
+                      alt="User profile"
+                      className="user-profile-image"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = '';
+                      }}
+                      style={{
+                        width: 46,
+                        height: 46,
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                        border: '2px solid #fff',
+                      }}
+                    />
+                  ) : (
+                    <UserIcon className="user-icon" />
+                  )}
+                </div>
+
+                <AnimatePresence>
+                  {userMenuOpen && (
+                    <motion.div
+                      className="custom-user-menu"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="user-info">
+                        <div className="user-name">
+                          {profile?.role === 'COMPANY'
+                            ? profile?.companyName
+                            : `${profile?.firstName || ''} ${profile?.lastName || ''}`}
+                        </div>
                       </div>
-                    </div>
 
-                    {user.role !== 'ADMIN' && (
+                      {user.role !== 'ADMIN' && (
+                        <div
+                          className="menu-item flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => {
+                            setUserMenuOpen(false);
+                            setShowModal(true);
+                          }}
+                        >
+                          {t('editProfile') || 'Edit Profile'}
+                        </div>
+                      )}
+
                       <div
-                        className="menu-item flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        className="logout flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
+                          logout();
                           setUserMenuOpen(false);
-                          setShowModal(true);
                         }}
                       >
-                        {t('editProfile') || 'Edit Profile'}
+                        <FaSignOutAlt className="text-lg mr-2" />
+                        <span>{t('logout') || 'Logout'}</span>
                       </div>
-                    )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
-                    <div
-                      className="logout flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        logout();
-                        setUserMenuOpen(false);
-                      }}
-                    >
-                      <FaSignOutAlt className="text-lg mr-2" />
-                      <span>{t('logout') || 'Logout'}</span>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ) : (
-            <Link to="/login" className="login-button">
-              Login
-            </Link>
-          )}
+            ) : (
+              <Link to="/login" className="login-button">
+                Login
+              </Link>
+            )}
+          </div>
         </div>
 
         <div>
