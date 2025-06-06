@@ -5,31 +5,26 @@ import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { MdDocumentScanner } from 'react-icons/md';
-
-import { FaQrcode } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';
 import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
 import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 import InvoiceSavedViewer from '../../components/invoice/InvoiceSavedViewer';
-import { AiOutlineEye } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
-
-
-
-
+import { exportAllInvoicesToCSV } from '../../utils/exportToCSV'; // Assurez-vous que ce chemin est correct
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2, fetchInvoiceById } = useInvoice();
+//const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2, fetchInvoiceById } = useInvoice();
+
+  const { invoices, fetchInvoices, deleteInvoice, fetchInvoiceById } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState(false);
-
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
   const [viewMode, setViewMode] = useState(null);
+  const [selectedInvoiceIds, setSelectedInvoiceIds] = useState([]);
 
   useEffect(() => {
     if (folderId) {
@@ -38,10 +33,9 @@ const InvoiceList = () => {
   }, [folderId]);
 
   const handleValidated = () => {
-    fetchInvoices(folderId); // refresh invoices list 
+
+    fetchInvoices(folderId);
   };
-
-
 
   const filteredInvoices = invoices
     .filter(
@@ -58,7 +52,6 @@ const InvoiceList = () => {
     if (invoiceToDelete) {
       try {
         await deleteInvoice(invoiceToDelete.id);
-
         toast.success('Invoice deleted successfully');
       } catch (error) {
         toast.error('Failed to delete invoice');
@@ -78,21 +71,52 @@ const InvoiceList = () => {
 
   const handleViewSavedData = async (invoice) => {
     try {
-      const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
-      console.log(updatedInvoice);
-      setSelectedInvoice(updatedInvoice); // set the updated one
+
+      const updatedInvoice = await fetchInvoiceById(invoice.id);
+      setSelectedInvoice(updatedInvoice);
       setViewMode('view');
     } catch (error) {
-      toast.error("Failed to fetch updated invoice data");
+      toast.error('Failed to fetch updated invoice data');
     }
   };
-
-
 
   const handleCloseViewer = () => {
     setViewMode(null);
     setSelectedInvoice(null);
   };
+
+  const toggleSelectAll = () => {
+    const validatedIds = filteredInvoices.filter(inv => inv.status === 'Validated').map(inv => inv.id);
+    const allSelected = validatedIds.every(id => selectedInvoiceIds.includes(id));
+    if (allSelected) {
+      setSelectedInvoiceIds(prev => prev.filter(id => !validatedIds.includes(id)));
+    } else {
+      setSelectedInvoiceIds(prev => [...new Set([...prev, ...validatedIds])]);
+    }
+  };
+
+  const handleCheckboxChange = (invoiceId) => {
+    setSelectedInvoiceIds((prev) =>
+      prev.includes(invoiceId)
+        ? prev.filter((id) => id !== invoiceId)
+        : [...prev, invoiceId]
+    );
+  };
+
+  const handleExportSelected = () => {
+    const selectedAndValidated = filteredInvoices.filter(
+      (inv) => selectedInvoiceIds.includes(inv.id) && inv.status === 'Validated'
+    );
+    if (selectedAndValidated.length === 0) {
+      toast.warn("No validated selected invoices to export.");
+      return;
+    }
+    exportAllInvoicesToCSV(selectedAndValidated);
+  };
+
+  const allValidatedSelected = filteredInvoices
+    .filter(inv => inv.status === 'Validated')
+    .every(inv => selectedInvoiceIds.includes(inv.id));
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -111,7 +135,16 @@ const InvoiceList = () => {
                 className="pl-10 pr-4 py-2 border rounded-lg w-64"
               />
             </div>
+           
             <button
+              title="Export extracted data from selected validated invoices to CSV"
+              className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200 shadow-md"
+              onClick={handleExportSelected}
+            >
+              <AiOutlineUpload className="mr-2" />
+              Export CSV
+            </button>
+             <button
               className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
               onClick={() => setShowUploader(true)}
             >
@@ -125,16 +158,24 @@ const InvoiceList = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500">
+                    <input
+                      type="checkbox"
+                      checked={allValidatedSelected}
+                      onChange={toggleSelectAll}
+                      title="Select All Validated"
+                    />
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Invoice Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
                     Actions
                   </th>
                 </tr>
@@ -143,6 +184,14 @@ const InvoiceList = () => {
                 {filteredInvoices.length > 0 ? (
                   filteredInvoices.map((invoice) => (
                     <tr key={invoice.reactKey} className="hover:bg-gray-50 transition duration-150">
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          disabled={invoice.status !== 'Validated'}
+                          checked={selectedInvoiceIds.includes(invoice.id)}
+                          onChange={() => handleCheckboxChange(invoice.id)}
+                        />
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {invoice.img && (
@@ -168,11 +217,11 @@ const InvoiceList = () => {
                                 : invoice.status === 'Failed'
                                   ? 'bg-red-100 text-red-800'
                                   : 'bg-gray-100 text-gray-800'
+
                             }`}
                         >
                           {invoice.status}
                         </span>
-
 
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -194,7 +243,8 @@ const InvoiceList = () => {
                           <button
                             onClick={() => handleViewSavedData(invoice)}
                             className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
-                            title="View">
+                            title="View"
+                          >
                             <FaEye />
                           </button>
                         </div>
@@ -203,7 +253,7 @@ const InvoiceList = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
+                    <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
                       No invoices found
                     </td>
                   </tr>
@@ -214,29 +264,21 @@ const InvoiceList = () => {
         </div>
 
         {selectedInvoice && viewMode === 'view' && (
-          <InvoiceSavedViewer
-            invoice={selectedInvoice}
-            onClose={handleCloseViewer}
-          />
+          <InvoiceSavedViewer invoice={selectedInvoice} onClose={handleCloseViewer} />
         )}
 
-
-        {/* Uploader Modal */}
         {showUploader && (
           <InvoiceUploader
-
             folderId={folderId}
             onClose={(uploaded) => {
-
-              setShowUploader(false); // Close the modal
+              setShowUploader(false);
               if (uploaded && folderId) {
-                fetchInvoices(folderId); // Fetch updated invoices
+                fetchInvoices(folderId);
               }
             }}
           />
         )}
 
-        {/* Delete Confirmation Modal */}
         {invoiceToDelete && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
@@ -262,7 +304,6 @@ const InvoiceList = () => {
           </div>
         )}
 
-        {/* Image Viewer Modal */}
         {selectedInvoice && viewMode === 'image' && (
           <ImageInvoiceModal
             imgUrl={`http://localhost:9090${selectedInvoice.img}`}
@@ -271,8 +312,6 @@ const InvoiceList = () => {
           />
         )}
 
-
-        {/* Full Viewer with Form */}
         {selectedInvoice && viewMode === 'full' && (
           <InvoiceViewer
             invoice={selectedInvoice}
@@ -280,8 +319,6 @@ const InvoiceList = () => {
             onValidated={handleValidated}
           />
         )}
-
-
       </div>
     </div>
   );

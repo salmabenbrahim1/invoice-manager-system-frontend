@@ -9,6 +9,8 @@ import { ClientProvider } from './contexts/ClientContext';
 import { FolderProvider } from './contexts/FolderContext';
 import { InvoiceProvider } from './contexts/InvoiceContext';
 import { ForgotPasswordProvider } from './contexts/ForgotPasswordContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+
 
 
 // Components
@@ -62,6 +64,8 @@ function App() {
                   <InvoiceProvider>
 
                     <ToastContainer />
+                        <NotificationProvider>
+
                     <Navbar />
                     <div className="main-content">
                       <Routes>
@@ -242,7 +246,7 @@ function App() {
                         />
                       </Routes>
                     </div>
-
+                    </NotificationProvider>
                   </InvoiceProvider>
                 </FolderProvider>
               </ClientProvider>
