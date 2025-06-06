@@ -7,7 +7,8 @@ import {
   FaChartBar,
   FaFolderOpen,
   FaExclamationTriangle,
-  FaDownload
+  FaCheck,
+  FaTimes,
 } from "react-icons/fa";
 import { useUser } from "../../contexts/UserContext";
 import CompanyLayout from "../../components/company/CompanyLayout";
@@ -49,10 +50,10 @@ const GraphCard = ({ title, icon, children }) => (
 );
 
 const CompanyDashboard = () => {
-  const { currentUser, stats, loading, error } = useUser();
+  const { stats } = useUser();
   const dashboardRef = useRef(null);
 
- 
+
 
   return (
     <CompanyLayout>
@@ -98,27 +99,27 @@ const CompanyDashboard = () => {
             value={stats?.assignedClients || 0}
             bg="bg-indigo-50"
           />
-            <DashboardCard
+          <DashboardCard
             icon={<FaUsers className="text-gray-600 text-2xl" />}
             label="Unassigned Clients"
             value={stats?.unassignedClients || 0}
             bg="bg-gray-50"
           />
 
-        
+
         </div>
 
         {/* Additional Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <DashboardCard
+          <DashboardCard
             icon={<FaFileInvoice className="text-yellow-600 text-2xl" />}
             label="Invoices Uploaded"
             value={stats?.uploadedInvoices || 0}
             bg="bg-yellow-50"
           />
           <DashboardCard
-            icon={<FaExclamationTriangle className="text-red-600 text-2xl" />}
-            label="Invoices Failed"
+            icon={<FaTimes className="text-red-600 text-2xl" />}
+            label="Failed Invoices"
             value={stats?.failedInvoices || 0}
             bg="bg-red-50"
           />
@@ -129,12 +130,12 @@ const CompanyDashboard = () => {
             bg="bg-yellow-100"
           />
           <DashboardCard
-            icon={<FaFileInvoice className="text-green-600 text-2xl" />}
+            icon={<FaCheck className="text-green-600 text-2xl" />}
             label="Validated Invoices"
-           value={stats?.validatedInvoices?. validated || 0}
+            value={stats?.validatedInvoicesCount || 0}
             bg="bg-green-50"
           />
-        
+
         </div>
 
         {/* Graphs Section */}
@@ -143,7 +144,7 @@ const CompanyDashboard = () => {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats?.monthlyInvoices || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="month" />
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
@@ -160,7 +161,7 @@ const CompanyDashboard = () => {
 
           <GraphCard title="Pending Invoices" icon={<FaFolderOpen className="text-yellow-500" />}>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats?.pendingByAccountant || []}>
+              <LineChart data={stats?.pendingInvoicesByMonth || []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="date" />
                 <YAxis />

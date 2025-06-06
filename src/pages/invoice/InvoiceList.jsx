@@ -22,12 +22,12 @@ import { useNavigate } from 'react-router-dom';
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2,fetchInvoiceById } = useInvoice();
+  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2, fetchInvoiceById } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
-    const [selectedInvoice, setSelectedInvoice] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(false);
 
   const [viewMode, setViewMode] = useState(null);
 
@@ -38,10 +38,10 @@ const InvoiceList = () => {
   }, [folderId]);
 
   const handleValidated = () => {
-  fetchInvoices(folderId); // refresh invoices list 
-};
+    fetchInvoices(folderId); // refresh invoices list 
+  };
 
- 
+
 
   const filteredInvoices = invoices
     .filter(
@@ -77,15 +77,15 @@ const InvoiceList = () => {
   };
 
   const handleViewSavedData = async (invoice) => {
-  try {
-    const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
-    console.log(updatedInvoice);
-    setSelectedInvoice(updatedInvoice); // set the updated one
-    setViewMode('view');
-  } catch (error) {
-    toast.error("Failed to fetch updated invoice data");
-  }
-};
+    try {
+      const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
+      console.log(updatedInvoice);
+      setSelectedInvoice(updatedInvoice); // set the updated one
+      setViewMode('view');
+    } catch (error) {
+      toast.error("Failed to fetch updated invoice data");
+    }
+  };
 
 
 
@@ -161,17 +161,18 @@ const InvoiceList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${invoice.status === 'processed'
-                              ? 'bg-green-100 text-green-800'
-                              : invoice.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : invoice.status === 'Validated'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
+                              ${invoice.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : invoice.status === 'Validated'
+                                ? 'bg-green-100 text-green-800'
+                                : invoice.status === 'Failed'
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-gray-100 text-gray-800'
                             }`}
                         >
                           {invoice.status}
                         </span>
+
 
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

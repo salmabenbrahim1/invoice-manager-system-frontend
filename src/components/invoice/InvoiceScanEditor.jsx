@@ -119,6 +119,20 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       return updatedData;
     });
   };
+  const handleCancel = async () => {
+  try {
+    await invoiceService.updateInvoice(invoice.id, {
+      ...formData,
+      status: 'Failed'
+    });
+    toast.info('Invoice marked as failed.');
+    onClose(); // Close the modal
+    fetchInvoices(folderId); // Refresh the invoice list
+  } catch (error) {
+    toast.error('Failed to mark the invoice as failed.');
+  }
+};
+
 
   return (
     <div className="fixed inset-0 z-[1001] bg-black bg-opacity-50 flex items-start justify-center pt-20 pb-4 overflow-y-auto">
@@ -192,7 +206,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
                 <button onClick={handleEditClick} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                   <FaEdit /> Edit
                 </button>
-                <button onClick={onClose} className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400">Close</button>
+                <button onClick={handleCancel} className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800">Cancel</button>
               </>
             ) : (
               <>

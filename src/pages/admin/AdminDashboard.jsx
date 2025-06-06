@@ -97,8 +97,8 @@ const AdminDashboard = () => {
                 <FaBuilding className="text-blue-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-gray-500">Companies</h2>
-                <p className="text-2xl font-bold text-gray-800">
+                <h2 className="text-xl font-medium text-gray-500">Companies</h2>
+                <p className="text-2xl text-center font-bold text-gray-800">
                   {stats?.totalCompanies || 0}
                 </p>
               </div>
@@ -111,8 +111,8 @@ const AdminDashboard = () => {
                 <FaUserTie className="text-green-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-gray-500">Accountants</h2>
-                <p className="text-2xl font-bold text-gray-800">
+                <h2 className="text-xl text-center text-center font-medium text-gray-500">Accountants</h2>
+                <p className="text-xl font-bold text-gray-800">
                   {stats?.totalIndependentAccountants || 0}
                 </p>
               </div>
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
                 <FaFileInvoice className="text-indigo-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-gray-500">Invoices</h2>
+                <h2 className="text-xl text-center font-medium text-gray-500">Invoices</h2>
                 <p className="text-2xl font-bold text-gray-800">
                   {stats?.totalInvoicesExtracted || 0}
                 </p>
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
                 <FaUsers className="text-purple-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-sm font-medium text-gray-500">Users</h2>
+                <h2 className="text-xl text-center font-medium text-gray-500">Users</h2>
                 <p className="text-2xl font-bold text-gray-800">
                   <span className="text-green-600">{stats?.activeUsers || 0}</span> /
                   <span className="text-red-600"> {stats?.inactiveUsers || 0}</span>
@@ -195,66 +195,76 @@ const AdminDashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-4">
-              <FaCrown className="text-yellow-500 mr-3 text-xl" />
-              <h2 className="text-lg font-semibold text-gray-800">Top 3 Accountants</h2>
+  {/* Top Accountants Card */}
+  <div className="bg-white p-4 rounded-lg border border-gray-200">
+    <div className="flex items-center mb-3">
+      <FaCrown className="text-yellow-500 mr-2 text-lg" />
+      <h2 className="text-base font-semibold text-gray-800">Top 3 Accountants</h2>
+    </div>
+
+    <ul className="space-y-2">
+      {top5Accountants.length > 0 ? (
+        top5Accountants.map((accountant, index) => (
+          <li key={accountant.id} className="flex items-center p-2 border-b border-gray-100 last:border-0">
+            <span className={`
+              flex items-center justify-center 
+              w-6 h-6 rounded-full mr-3
+              text-sm font-bold
+              ${index < 3 ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700'}
+              border ${index < 3 ? 'border-yellow-600' : 'border-gray-300'}
+            `}>
+              {index + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">{accountant.name}</p>
+              <p className="text-xs text-gray-600">{accountant.invoiceCount} invoices</p>
             </div>
-
-            <ul className="space-y-3">
-              {top5Accountants.length > 0 ? (
-                top5Accountants.map((accountant, index) => (
-                  <li key={accountant.id} className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                    <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 
-                      ${index < 3 ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                      {index + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{accountant.name}</p>
-                      <p className="text-sm text-gray-500">{accountant.invoiceCount} invoices</p>
-
-                    </div>
-                    <FaChartLine className="text-green-500 ml-2" />
-                  </li>
-                ))
-              ) : (
-                <div className="text-center py-4 text-gray-500">
-                  No accountants data available
-                </div>
-              )}
-            </ul>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-            <div className="flex items-center mb-4">
-              <FaBuilding className="text-indigo-500 mr-3 text-xl" />
-              <h2 className="text-lg font-semibold text-gray-800">Top 3 Companies</h2>
-            </div>
-
-            <ul className="space-y-3">
-              {top5Companies.length > 0 ? (
-                top5Companies.map((company, index) => (
-                  <li key={company.id} className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                    <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-3 
-                      ${index < 3 ? 'bg-indigo-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
-                      {index + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{company.name}</p>
-                      <p className="text-sm text-gray-500">{company.invoiceCount} invoices</p>
-
-                    </div>
-                    <FaChartBar className="text-blue-500 ml-2" />
-                  </li>
-                ))
-              ) : (
-                <div className="text-center py-4 text-gray-500">
-                  No companies data available
-                </div>
-              )}
-            </ul>
-          </div>
+            <FaChartLine className="text-green-500 ml-2" />
+          </li>
+        ))
+      ) : (
+        <div className="text-center py-3 text-gray-500 text-sm">
+          No accountants data available
         </div>
+      )}
+    </ul>
+  </div>
+
+  {/* Top Companies Card */}
+  <div className="bg-white p-4 rounded-lg border border-gray-200">
+    <div className="flex items-center mb-3">
+      <FaBuilding className="text-indigo-500 mr-2 text-lg" />
+      <h2 className="text-base font-semibold text-gray-800">Top 3 Companies</h2>
+    </div>
+
+    <ul className="space-y-2">
+      {top5Companies.length > 0 ? (
+        top5Companies.map((company, index) => (
+          <li key={company.id} className="flex items-center p-2 border-b border-gray-100 last:border-0">
+            <span className={`
+              flex items-center justify-center 
+              w-6 h-6 rounded-full mr-3
+              text-sm font-bold
+              ${index < 3 ? 'bg-indigo-500 text-white' : 'bg-gray-200 text-gray-700'}
+              border ${index < 3 ? 'border-indigo-600' : 'border-gray-300'}
+            `}>
+              {index + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">{company.name}</p>
+              <p className="text-xs text-gray-600">{company.invoiceCount} invoices</p>
+            </div>
+            <FaChartBar className="text-blue-500 ml-2" />
+          </li>
+        ))
+      ) : (
+        <div className="text-center py-3 text-gray-500 text-sm">
+          No companies data available
+        </div>
+      )}
+    </ul>
+  </div>
+</div>
       </div>
     </AdminLayout>
   );

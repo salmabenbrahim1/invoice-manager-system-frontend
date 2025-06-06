@@ -1,13 +1,14 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import {
   FaUser,
   FaFolderOpen,
   FaFileAlt,
-  FaClock,
+  FaClock, FaTimes,
   FaArchive,
   FaStar,
   FaChartLine,
-  FaCalendar, FaCalendarAlt
+  FaCalendar, FaCalendarAlt,
+  FaCheck
 } from "react-icons/fa";
 import { useUser } from "../../contexts/UserContext";
 import AccountantLayout from "../../components/accountant/AccountantLayout";
@@ -26,14 +27,16 @@ import {
 } from "recharts";
 import { exportDashboardAsPDF } from "../../utils/pdfUtils";
 
-const DashboardCard = ({ icon, label, value, bg }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100">
-    <div className="flex items-center">
-      <div className={`p-3 rounded-full ${bg} mr-4`}>{icon}</div>
-      <div>
-        <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className="text-2xl font-bold text-gray-800">{value}</p>
+const DashboardCard = ({ icon, label, value, bg, className }) => (
+  <div className={`bg-white p-4 rounded-lg shadow-md border border-gray-100 ${className}`}>
+    <div className="flex flex-col">
+      {/* Top row: icon + label */}
+      <div className="flex items-center mb-1">
+        <div className={`p-2 rounded-full ${bg} mr-2`}>{icon}</div>
+        <p className="text-medium font-medium text-gray-500">{label}</p>
       </div>
+      {/* Bottom row: value */}
+      <p className="text-2xl text-center font-bold text-gray-800">{value}</p>
     </div>
   </div>
 );
@@ -48,8 +51,7 @@ const GraphCard = ({ title, icon, children }) => (
   </div>
 );
 
-const COLORS = ["#0088FE", "#FF8042", "#FFBB28"];
-
+const COLORS = [ "#FFBB28","#4CAF50", "#FF4D4D", "#AAAAAA"];
 const ProportionCharts = ({ stats }) => {
   if (!stats) return null;
 
@@ -63,18 +65,24 @@ const ProportionCharts = ({ stats }) => {
   ];
 
   const validatedInvoices =
-    typeof stats.validatedInvoices === "number"
-      ? stats.validatedInvoices
-      : stats.validatedInvoices?.count || 0;
+    typeof stats.validatedInvoicesCount === "number"
+      ? stats.validatedInvoicesCount
+      : stats.validatedInvoicesCount?.count || 0;
   const pendingInvoices =
     typeof stats.pendingInvoices === "number"
       ? stats.pendingInvoices
       : stats.pendingInvoices?.count || 0;
+  const failedInvoices =
+    typeof stats.failedInvoices === "number"
+      ? stats.failedInvoices
+      : stats.failedInvoices?.count || 0;
 
   // Prepare data for the chart
   const invoiceData = [
-    { name: "Validated Invoices", value: validatedInvoices },
     { name: "Pending Invoices", value: pendingInvoices },
+    { name: "Validated Invoices", value: validatedInvoices },
+    { name: "Failed Invoices", value: failedInvoices },
+
   ];
 
   // Proportion of favorite vs non-favorite folders (excluding archived)
@@ -94,7 +102,6 @@ const ProportionCharts = ({ stats }) => {
 
       <GraphCard
         title="Invoices"
-        subtitle="Validated vs Pending Invoices"
         icon={<FaFileAlt className="text-indigo-600" />}
         className="bg-white rounded-md border border-gray-200 shadow-sm p-5 corporate-dashboard"
       >
@@ -109,10 +116,7 @@ const ProportionCharts = ({ stats }) => {
                 data={invoiceData}
                 dataKey="value"
                 nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={75}
-                innerRadius={40}
+
                 paddingAngle={1}
                 label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                 labelLine={false}
@@ -131,11 +135,14 @@ const ProportionCharts = ({ stats }) => {
                 formatter={(value) => [
                   <span className="font-semibold">{value} invoices</span>
                 ]}
-                labelFormatter={(name) =>
-                  <div className="mb-1">
-                    {name === 'Pending' ? ' Pending Invoices' : ' Validated Invoices'}
-                  </div>
-                }
+                labelFormatter={(name) => {
+                   if (name === "Pending Invoices") return "Pending Invoices";
+                  if (name === "Validated Invoices") return "Validated Invoices";
+                 
+                  if (name === "Failed Invoices") return "Failed Invoices";
+                  return name;
+                }}
+
                 contentStyle={{
                   background: '#ffffff',
                   border: '1px solid #E5E7EB',
@@ -155,8 +162,10 @@ const ProportionCharts = ({ stats }) => {
                   fontSize: '13px'
                 }}
                 formatter={(value) => {
-                  if (value === 'Pending') return 'Pending Invoices';
-                  if (value === 'Validated') return 'Validated Invoices';
+                  if (value === 'Pending Invoices') return 'Pending Invoices';
+                  if (value === 'validatedInvoicesCount') return 'Validated Invoices';
+                  if (value === "Failed Invoices") return "Failed Invoices";
+
                   return value;
                 }}
               />
@@ -294,30 +303,56 @@ const AccountantDashboard = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
           <DashboardCard
             icon={<FaUser className="text-blue-600 text-2xl" />}
             label="Clients"
             value={stats?.totalClients || 0}
             bg="bg-blue-50"
+            className="w-60"
+
           />
           <DashboardCard
             icon={<FaFolderOpen className="text-green-600 text-2xl" />}
             label="Folders"
             value={(stats?.totalFolders || 0) - (stats?.archivedFiles || 0)}
             bg="bg-green-50"
+            className="w-60"
+
           />
           <DashboardCard
             icon={<FaFileAlt className="text-indigo-600 text-2xl" />}
             label="Invoices"
             value={stats?.totalInvoices || 0}
             bg="bg-indigo-50"
+            className="w-60"
           />
           <DashboardCard
             icon={<FaClock className="text-yellow-600 text-2xl" />}
             label="Pending Invoices"
             value={stats?.pendingInvoices || 0}
             bg="bg-yellow-50"
+            className="w-60"
+
+
+          />
+          <DashboardCard
+            icon={<FaCheck className="text-green-600 text-2xl" />}
+            label="Validated Invoices"
+            value={stats?.validatedInvoicesCount || 0}
+            bg="bg-green-50"
+             className="w-60"
+          />
+
+
+          <DashboardCard
+            icon={<FaTimes className="text-red-600 text-2xl" />}
+            label="Failed Invoices"
+            value={stats?.failedInvoices || 0}
+            bg="bg-red-50"
+            className="w-60"
+
+
           />
         </div>
 

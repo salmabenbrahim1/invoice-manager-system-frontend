@@ -60,18 +60,35 @@ const invoiceService = {
 
   // Update an existing invoice
   updateInvoice: async (invoiceId, updatedData) => {
-    try {
-      const response = await axios.put(`${API_URL}/${invoiceId}`, updatedData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error updating invoice:', error);
-      throw error;
+  try {
+    const formData = new FormData();
+
+    if (updatedData.invoiceName) {
+      formData.append("invoiceName", updatedData.invoiceName);
     }
-  },
+    if (updatedData.status) {
+      formData.append("status", updatedData.status);
+    }
+    if (updatedData.folderId) {
+      formData.append("folderId", updatedData.folderId);
+    }
+    if (updatedData.file) {
+      formData.append("file", updatedData.file);
+    }
+
+    const response = await axios.put(`${API_URL}/${invoiceId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating invoice:", error);
+    throw error;
+  }
+},
+
 
   // Delete an invoice by ID
   deleteInvoice: async (invoiceId) => {

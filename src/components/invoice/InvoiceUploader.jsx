@@ -116,7 +116,7 @@ const InvoiceUploader = ({ onClose }) => {
                 <label className="cursor-pointer flex flex-col items-center justify-center">
                   <FaFileUpload className="text-gray-400 text-4xl mb-2" />
                   <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500 mt-1">PNG, JPG (Max. 5MB)</p>
+                  <p className="text-xs text-gray-500 mt-1">PNG, JPG, PDF (Max. 5MB)</p>
                   <input
                     type="file"ng
                     accept="image/*"

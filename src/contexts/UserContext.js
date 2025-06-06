@@ -178,7 +178,6 @@ const updateProfile = async (profileData) => {
     throw err;
   }
 };
-// UserContext.js
 const fetchCompanyAccountants = async (companyId) => {
   try {
     return await userService.getInternalAccountantsByCompanyId(companyId);
