@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { FaEye, FaUser } from "react-icons/fa"; 
+import {  FaUser } from "react-icons/fa"; 
+import { Eye } from "lucide-react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { useUser } from "../../contexts/UserContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -132,10 +133,10 @@ const MyAccountantsOversight = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleViewClick(user)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-gray-600 hover:text-gray-900"
                           title="View Folders"
                         >
-                          <FaEye className="text-lg" />
+                          <Eye className="text-medium" />
                         </button>
                       </td>
                     </tr>

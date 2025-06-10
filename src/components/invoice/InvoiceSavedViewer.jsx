@@ -1,13 +1,10 @@
-import React from "react";
-
 const InvoiceSavedViewer = ({ invoice, onClose }) => {
   if (!invoice) return null;
 
   const statusColors = {
-    Paid: { bg: "bg-green-100", text: "text-green-800" },
+    Validated: { bg: "bg-green-100", text: "text-green-800" },
     Pending: { bg: "bg-yellow-100", text: "text-yellow-800" },
-    Overdue: { bg: "bg-red-100", text: "text-red-800" },
-    Draft: { bg: "bg-gray-100", text: "text-gray-800" },
+    Failed: { bg: "bg-red-100", text: "text-red-800" },
   };
 
   return (
@@ -30,7 +27,7 @@ const InvoiceSavedViewer = ({ invoice, onClose }) => {
           <div className="sticky top-0 bg-white p-6 pb-4 border-b border-gray-100 z-10 flex justify-between items-center">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Invoice Details</h2>
-              <p className="text-sm text-gray-500 mt-1">#{invoice.invoiceNumber || "N/A"}</p>
+              <p className="text-sm text-gray-500 mt-1">#{invoice.invoiceNumber || "N/A "}</p>
             </div>
             <button
               onClick={onClose}
@@ -63,12 +60,14 @@ const InvoiceSavedViewer = ({ invoice, onClose }) => {
               <Section title="Seller Details" color="purple" items={[
                 { label: "Name", value: invoice.sellerName },
                 { label: "Address", value: invoice.sellerAddress, isAddress: true },
-                { label: "SIRET", value: invoice.sellerSiretNumber },
+                { label: "Email", value: invoice.sellerEmail },
               ]} />
 
               <Section title="Customer Details" color="green" items={[
                 { label: "Name", value: invoice.customerName },
                 { label: "Address", value: invoice.customerAddress, isAddress: true },
+                { label: "Email", value: invoice.customerEmail },
+
               ]} />
 
               <Section title="Tax Information" color="amber" items={[

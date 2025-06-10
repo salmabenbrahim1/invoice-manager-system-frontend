@@ -49,7 +49,7 @@ import AccountantOversight from './pages/admin/AccountantOversight';
 import CompanyOversight from './pages/admin/CompanyOversight';
 import ViewAccountantIndependentFolder from './pages/admin/ViewAccountantIndependentFolder';
 import ViewInvoicesForAdmin from './pages/admin/ViewInvoicesForAdmin';
-import SavedInvoiceViewerForAccountant from './pages/company/SavedInvoiceViewerForAccountant';
+import ContactUs from './pages/ContactUs';
 import ViewCompanyAccountants from './pages/admin/ViewCompanyAccountants';
 import ViewInternalAccountantFolders from './pages/admin/ViewInternalAccountantFolders';
 function App() {
@@ -73,6 +73,9 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/home" element={<Home />} />
                         <Route path="/login" element={<Login />} />
+                         <Route path="/contact-us" element={<ContactUs />} />
+
+
                         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
                         <Route path="/unauthorized" element={<Unauthorized />} />

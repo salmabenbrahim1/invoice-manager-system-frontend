@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import CompanyLayout from "../../components/company/CompanyLayout";
 import { useAuth } from "../../contexts/AuthContext";
 import { getCompanyEmailLogs, deleteCompanyEmail } from "../../services/emailService";
-import { FaTrash, FaSearch, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { FaSearch, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import {Trash } from 'lucide-react';
+
 import ConfirmModal from "../../components/modals/ConfirmModal";
 import EmailDetailsModal from "../../components/modals/EmailDetailsModal";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -191,7 +193,7 @@ const CompanyEmailHistoryPage = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{new Date(log.date).toLocaleString()}</td>
                     <td className="px-6 py-4 whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <button onClick={(e) => handleDelete(log, e)} className="text-red-500 hover:text-red-700" title="Delete Email">
-                        <FaTrash />
+                        <Trash />
                       </button>
                     </td>
                   </tr>

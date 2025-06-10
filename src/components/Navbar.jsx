@@ -59,13 +59,24 @@ const Navbar = () => {
           <Link to="/home" className="nav-link">
             {t('home')}
           </Link>
-          <Link to="/manage-invoices" className="nav-link">
-            {t('manageInvoices')}
-          </Link>
+
+          {user?.role === 'COMPANY' && (
+            <Link to="/my-accountants-oversight" className="nav-link">
+              {'Oversight'}
+            </Link>
+          )}
+
+          {(user?.role === 'INTERNAL_ACCOUNTANT' || user?.role === 'INDEPENDENT_ACCOUNTANT') && (
+            <Link to="/manage-invoices" className="nav-link">
+              {t('manageInvoices') || 'Manage Invoices'}
+            </Link>
+          )}
+
           <Link to="/contact-us" className="nav-link">
             {t('contactUs')}
           </Link>
         </div>
+
 
         <div
           className="user-section"

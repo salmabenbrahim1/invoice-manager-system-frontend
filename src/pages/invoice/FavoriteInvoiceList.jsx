@@ -6,25 +6,22 @@ import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { MdDocumentScanner } from 'react-icons/md';
 
-import { FaQrcode } from 'react-icons/fa';
 import { AiOutlineUpload } from 'react-icons/ai';
 import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
 import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 import InvoiceSavedViewer from '../../components/invoice/InvoiceSavedViewer';
-import { AiOutlineEye } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
 
 
 const FavoiriteInvoiceList = () => {
   const { folderId } = useParams();
-  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2,fetchInvoiceById } = useInvoice();
+  const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2, fetchInvoiceById } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [invoiceToDelete, setInvoiceToDelete] = useState(null);
   const [showUploader, setShowUploader] = useState(false);
-    const [selectedInvoice, setSelectedInvoice] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(false);
 
   const [viewMode, setViewMode] = useState(null);
 
@@ -35,10 +32,10 @@ const FavoiriteInvoiceList = () => {
   }, [folderId]);
 
   const handleValidated = () => {
-  fetchInvoices(folderId); // refresh invoices list 
-};
+    fetchInvoices(folderId);
+  };
 
- 
+
 
   const filteredInvoices = invoices
     .filter(
@@ -74,15 +71,15 @@ const FavoiriteInvoiceList = () => {
   };
 
   const handleViewSavedData = async (invoice) => {
-  try {
-    const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
-    console.log(updatedInvoice);
-    setSelectedInvoice(updatedInvoice); // set the updated one
-    setViewMode('view');
-  } catch (error) {
-    toast.error("Failed to fetch updated invoice data");
-  }
-};
+    try {
+      const updatedInvoice = await fetchInvoiceById(invoice.id); // fetch from backend
+      console.log(updatedInvoice);
+      setSelectedInvoice(updatedInvoice); // set the updated one
+      setViewMode('view');
+    } catch (error) {
+      toast.error("Failed to fetch updated invoice data");
+    }
+  };
 
 
 
@@ -158,13 +155,11 @@ const FavoiriteInvoiceList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                          ${invoice.status === 'processed'
-                              ? 'bg-green-100 text-green-800'
-                              : invoice.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : invoice.status === 'Validated'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-red-100 text-red-800'
+                          ${invoice.status === 'Pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : invoice.status === 'Validated'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
                             }`}
                         >
                           {invoice.status}
@@ -180,18 +175,19 @@ const FavoiriteInvoiceList = () => {
                           >
                             <MdDocumentScanner />
                           </button>
+                          
+                          <button
+                            onClick={() => handleViewSavedData(invoice)}
+                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
+                            title="View">
+                            <FaEye />
+                          </button>
                           <button
                             onClick={() => setInvoiceToDelete(invoice)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                             title="Delete"
                           >
                             <FaTrash />
-                          </button>
-                          <button
-                            onClick={() => handleViewSavedData(invoice)}
-                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
-                            title="View">
-                            <FaEye />
                           </button>
                         </div>
                       </td>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { useCallback } from 'react';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { FaUser, FaSearch } from 'react-icons/fa';

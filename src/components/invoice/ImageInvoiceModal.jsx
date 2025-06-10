@@ -1,5 +1,4 @@
-import React from 'react';
-import ZoomableImage from '../ZoomableImage'; // Import the ZoomableImage component
+import ZoomableImage from '../ZoomableImage'; 
 
 const ImageInvoiceModal = ({ imgUrl, onClose, onScan }) => {
   return (
@@ -21,7 +20,6 @@ const ImageInvoiceModal = ({ imgUrl, onClose, onScan }) => {
           <ZoomableImage imgUrl={imgUrl} maxHeight="60vh" showDragHint={true} />
         </div>
 
-        {/* Action Buttons - Adjusted to be closer */}
         <div className="px-2 py-2 bg-white border-t border-gray-100 flex gap-2 justify-end items-center">
           <button
             onClick={onClose}

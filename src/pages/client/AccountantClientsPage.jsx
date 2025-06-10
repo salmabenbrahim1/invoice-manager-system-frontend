@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import AddClientForm from '../../components/client/AddClientForm';
-import { FaUser, FaEdit, FaTrash, FaUserPlus, FaSearch, FaSync } from 'react-icons/fa';
+import { FaUser,FaUserPlus, FaSearch, FaSync } from 'react-icons/fa';
+import { Pencil, Trash } from 'lucide-react';
 import { useClient } from '../../contexts/ClientContext';
-import { useAuth } from '../../contexts/AuthContext'; // Import useAuth
+import { useAuth } from '../../contexts/AuthContext'; 
 import UpdateClientForm from '../../components/client/UpdateClientForm';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../components/modals/ConfirmModal';
@@ -12,7 +13,7 @@ import LoadingSpinner from '../../components/LoadingSpinner';
 
 const AccountantClientsPage = () => {
   const { clients, loading: contextLoading, fetchClients, addClient,updateClient,deleteClient } = useClient();
-  const { user } = useAuth(); // Get the user from AuthContext
+  const { user } = useAuth(); 
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
@@ -197,14 +198,14 @@ const handleRefresh = useCallback(async () => {
                           className="text-blue-600 hover:text-blue-900 mr-4 disabled:opacity-50"
                           disabled={contextLoading || operationLoading}
                         >
-                          <FaEdit className="inline mr-1" />
+                          <Pencil size = {18} className="inline mr-1" />
                         </button>
                         <button
                           onClick={() => requestDeleteClient(client)}
                           className="text-red-600 hover:text-red-900 disabled:opacity-50"
                           disabled={contextLoading || operationLoading}
                         >
-                          <FaTrash className="inline mr-1" /> 
+                          <Trash size = {18} className="inline mr-1" /> 
                         </button>
                       </td>
                     </tr>

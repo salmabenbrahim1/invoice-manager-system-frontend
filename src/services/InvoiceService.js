@@ -104,7 +104,7 @@ const invoiceService = {
  // Update the status of an existing invoice
  updateInvoiceStatus: async (invoiceId, status) => {
   try {
-    const response = await axios.put(`${API_URL}/${invoiceId}/status?status=${status}`, null, {
+    const response = await axios.put(`${API_URL}/${invoiceId}/status?status=${status}`, "N/A", {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -139,26 +139,28 @@ export const extractInvoiceData = async (imagePath, selectedEngine) => {
 
     if (isFlatStructure) {
       structuredData = {
-        sellerSiretNumber: extracted.sellerSiretNumber || 'null',
-        sellerName: extracted.sellerName || 'null',
-        sellerAddress: extracted.sellerAddress || 'null',
-        sellerPhone: extracted.sellerPhone || 'null',
+        sellerName: extracted.sellerName || 'N/A',
+        sellerAddress: extracted.sellerAddress || 'N/A',
+        sellerPhone: extracted.sellerPhone || 'N/A',
+        sellerEmail: extracted.sellerEmail || 'N/A',
 
-        customerName: extracted.customerName || 'null',
-        customerAddress: extracted.customerAddress || 'null',
-        customerPhone: extracted.customerPhone || 'null',
 
-        invoiceNumber: extracted.invoiceNumber || 'null',
-        invoiceDate: extracted.invoiceDate || 'null',
-        dueDate: extracted.dueDate || 'null',
-        currency: extracted.currency || 'null',
+        customerName: extracted.customerName || 'N/A',
+        customerAddress: extracted.customerAddress || 'N/A',
+        customerPhone: extracted.customerPhone || 'N/A',
+        customerEmail: extracted.customerEmail || 'N/A',
 
-        tva: extracted.tva || 'null',
-        tvaNumber: extracted.tvaNumber || 'null',
-        tvaRate: extracted.tvaRate || 'null',
-        ht: extracted.ht || 'null',
-        ttc: extracted.ttc || 'null',
-        discount: extracted.discount || 'null',
+        invoiceNumber: extracted.invoiceNumber || 'N/A',
+        invoiceDate: extracted.invoiceDate || 'N/A',
+        dueDate: extracted.dueDate || 'N/A',
+        currency: extracted.currency || 'N/A',
+
+        tva: extracted.tva || 'N/A',
+        tvaNumber: extracted.tvaNumber || 'N/A',
+        tvaRate: extracted.tvaRate || 'N/A',
+        ht: extracted.ht || 'N/A',
+        ttc: extracted.ttc || 'N/A',
+        discount: extracted.discount || 'N/A',
       };
     } else {
       // (Gemini)
@@ -170,30 +172,30 @@ export const extractInvoiceData = async (imagePath, selectedEngine) => {
       } = extracted;
 
       structuredData = {
-        sellerSiretNumber: sellerInformation.sellerSiretNumber || 'null',
-        sellerName: sellerInformation.sellerName || 'null',
-        sellerAddress: sellerInformation.sellerAddress || 'null',
-        sellerPhone: sellerInformation.sellerPhone || 'null',
+        sellerSiretNumber: sellerInformation.sellerSiretNumber || 'N/A',
+        sellerName: sellerInformation.sellerName || 'N/A',
+        sellerAddress: sellerInformation.sellerAddress || 'N/A',
+        sellerPhone: sellerInformation.sellerPhone || 'N/A',
 
-        customerName: customerInformation.customerName || 'null',
-        customerAddress: customerInformation.customerAddress || 'null',
-        customerPhone: customerInformation.customerPhone || 'null',
+        customerName: customerInformation.customerName || 'N/A',
+        customerAddress: customerInformation.customerAddress || 'N/A',
+        customerPhone: customerInformation.customerPhone || 'N/A',
 
-        invoiceNumber: invoiceMetadata.invoiceNumber || 'null',
-        invoiceDate: invoiceMetadata.invoiceDate || 'null',
-        dueDate: invoiceMetadata.dueDate || 'null',
-        currency: invoiceMetadata.currency || 'null',
+        invoiceNumber: invoiceMetadata.invoiceNumber || 'N/A',
+        invoiceDate: invoiceMetadata.invoiceDate || 'N/A',
+        dueDate: invoiceMetadata.dueDate || 'N/A',
+        currency: invoiceMetadata.currency || 'N/A',
 
-        tva: amounts.tva || 'null',
-        tvaNumber: amounts.tvaNumber || 'null',
-        tvaRate: amounts.tvaRate || 'null',
-        ht: amounts.ht || 'null',
-        ttc: amounts.ttc || 'null',
-        discount: amounts.discount || 'null',
+        tva: amounts.tva || 'N/A',
+        tvaNumber: amounts.tvaNumber || 'N/A',
+        tvaRate: amounts.tvaRate || 'N/A',
+        ht: amounts.ht || 'N/A',
+        ttc: amounts.ttc || 'N/A',
+        discount: amounts.discount || 'N/A',
       };
     }
 
-    const isEmpty = Object.values(structuredData).every(val => val === 'null');
+    const isEmpty = Object.values(structuredData).every(val => val === 'N/A');
     if (isEmpty) throw new Error('No usable data returned from extraction');
 
     return structuredData;

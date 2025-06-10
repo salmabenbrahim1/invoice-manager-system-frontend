@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useInvoice } from '../../contexts/InvoiceContext';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { toast } from 'react-toastify';
 import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
 import { MdDocumentScanner } from 'react-icons/md';
-import { AiOutlineUpload, AiOutlineEye } from 'react-icons/ai';
 import moment from 'moment';
 
-import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
 import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 import InvoiceSavedViewer from '../../components/invoice/InvoiceSavedViewer';
@@ -155,19 +153,20 @@ const ArchivedInvoiceList = () => {
                           >
                             <MdDocumentScanner />
                           </button>
-                          <button
-                            onClick={() => setInvoiceToDelete(invoice)}
-                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
-                            title="Delete"
-                          >
-                            <FaTrash />
-                          </button>
+                          
                           <button
                             onClick={() => handleViewSavedData(invoice)}
                             className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
                             title="View"
                           >
                             <FaEye />
+                          </button>
+                          <button
+                            onClick={() => setInvoiceToDelete(invoice)}
+                            className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
+                            title="Delete"
+                          >
+                            <FaTrash />
                           </button>
                         </div>
                       </td>

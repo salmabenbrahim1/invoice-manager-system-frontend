@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaFileUpload, FaTimes } from 'react-icons/fa';
 import { useInvoice } from '../../contexts/InvoiceContext';
@@ -12,7 +12,7 @@ const InvoiceUploader = ({ onClose }) => {
 
   const [invoiceName, setInvoiceName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('Pending');
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileChange = (e) => {
@@ -53,7 +53,7 @@ const InvoiceUploader = ({ onClose }) => {
       await createInvoice(formData); 
       toast.success('Invoice uploaded successfully');
 
-      onClose(false);  // Close the form after successful submission
+      onClose(false);  
 
       // Reset the form after submission
       setInvoiceName('');

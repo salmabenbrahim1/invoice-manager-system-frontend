@@ -1,5 +1,7 @@
-import React, { useState } from "react";
-import { FaUserPlus, FaEdit, FaToggleOn, FaToggleOff, FaTrash, FaSearch, FaUser } from "react-icons/fa"; 
+import { useState } from "react";
+import { FaUserPlus, FaToggleOn, FaToggleOff, FaSearch, FaUser } from "react-icons/fa"; 
+import { Pencil, Trash } from 'lucide-react';
+
 import InternalAccountantForm from "../../components/company/InternalAccountantForm";
 import Pagination from "../../components/Pagination";
 import ConfirmModal from "../../components/modals/ConfirmModal";
@@ -214,14 +216,14 @@ const InternalAccountantsPage = () => {
                             className="text-blue-600 hover:text-blue-900"
                             title="Edit"
                           >
-                            <FaEdit />
+                            <Pencil size = {18} />
                           </button>
                           <button
                             onClick={() => handleDeleteConfirmation(user)}
                             className="text-red-600 hover:text-red-900"
                             title="Delete"
                           >
-                            <FaTrash />
+                            <Trash size = {18} />
                           </button>
                           <button
                             onClick={() => handleToggleConfirmation(user)}

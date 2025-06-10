@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { FaUserPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaUserPlus } from "react-icons/fa";
+import { Pencil, Trash } from 'lucide-react';
+
 import { FaUser, FaSearch } from 'react-icons/fa';
 import AddClientForm from "../../components/client/AddClientForm";
 import UpdateClientForm from "../../components/client/UpdateClientForm";
@@ -185,13 +187,13 @@ const CompanyClientsPage = () => {
                         onClick={() => openEditModal(client)}
                         className="text-blue-500 hover:text-blue-700 mr-2"
                       >
-                        <FaEdit />
+                        <Pencil size = {18} />
                       </button>
                       <button
                         onClick={() => requestDeleteClient(client)}
                         className="text-red-500 hover:text-red-700"
                       >
-                        <FaTrash />
+                        <Trash size = {18}/>
                       </button>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">

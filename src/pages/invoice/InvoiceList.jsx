@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useInvoice } from '../../contexts/InvoiceContext';
 import SidebarAccountant from '../../components/accountant/SidebarAccountant';
 import { toast } from 'react-toastify';
-import { FaSearch, FaTrash, FaEye } from 'react-icons/fa';
-import { MdDocumentScanner } from 'react-icons/md';
+import { FaSearch } from 'react-icons/fa';
+import { Scan } from 'lucide-react';
+import { Trash } from 'lucide-react';
+import { Eye } from 'lucide-react';
+
 import { AiOutlineUpload } from 'react-icons/ai';
 import moment from 'moment';
 import InvoiceUploader from '../../components/invoice/InvoiceUploader';
 import InvoiceViewer from '../../components/invoice/InvoiceScanEditor';
 import ImageInvoiceModal from '../../components/invoice/ImageInvoiceModal';
 import InvoiceSavedViewer from '../../components/invoice/InvoiceSavedViewer';
-import { exportAllInvoicesToCSV } from '../../utils/exportToCSV'; // Assurez-vous que ce chemin est correct
+import { exportAllInvoicesToCSV } from '../../utils/exportToCSV';
+
 
 const InvoiceList = () => {
   const { folderId } = useParams();
-//const { invoices, fetchInvoices, deleteInvoice, selectedInvoice2, setSelectedInvoice2, fetchInvoiceById } = useInvoice();
-
   const { invoices, fetchInvoices, deleteInvoice, fetchInvoiceById } = useInvoice();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -60,10 +62,15 @@ const InvoiceList = () => {
     setInvoiceToDelete(null);
   };
 
-  const handleShowInvoice = (invoice) => {
-    setSelectedInvoice(invoice);
-    setViewMode('image');
-  };
+ const handleShowInvoice = (invoice) => {
+  if (invoice.status === 'Validated') {
+    toast.info('This invoice is already validated!');
+    return;
+  }
+  setSelectedInvoice(invoice);
+  setViewMode('image');
+};
+
 
   const handleScanInvoice = () => {
     setViewMode('full');
@@ -135,7 +142,7 @@ const InvoiceList = () => {
                 className="pl-10 pr-4 py-2 border rounded-lg w-64"
               />
             </div>
-           
+
             <button
               title="Export extracted data from selected validated invoices to CSV"
               className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200 shadow-md"
@@ -144,7 +151,7 @@ const InvoiceList = () => {
               <AiOutlineUpload className="mr-2" />
               Export CSV
             </button>
-             <button
+            <button
               className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 shadow-md"
               onClick={() => setShowUploader(true)}
             >
@@ -210,7 +217,7 @@ const InvoiceList = () => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                              ${invoice.status === 'pending'
+                              ${invoice.status === 'Pending'
                               ? 'bg-yellow-100 text-yellow-800'
                               : invoice.status === 'Validated'
                                 ? 'bg-green-100 text-green-800'
@@ -231,21 +238,22 @@ const InvoiceList = () => {
                             className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                             title="Scan"
                           >
-                            <MdDocumentScanner />
+                            <Scan color="black" />
+                          </button>
+
+                          <button
+                            onClick={() => handleViewSavedData(invoice)}
+                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
+                            title="View"
+                          >
+                            <Eye size = {18}/>
                           </button>
                           <button
                             onClick={() => setInvoiceToDelete(invoice)}
                             className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50"
                             title="Delete"
                           >
-                            <FaTrash />
-                          </button>
-                          <button
-                            onClick={() => handleViewSavedData(invoice)}
-                            className="text-gray-600 hover:text-gray-900 p-1 rounded hover:bg-gray-50"
-                            title="View"
-                          >
-                            <FaEye />
+                            <Trash size = {18} />
                           </button>
                         </div>
                       </td>

@@ -133,7 +133,7 @@ const AddClientForm = ({ show, onHide }) => {
           <Form.Group className="mb-4" controlId="formClientPhone">
             <Form.Label>Phone Number <span className="text-danger">*</span></Form.Label>
             <Form.Control
-              type="tel"
+              type="text"
               name="phone"
               placeholder="123 456 7890"
               value={newClient.phone}

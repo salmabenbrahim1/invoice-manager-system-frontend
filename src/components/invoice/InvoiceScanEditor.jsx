@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaEdit, FaTimes, FaCheck } from 'react-icons/fa';
 import { extractInvoiceData } from '../../services/InvoiceService';
 import invoiceService from '../../services/InvoiceService';
@@ -6,13 +6,14 @@ import ZoomableImage from '../ZoomableImage';
 import { toast } from 'react-toastify';
 import { useInvoice } from '../../contexts/InvoiceContext';
 import { useRef } from 'react';
+import { ArrowPathIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 
 const InvoiceScanEditor = ({ invoice, onClose }) => {
   const [extractedData, setExtractedData] = useState(null);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [extractionError, setExtractionError] = useState(false); 
+  const [extractionError, setExtractionError] = useState(false);
   const { fetchInvoices } = useInvoice();
   const folderId = invoice?.folderId;
 
@@ -32,7 +33,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
         { name: 'sellerName', label: 'Seller Name' },
         { name: 'sellerAddress', label: 'Seller Address' },
         { name: 'sellerPhone', label: 'Seller Phone' },
-        { name: 'sellerSiretNumber', label: 'SIRET Number' }
+        { name: 'sellerEmail', label: 'Seller Email' }
       ]
     },
     {
@@ -40,7 +41,9 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
       fields: [
         { name: 'customerName', label: 'Customer Name' },
         { name: 'customerAddress', label: 'Customer Address' },
-        { name: 'customerPhone', label: 'Customer Phone' }
+        { name: 'customerPhone', label: 'Customer Phone' },
+        { name: 'customerEmail', label: 'Customer Email' }
+
       ]
     },
     {
@@ -59,7 +62,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const fetchData = async () => {
     if (!invoice?.img) return;
     setLoading(true);
-    setExtractionError(false); 
+    setExtractionError(false);
 
     try {
       const data = await extractInvoiceData(invoice.img);
@@ -68,10 +71,10 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
         throw new Error("No usable data returned from extraction");
       }
       setFormData(data);
-      setExtractedData(data); 
+      setExtractedData(data);
     } catch (error) {
       console.error("Error extracting data:", error);
-      setExtractionError(true); 
+      setExtractionError(true);
     } finally {
       setLoading(false);
     }
@@ -81,7 +84,7 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
   //
   useEffect(() => {
-    if (didFetch.current) return; 
+    if (didFetch.current) return;
     didFetch.current = true;
     fetchData();
   }, [invoice]);
@@ -97,18 +100,18 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
   const handleSave = async () => {
     try {
       await invoiceService.saveInvoice(invoice.id, {
-      ...formData,
-      status: 'Validated', 
-    });
+        ...formData,
+        status: 'Validated',
+      });
       toast.success('Invoice saved successfully!');
       setIsEditing(false);
       const updatedInvoice = { ...invoice, status: 'Validated' };
       setFormData(updatedInvoice); // Update formData 
-      onClose(); 
-      
-     fetchInvoices(folderId); // Refresh the invoices list 
-  } catch (error) {
-    toast.error('Error while saving the invoice.');
+      onClose();
+
+      fetchInvoices(folderId); // Refresh the invoices list 
+    } catch (error) {
+      toast.error('Error while saving the invoice.');
     }
   };
 
@@ -120,18 +123,22 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
     });
   };
   const handleCancel = async () => {
-  try {
-    await invoiceService.updateInvoice(invoice.id, {
-      ...formData,
-      status: 'Failed'
-    });
-    toast.info('Invoice marked as failed.');
-    onClose(); // Close the modal
-    fetchInvoices(folderId); // Refresh the invoice list
-  } catch (error) {
-    toast.error('Failed to mark the invoice as failed.');
-  }
-};
+    try {
+      await invoiceService.updateInvoice(invoice.id, {
+        ...formData,
+        status: 'Failed'
+      });
+      toast.info('Invoice marked as failed.');
+      onClose(); // Close the modal
+      fetchInvoices(folderId); // Refresh the invoice list
+    } catch (error) {
+      toast.error('Failed to mark the invoice as failed.');
+    }
+  };
+  const allFieldsAreNA = () => {
+    return Object.values(formData || {}).every(value => value === "N/A");
+  };
+
 
 
   return (
@@ -152,40 +159,73 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2 flex-1 overflow-hidden">
           {/* Left panel - Form fields */}
-          <div className="flex flex-col overflow-hidden">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <div className="w-8 h-8 border-3 border-blue-100 border-t-blue-500 rounded-full animate-spin mb-3"></div>
-                <p className="text-sm text-gray-500">Extracting data...</p>
-              </div>
-            ) : (
-              <div className="overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                {fieldGroups.map((group, index) => (
-                  <div key={index} className="bg-gray-50 rounded-md mb-3 overflow-hidden">
-                    <h3 className="text-md font-semibold text-gray-700 p-3 border-b">{group.title}</h3>
-                    <div className={`grid gap-3 p-3 ${group.title === 'Amounts' ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                      {group.fields.map((field) => (
-                        <div key={field.name} className="space-y-1">
-                          <label className="block text-xs font-medium text-gray-600">{field.label}</label>
-                          <input
-                            type="text"
-                            name={field.name}
-                            value={formData?.[field.name] || ''}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                            className={`w-full px-3 py-2 text-sm rounded border focus:ring-1 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${isEditing
-                              ? 'bg-white border-gray-300 hover:border-gray-400'
-                              : 'bg-gray-100 border-gray-200'
-                              }`}
-                          />
-                        </div>
-                      ))}
-                    </div>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-full space-y-3">
+              <div
+                className="w-8 h-8 border-3 border-blue-100 border-t-blue-500 rounded-full animate-spin"
+                aria-label="Loading spinner"
+              />
+              <p className="text-sm text-gray-600">Extracting data...</p>
+            </div>
+          ) : (
+            <div className="overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              {allFieldsAreNA() && !isEditing ? (
+                <div className="flex flex-col justify-center items-center h-full text-center p-6 space-y-4">
+                  <div className="flex items-center space-x-2 text-red-600">
+                    <p className="font-medium text-medium">
+                      A problem has occurred — the invoice may not be clear.
+                    </p>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <button
+                    onClick={fetchData}
+                    className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                  >
+                    <ArrowPathIcon className="w-4 h-4 mr-2" />
+                    Try Again
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {fieldGroups.map((group, index) => (
+                    <div key={`group-${index}`} className="bg-gray-50 rounded-lg overflow-hidden shadow-sm">
+                      <h3 className="text-md font-semibold text-gray-800 p-3 border-b border-gray-200">
+                        {group.title}
+                      </h3>
+                      <div
+                        className={`grid gap-4 p-3 ${group.title === 'Amounts' ? 'grid-cols-3' : 'grid-cols-2'
+                          }`}
+                      >
+                        {group.fields.map((field) => (
+                          <div key={field.name} className="space-y-1.5">
+                            <label
+                              htmlFor={field.name}
+                              className="block text-xs font-medium text-gray-700"
+                            >
+                              {field.label}
+                            </label>
+                            <input
+                              type="text"
+                              id={field.name}
+                              name={field.name}
+                              value={formData?.[field.name] || 'N/A'}
+                              onChange={handleInputChange}
+                              disabled={!isEditing}
+                              aria-disabled={!isEditing}
+                              className={`w-full px-3 py-2 text-sm rounded-md border focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition ${isEditing
+                                  ? 'bg-white border-gray-300 hover:border-gray-400'
+                                  : 'bg-gray-100 border-gray-200 cursor-not-allowed'
+                                }`}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
 
           {/* Right panel - Image */}
           <div className="flex flex-col h-full sticky top-16">
@@ -206,7 +246,9 @@ const InvoiceScanEditor = ({ invoice, onClose }) => {
                 <button onClick={handleEditClick} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                   <FaEdit /> Edit
                 </button>
-                <button onClick={handleCancel} className="px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800">Cancel</button>
+                <button onClick={handleCancel} className=" flex items-center gap-2 px-4 py-2 text-white rounded-md bg-red-700 text-white rounded-md hover:bg-red-800">
+                  <FaTimes /> Cancel
+                </button>
               </>
             ) : (
               <>
