@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { FaFolder, FaStar, FaSearch, FaRegCalendarAlt } from 'react-icons/fa';
@@ -15,6 +15,8 @@ import InternalAddFolderForm from '../../components/folder/InternalAddFolderForm
 import FolderContextMenu from '../../components/folder/FolderContextMenu';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import UpdateFolderForm from '../../components/folder/UpdateFolderForm';
+import ClientInfoModal from '../../components/client/ClientInfoModal'; 
+import FolderDetailsModal from '../../components/folder/FolderDetailsModal';
 
 import '../../styles/folderList.css';
 
@@ -30,6 +32,16 @@ const FolderList = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  //  client modal
+  const [showClientModal, setShowClientModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null);
+  // Folder Details modal
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [folderToShowDetails, setFolderToShowDetails] = useState(null);
+
+
+
+
 
   const navigate = useNavigate();
 
@@ -47,6 +59,12 @@ const FolderList = () => {
     setShowAddModal(false);
     toast.success(`Folder "${createdFolder.folderName}" created successfully.`);
   };
+
+  const handleShowClientInfo = (client) => {
+    setSelectedClient(client);
+    setShowClientModal(true);
+  };
+
 
   const formatDate = (date) =>
     new Date(date).toLocaleDateString('en-US', {
@@ -89,6 +107,17 @@ const FolderList = () => {
         break;
       case 'archive':
         archiveFolder(folderId);
+        break;
+      case 'clientInfo':    // <-- ADD THIS CASE
+        if (folder.client) {
+          handleShowClientInfo(folder.client);
+        } else {
+          toast.info('No client information available.');
+        }
+        break;
+      case 'details':
+        setFolderToShowDetails(folder);
+        setShowDetailsModal(true);
         break;
       default:
         break;
@@ -220,6 +249,20 @@ const FolderList = () => {
           folderData={folderToEdit}
         />
       )}
+      <ClientInfoModal
+        show={showClientModal}
+        onHide={() => setShowClientModal(false)}
+        client={selectedClient}
+      />
+      <FolderDetailsModal
+  show={showDetailsModal}
+  onHide={() => setShowDetailsModal(false)}
+  folder={folderToShowDetails}
+/>
+
+      
+
+
     </Container>
   );
 };

@@ -1,7 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState} from 'react';
 import { folderService } from '../services/FolderService';
 import { toast } from 'react-toastify';
-import { useParams } from 'react-router-dom';
 
 const FolderContext = createContext();
 

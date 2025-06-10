@@ -1,6 +1,7 @@
 import  { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
-import { FaUserPlus, FaEdit, FaUser, FaBuilding, FaToggleOn, FaToggleOff, FaTrash, FaSearch } from "react-icons/fa";
+import { FaUserPlus, FaUser, FaBuilding, FaToggleOn, FaToggleOff, FaSearch } from "react-icons/fa";
+import { Pencil, Trash } from "lucide-react";
 import UserModal from "../../components/modals/UserModal";
 import Pagination from "../../components/Pagination";
 import { useUser } from "../../contexts/UserContext";
@@ -249,14 +250,14 @@ const UsersPage = () => {
                           className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50"
                           title="Edit"
                         >
-                          <FaEdit />
+                          <Pencil size = {18} />
                         </button>
                         <button 
                           onClick={() => handleDeleteConfirmation(user)} 
                           className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
                           title="Delete"
                         >
-                          <FaTrash />
+                          <Trash size = {18}/>
                         </button>
                         <button 
                           onClick={() => handleDeactivateConfirmation(user)} 
@@ -300,14 +301,14 @@ const UsersPage = () => {
                         className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50"
                         title="Edit"
                       >
-                        <FaEdit />
+                        <Pencil size = {18} />
                       </button>
                       <button 
                         onClick={() => handleDeleteConfirmation(user)} 
                         className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
                         title="Delete"
                       >
-                        <FaTrash />
+                        <Trash size = {18} />
                       </button>
                       <button 
                         onClick={() => handleDeactivateConfirmation(user)} 

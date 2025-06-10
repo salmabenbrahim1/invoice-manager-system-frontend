@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import CompanyLayout from "../../components/company/CompanyLayout";
 
 const CompanyClientsPage = () => {
-  const { clients, handleAddClient, deleteClient, updateClient, assignAccountantToClient } = useClient();
+  const { clients, addClient, deleteClient, updateClient, assignAccountantToClient } = useClient();
   const { getInternalAccountants } = useUser();
 
   const [showAddModal, setShowAddModal] = useState(false);
@@ -45,8 +45,8 @@ const CompanyClientsPage = () => {
   const clientsPerPage = 6;
 
   //add client 
-  const addClient = async (newClient) => {
-    await handleAddClient(newClient);
+  const handleAddClient = async (newClient) => {
+    await addClient(newClient);
     setShowAddModal(false);
   };
 
@@ -276,7 +276,7 @@ const CompanyClientsPage = () => {
           <AddClientForm
             show={showAddModal}
             onHide={() => setShowAddModal(false)}
-            onSave={addClient}
+            onSave={handleAddClient}
           />
         )}
 

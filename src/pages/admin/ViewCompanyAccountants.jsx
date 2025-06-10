@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import AdminLayout from "../../components/admin/AdminLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { FaUserTie, FaEye,FaArrowLeft } from "react-icons/fa";
+import { FaUserTie,FaArrowLeft } from "react-icons/fa";
+import { Eye } from "lucide-react";
 import { useUser } from "../../contexts/UserContext";
 
 const ViewCompanyAccountants = () => {
@@ -94,10 +95,10 @@ const ViewCompanyAccountants = () => {
                                         <td className="px-6 py-4">
                                             <button
                                                 onClick={() => handleViewClick(acc)}
-                                                className="text-blue-600 hover:text-blue-900"
+                                                className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
                                                 title="View Folders"
                                             >
-                                                <FaEye />
+                                                <Eye  size={18} /> View
                                             </button>
                                         </td>
                                     </tr>

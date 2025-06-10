@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { FaBuilding, FaEye, FaArrowLeft } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import { FaBuilding, FaArrowLeft } from "react-icons/fa";
+import { Eye } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { useUser } from "../../contexts/UserContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -121,10 +122,10 @@ const CompanyOversight = () => {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleViewClick(user)}
-                        className="text-blue-600 hover:text-blue-900"
+                        className="text-indigo-600 hover:text-indigo-900"
                         title="View Internal Accountants "
                       >
-                        <FaEye />
+                        <Eye /> 
                       </button>
                     </td>
                   </tr>

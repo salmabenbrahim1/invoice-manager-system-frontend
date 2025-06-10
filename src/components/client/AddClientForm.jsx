@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Modal, Form, Button, Spinner } from 'react-bootstrap';
 import { useClient } from '../../contexts/ClientContext';
+import { validateEmail, validatePhoneNumber } from '../../utils/validation'; // adjust path if needed
 
 const AddClientForm = ({ show, onHide }) => {
   const { addClient, loading: contextLoading } = useClient();
@@ -16,19 +17,19 @@ const AddClientForm = ({ show, onHide }) => {
 
   const validateForm = () => {
     const errors = {};
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const phoneRegex = /^\+?[\d\s-]{8,15}$/;
 
     if (!newClient.name.trim()) errors.name = 'Name is required';
+
     if (!newClient.email.trim()) {
       errors.email = 'Email is required';
-    } else if (!emailRegex.test(newClient.email)) {
+    } else if (!validateEmail(newClient.email)) {
       errors.email = 'Please enter a valid email';
     }
+
     if (!newClient.phone.trim()) {
       errors.phone = 'Phone number is required';
-    } else if (!phoneRegex.test(newClient.phone)) {
-      errors.phone = '8-15 digits, optional "+" prefix';
+    } else if (!validatePhoneNumber(newClient.phone)) {
+      errors.phone = 'Phone number must be 8 to 15 digits, optionally starting with +';
     }
 
     setFormErrors(errors);
@@ -37,12 +38,29 @@ const AddClientForm = ({ show, onHide }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setNewClient(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
+
+    if (name === 'phone') {
+      // Keep only digits and optional leading +
+      let newValue = value;
+
+      if (newValue.startsWith('+')) {
+        newValue = '+' + newValue.slice(1).replace(/\D/g, '');
+      } else {
+        newValue = newValue.replace(/\D/g, '');
+      }
+
+      setNewClient(prev => ({
+        ...prev,
+        phone: newValue
+      }));
+    } else {
+      setNewClient(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+
+    // Clear error for this field when user types
     if (formErrors[name]) {
       setFormErrors(prev => ({
         ...prev,
@@ -52,7 +70,8 @@ const AddClientForm = ({ show, onHide }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
@@ -74,23 +93,6 @@ const AddClientForm = ({ show, onHide }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handlePhoneInput = (e) => {
-    const input = e.target.value.replace(/\D/g, '');
-    let formatted = input;
-    
-    if (input.length > 3) {
-      formatted = `${input.substring(0, 3)} ${input.substring(3, 6)}`;
-      if (input.length > 6) {
-        formatted += ` ${input.substring(6, 10)}`;
-      }
-    }
-    
-    setNewClient(prev => ({
-      ...prev,
-      phone: formatted
-    }));
   };
 
   return (
@@ -135,20 +137,15 @@ const AddClientForm = ({ show, onHide }) => {
             <Form.Control
               type="text"
               name="phone"
-              placeholder="123 456 7890"
+              placeholder="12345678"
               value={newClient.phone}
               onChange={handleChange}
-              onBlur={handlePhoneInput}
               isInvalid={!!formErrors.phone}
-              maxLength={15}
-
+              maxLength={16} // allow + and up to 15 digits
             />
             <Form.Control.Feedback type="invalid">
               {formErrors.phone}
             </Form.Control.Feedback>
-            <Form.Text className="text-muted">
-              Format: 123 456 7890 or +123 456 7890
-            </Form.Text>
           </Form.Group>
 
           <div className="d-flex justify-content-end gap-2">

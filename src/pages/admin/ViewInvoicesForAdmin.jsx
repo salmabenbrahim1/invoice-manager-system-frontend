@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { FaArrowLeft, FaSearch, FaEye } from 'react-icons/fa';
+import { FaArrowLeft, FaSearch } from 'react-icons/fa';
+import { Eye } from 'lucide-react';
 import moment from 'moment';
 import Pagination from '../../components/Pagination';
 import { useInvoice } from '../../contexts/InvoiceContext';
@@ -109,9 +110,9 @@ const ViewInvoicesForAdmin = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">
                     Actions
-                  </th>
+                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -153,7 +154,7 @@ const ViewInvoicesForAdmin = () => {
                             onClick={() => handleViewSavedData(inv.id)}
                             className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
                           >
-                            <FaEye /> View
+                            <Eye size={18}/> View
                           </button>
                         </td>
                       </tr>

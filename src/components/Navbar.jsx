@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaUserCircle, FaBars, FaTimes, FaBuilding, FaSignOutAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -59,10 +59,34 @@ const Navbar = () => {
           <Link to="/home" className="nav-link">
             {t('home')}
           </Link>
-
+          {(user?.role === 'ADMIN') && (
+            <Link to="/admin/dashboard" className="nav-link">
+              {'Dashboard'}
+            </Link>
+          )}
+          {(user?.role === 'ADMIN') && (
+            <Link to="/users" className="nav-link">
+              {'Manage users'}
+            </Link>
+          )}
+          {(user?.role === 'ADMIN') && (
+            <Link to="/admin/user-oversight" className="nav-link">
+              {'Oversight'}
+            </Link>
+          )}
+          {user?.role === 'COMPANY' && (
+            <Link to="/company/dashboard" className="nav-link">
+              {'Dashboard'}
+            </Link>
+          )}
           {user?.role === 'COMPANY' && (
             <Link to="/my-accountants-oversight" className="nav-link">
               {'Oversight'}
+            </Link>
+          )}
+          {(user?.role === 'INTERNAL_ACCOUNTANT' || user?.role === 'INDEPENDENT_ACCOUNTANT') && (
+            <Link to="/accountant/dashboard" className="nav-link">
+              { 'Dashboard'}
             </Link>
           )}
 
@@ -71,10 +95,16 @@ const Navbar = () => {
               {t('manageInvoices') || 'Manage Invoices'}
             </Link>
           )}
+          
+          { (!user) && (
 
-          <Link to="/contact-us" className="nav-link">
-            {t('contactUs')}
-          </Link>
+            <Link to="/login" className="nav-link">
+              {t('manageInvoices') || 'Manage Invoices'}
+            </Link>)}
+          {(user?.role !== 'ADMIN') && (
+            <Link to="/contact-us" className="nav-link">
+              {t('contactUs')}
+            </Link>)}
         </div>
 
 

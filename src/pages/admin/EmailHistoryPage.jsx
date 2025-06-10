@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
-import { FaSearch, FaEnvelope, FaTimesCircle, FaCheckCircle, FaTrash } from "react-icons/fa";
+import { FaSearch,  FaTimesCircle, FaCheckCircle } from "react-icons/fa";
+import { Trash } from "lucide-react";
 import Pagination from "../../components/Pagination";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import EmailDetailsModal from "../../components/modals/EmailDetailsModal";
@@ -187,7 +188,7 @@ const EmailHistoryPage = () => {
                         className="text-red-500 hover:text-red-700"
                         title="Delete Email"
                       >
-                        <FaTrash />
+                        <Trash />
                       </button>
                     </td>
                   </tr>

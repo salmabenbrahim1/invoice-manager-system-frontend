@@ -70,10 +70,8 @@ const ClientProvider = ({ children }) => {
     if (!user) return;
 
     try {
-      const newClient = await createClient(clientData, user.token);
-      setClients((prev) => [...prev, newClient]);
-      return newClient; // Return the newly created client
-
+     await createClient(clientData, user.token);
+     await fetchClients();        
     } catch (error) {
       console.error('Error creating client', error);
       setError('Failed to create client');

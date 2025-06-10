@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { FaFolder, FaSearch, FaRegCalendarAlt, FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaFolder, FaSearch, FaRegCalendarAlt, FaArrowLeft } from "react-icons/fa";
+import { Eye } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Pagination from "../../components/Pagination";
-import { useFolder } from '../../contexts/FolderContext'; 
+import { useFolder } from '../../contexts/FolderContext';
 
 const ViewAccountantIndependentFolder = () => {
   const { accountantId } = useParams();
@@ -77,7 +78,7 @@ const ViewAccountantIndependentFolder = () => {
             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
           >
             <FaArrowLeft className="mr-2" />
-            Back to Independent Accountants 
+            Back to Independent Accountants
           </button>
         </div>
 
@@ -111,8 +112,8 @@ const ViewAccountantIndependentFolder = () => {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Folder</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client</th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created On</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">Actions</th>                 
+                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {currentFolders.map((folder) => (
@@ -133,10 +134,10 @@ const ViewAccountantIndependentFolder = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => handleFolderClick(folder.id)}
-                          className="text-blue-600 hover:text-blue-900 flex items-center"
+                          className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
                           title="View invoices"
                         >
-                          <FaEye className="mr-1" /> View
+                          <Eye size={18} /> View
                         </button>
                       </td>
                     </tr>

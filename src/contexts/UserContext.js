@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import  { createContext, useContext, useState, useEffect } from 'react';
 import { userService } from '../services/userService';
 import { useAuth } from './AuthContext';
 import { toast } from 'react-toastify';
@@ -102,7 +102,7 @@ export const UserProvider = ({ children }) => {
       } else {
         const response = await userService.createUser(userData);
         user = response.user;
-        emailSent = response.emailSent;  // Extract email sent status from the response
+        emailSent = response.emailSent; 
         subject = response.subject || "No subject";
         body = response.body || "No body";
         setUsers(prev => [...prev, user]);
@@ -112,7 +112,6 @@ export const UserProvider = ({ children }) => {
       return { user, emailSent, subject, body };
     } catch (err) {
       console.error('Error saving user:', err);
-      toast.error(err.message || 'Failed to save user');
       throw err;
     } finally {
       setLoading(false);
@@ -125,7 +124,6 @@ export const UserProvider = ({ children }) => {
     try {
       await userService.deleteUser(id);
       setUsers(prev => prev.filter(u => u.id !== id));
-      toast.success("User deleted successfully");
     } catch (err) {
       console.error('Delete user error:', err);
       toast.error(err.message || 'Failed to delete user');

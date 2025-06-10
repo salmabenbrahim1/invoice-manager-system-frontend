@@ -56,7 +56,7 @@ export const exportAllInvoicesToCSV = (invoices) => {
 
   const csvContent = csvArray
     .map(row =>
-      row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(";")
+      row.map(field => `"${String(field).replace(/"/g, '""')}"`).join(",")
     )
     .join("\n");
 

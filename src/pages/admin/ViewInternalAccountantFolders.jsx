@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import { FaFolder, FaSearch, FaRegCalendarAlt, FaEye, FaArrowLeft } from "react-icons/fa";
+import { FaFolder, FaSearch, FaRegCalendarAlt, FaArrowLeft } from "react-icons/fa";
+import { Eye } from "lucide-react";
 
 import AdminLayout from "../../components/admin/AdminLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -153,10 +154,10 @@ const ViewInternalAccountantFolders = () => {
                       <td className="px-6 py-4 text-sm font-medium">
                         <button
                           onClick={() => handleFolderClick(folder.id)}
-                          className="text-blue-600 hover:text-blue-900 flex items-center"
+                          className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
                           title="View invoices"
                         >
-                          <FaEye className="mr-1" /> View
+                          <Eye className="mr-1" /> View
                         </button>
                       </td>
                     </tr>

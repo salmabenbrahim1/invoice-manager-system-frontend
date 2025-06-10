@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Button, Form, FloatingLabel, Spinner, Image } from 'react-bootstrap';
 import { useUser } from '../../contexts/UserContext';
 import { toast } from 'react-toastify';

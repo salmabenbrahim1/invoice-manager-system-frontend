@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { fetchNotifications, markAllAsRead, deleteOldNotifications } from '../services/notificationService';
 import { jwtDecode } from 'jwt-decode';
