@@ -5,8 +5,11 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { FaUserTie,FaArrowLeft } from "react-icons/fa";
 import { Eye } from "lucide-react";
 import { useUser } from "../../contexts/UserContext";
+import { useTranslation } from 'react-i18next';
 
 const ViewCompanyAccountants = () => {
+      const { t } = useTranslation();
+
     const { id: companyId } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -52,32 +55,32 @@ const ViewCompanyAccountants = () => {
                             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
                           >
                             <FaArrowLeft className="mr-2" />
-                            Back to Companies
+                            {t('back_to_companies')}
                           </button>
                         </div>
                 
                 <h2 className="text-2xl font-bold mb-6">
-                    Internal Accountants - {companyName}
+                    {t('internal_accountants')} - {companyName}
                 </h2>
 
                 {accountants.length === 0 ? (
-                    <p className="text-gray-500">No internal accountants found.</p>
+                    <p className="text-gray-500">{t('no_internal_accountants_found')}</p>
                 ) : (
                     <div className="bg-white shadow rounded-lg overflow-hidden">
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Name
+                                        {t('name')}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Email
+                                        {t('email')}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Phone
+                                        {t('phone')}
                                     </th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                        Actions
+                                        {t('actions')}
                                     </th>
                                 </tr>
                             </thead>

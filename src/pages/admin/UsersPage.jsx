@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import { FaUserPlus, FaUser, FaBuilding, FaToggleOn, FaToggleOff, FaSearch } from "react-icons/fa";
 import { Pencil, Trash } from "lucide-react";
@@ -8,8 +8,12 @@ import { useUser } from "../../contexts/UserContext";
 import ConfirmModal from "../../components/modals/ConfirmModal";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { toast } from "react-toastify";
+import { useTranslation } from 'react-i18next';
+
 
 const UsersPage = () => {
+  const { t } = useTranslation();
+
   const {
     users,
     deleteUser,
@@ -35,9 +39,9 @@ const UsersPage = () => {
   if (contextLoading) {
     return (
       <AdminLayout>
-        <LoadingSpinner 
+        <LoadingSpinner
           size="lg"
-          color="primary" 
+          color="primary"
           position="fixed"
           fullScreen={true}
           overlay={true}
@@ -57,7 +61,7 @@ const UsersPage = () => {
 
   // Handle user creation
   const handleSubmit = async (e) => {
-    e.preventDefault();    
+    e.preventDefault();
     const formData = {
       id: selectedUser?.id,
       email: e.target.email.value,
@@ -66,38 +70,38 @@ const UsersPage = () => {
       gender: isPerson ? e.target.gender?.value : undefined,
       firstName: isPerson ? e.target.firstName?.value : undefined,
       lastName: isPerson ? e.target.lastName?.value : undefined,
-      companyName: !isPerson ? e.target.companyName?.value : undefined, 
+      companyName: !isPerson ? e.target.companyName?.value : undefined,
       role: isPerson ? "INDEPENDENT_ACCOUNTANT" : "COMPANY",
     };
-    
+
     try {
       const createdUser = await saveUser(formData, selectedUser?.id);
-    
+
       toast.success("User created successfully!");
-    
+
       const emailStatus = createdUser.emailSent ? 'sent' : 'failed';
       toast.info(`Email ${emailStatus === 'sent' ? 'sent' : 'not sent'}`);
-    
+
       const emailHistory = JSON.parse(localStorage.getItem('emailHistory')) || [];
-    
+
       const newEntry = {
         email: formData.email,
-        subject: createdUser.subject || "No subject", 
+        subject: createdUser.subject || "No subject",
         body: createdUser.body || "No body",
         status: emailStatus,
         date: new Date().toISOString()
       };
-    
+
       localStorage.setItem('emailHistory', JSON.stringify([newEntry, ...emailHistory]));
-    
+
       setIsModalOpen(false);
       setSelectedUser(null);
     } catch (error) {
       console.error("Error saving user:", error);
       toast.error("Failed to create user.");
     }
-    
-    
+
+
 
   };
 
@@ -153,8 +157,8 @@ const UsersPage = () => {
       <div className="px-4 sm:px-6 py-4">
         {/* Header and Controls */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">User Management</h1>
-          
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">{t('user_management')}</h1>
+
           <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1 min-w-[200px]">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -162,23 +166,23 @@ const UsersPage = () => {
               </div>
               <input
                 type="text"
-                placeholder="Search users..."
+                placeholder={t('search_users_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
               />
             </div>
-            
+
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             >
-              <option value="all">All Roles</option>
-              <option value="COMPANY">Companies</option>
-              <option value="INDEPENDENT_ACCOUNTANT">Accountants</option>
+              <option value="all">{t('all_roles')}</option>
+              <option value="COMPANY">{t('companies')}</option>
+              <option value="INDEPENDENT_ACCOUNTANT">{t('accountants')}</option>
             </select>
-            
+
             <button
               onClick={() => {
                 setSelectedUser(null);
@@ -187,7 +191,7 @@ const UsersPage = () => {
               className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
             >
               <FaUserPlus className="text-sm sm:text-base" />
-              <span className="text-sm sm:text-base">Add User</span>
+              <span className="text-sm sm:text-base">{t('add_user')}</span>
             </button>
           </div>
         </div>
@@ -207,8 +211,8 @@ const UsersPage = () => {
         <div className="overflow-x-auto shadow rounded-lg">
           {filteredUsers.length === 0 ? (
             <div className="text-center text-gray-500 py-8 bg-white rounded-lg">
-              <p className="text-lg">No users found</p>
-              <p className="text-sm mt-1">Try adjusting your search or filters</p>
+              <p className="text-lg">{t('no_users_found')}</p>
+              <p className="text-sm mt-1">{t('try_adjusting_search_or_filters')}</p>
             </div>
           ) : (
             <>
@@ -216,12 +220,12 @@ const UsersPage = () => {
               <table className="hidden md:table min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('type')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('name')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('email')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('phone')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('status')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -245,22 +249,22 @@ const UsersPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap flex gap-3">
-                        <button 
-                          onClick={() => handleEdit(user)} 
+                        <button
+                          onClick={() => handleEdit(user)}
                           className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50"
                           title="Edit"
                         >
-                          <Pencil size = {18} />
+                          <Pencil size={18} />
                         </button>
-                        <button 
-                          onClick={() => handleDeleteConfirmation(user)} 
+                        <button
+                          onClick={() => handleDeleteConfirmation(user)}
                           className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
                           title="Delete"
                         >
-                          <Trash size = {18}/>
+                          <Trash size={18} />
                         </button>
-                        <button 
-                          onClick={() => handleDeactivateConfirmation(user)} 
+                        <button
+                          onClick={() => handleDeactivateConfirmation(user)}
                           className={`p-1 rounded ${user.active ? "text-green-500 hover:bg-green-50" : "text-gray-500 hover:bg-gray-50"}`}
                           title={user.active ? "Deactivate" : "Activate"}
                         >
@@ -296,22 +300,22 @@ const UsersPage = () => {
                       </span>
                     </div>
                     <div className="flex justify-end gap-3 mt-3 pt-3 border-t border-gray-100">
-                      <button 
-                        onClick={() => handleEdit(user)} 
+                      <button
+                        onClick={() => handleEdit(user)}
                         className="text-blue-500 hover:text-blue-700 p-1 rounded hover:bg-blue-50"
                         title="Edit"
                       >
-                        <Pencil size = {18} />
+                        <Pencil size={18} />
                       </button>
-                      <button 
-                        onClick={() => handleDeleteConfirmation(user)} 
+                      <button
+                        onClick={() => handleDeleteConfirmation(user)}
                         className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50"
                         title="Delete"
                       >
-                        <Trash size = {18} />
+                        <Trash size={18} />
                       </button>
-                      <button 
-                        onClick={() => handleDeactivateConfirmation(user)} 
+                      <button
+                        onClick={() => handleDeactivateConfirmation(user)}
                         className={`p-1 rounded ${user.active ? "text-green-500 hover:bg-green-50" : "text-gray-500 hover:bg-gray-50"}`}
                         title={user.active ? "Deactivate" : "Activate"}
                       >
@@ -341,31 +345,48 @@ const UsersPage = () => {
           show={showConfirmModal}
           onHide={() => setShowConfirmModal(false)}
           onConfirm={handleDeleteUserConfirmed}
-          title="Confirm Deletion"
-          message={
+          title={t('confirm_deletion')} message={
             <p>
-              You are about to permanently delete the user with email <strong>{userToDelete?.email}</strong>.
-              This action cannot be undone.
+              {t('delete_user_warning_part1')}{' '}
+              <strong>{userToDelete?.email}</strong>.
+              {t('delete_user_warning_part2')}
             </p>
           }
           isDeactivation={false}
         />
-
         <ConfirmModal
           show={showDeactivateModal}
           onHide={() => setShowDeactivateModal(false)}
           onConfirm={handleDeactivateUserConfirmed}
-          title={userToDeactivate?.active ? "Confirm Deactivation" : "Confirm Activation"}
+          title={
+            userToDeactivate?.active
+              ? t('confirm_deactivation')
+              : t('confirm_activation')
+          }
           message={
             userToDeactivate?.active ? (
               <>
-                <p><strong className="text-orange-500">Warning:</strong> You are about to deactivate <strong>{userToDeactivate?.email}</strong>.</p>
-                <p>This will <strong className="text-orange-500">prevent access</strong> to their account.</p>
+                <p>
+                  <strong className="text-orange-500">{t('warning')}:</strong>{' '}
+                  {t('deactivate_user_message_part1')}{' '}
+                  <strong>{userToDeactivate?.email}</strong>.
+                </p>
+                <p>
+                  {t('deactivate_user_message_part2')}{' '}
+                  <strong className="text-orange-500">{t('prevent_access')}</strong>.
+                </p>
               </>
             ) : (
               <>
-                <p><strong className="text-green-600">Info:</strong> You are about to activate <strong>{userToDeactivate?.email}</strong>.</p>
-                <p>This will <strong className="text-green-600">restore access</strong> to their account.</p>
+                <p>
+                  <strong className="text-green-600">{t('info')}:</strong>{' '}
+                  {t('activate_user_message_part1')}{' '}
+                  <strong>{userToDeactivate?.email}</strong>.
+                </p>
+                <p>
+                  {t('activate_user_message_part2')}{' '}
+                  <strong className="text-green-600">{t('restore_access')}</strong>.
+                </p>
               </>
             )
           }

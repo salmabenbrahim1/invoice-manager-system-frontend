@@ -6,12 +6,16 @@ import { useUser } from "../../contexts/UserContext";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { useNavigate } from "react-router-dom";
 import Pagination from "../../components/Pagination";
+import { useTranslation } from 'react-i18next';
 
 const CompanyOversight = () => {
+  const { t } = useTranslation();
+
   const { users, loading } = useUser();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+
 
   const companies = users.filter(
     (user) =>
@@ -48,7 +52,7 @@ const CompanyOversight = () => {
           fullScreen
           overlay
           blur
-          text="Loading Companies"
+          text="{t('loading_companies')}"
         />
       </AdminLayout>
     );
@@ -63,19 +67,19 @@ const CompanyOversight = () => {
             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
           >
             <FaArrowLeft className="mr-2" />
-            Back to User Oversight
+           {t('back_to_user_oversight')}
           </button>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <h2 className="text-2xl font-semibold">Company Oversight</h2>
+          <h2 className="text-2xl font-semibold">{t('company_oversight')}</h2>
           <div className="relative w-full md:w-1/3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaBuilding className="text-gray-400" />
             </div>
             <input
               type="text"
-              placeholder="Search companies..."
+               placeholder={t('search_companies')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-purple-500"
@@ -92,11 +96,11 @@ const CompanyOversight = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('name')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('email')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('phone')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('status')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -112,9 +116,8 @@ const CompanyOversight = () => {
                     <td className="px-6 py-4 text-gray-500">{user.phone || "-"}</td>
                     <td className="px-6 py-4">
                       <span
-                        className={`px-2 inline-flex text-xs font-semibold rounded-full ${
-                          user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                        }`}
+                        className={`px-2 inline-flex text-xs font-semibold rounded-full ${user.active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {user.active ? "Active" : "Inactive"}
                       </span>
@@ -125,7 +128,7 @@ const CompanyOversight = () => {
                         className="text-indigo-600 hover:text-indigo-900"
                         title="View Internal Accountants "
                       >
-                        <Eye /> 
+                        <Eye />
                       </button>
                     </td>
                   </tr>
