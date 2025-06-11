@@ -92,7 +92,6 @@ const InternalAccountantForm = ({ show, onHide, userToEdit }) => {
   const createdUser = await saveUser(dataToSave, userToEdit?.id);
   refreshUsers();
 
-  // 🔽 Sauvegarde email dans localStorage si nouveau
   if (!userToEdit) {
     const emailStatus = createdUser.emailSent ? 'sent' : 'failed';
 

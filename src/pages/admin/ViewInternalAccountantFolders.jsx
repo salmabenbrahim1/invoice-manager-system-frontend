@@ -7,10 +7,13 @@ import { Eye } from "lucide-react";
 import AdminLayout from "../../components/admin/AdminLayout";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Pagination from "../../components/Pagination";
+import { useTranslation } from 'react-i18next';
 
 import { useFolder } from "../../contexts/FolderContext";
 
 const ViewInternalAccountantFolders = () => {
+  const { t } = useTranslation();
+
   const { accountantId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,12 +87,12 @@ const ViewInternalAccountantFolders = () => {
             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
           >
             <FaArrowLeft className="mr-2" />
-            Back to Internal Accountants
+            {t('back_to_internal_accountants')}
           </button>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <h2 className="text-2xl font-semibold">Folders of {accountantName}</h2>
+          <h2 className="text-2xl font-semibold">{t('folders_of')}  {accountantName}</h2>
 
           <div className="relative w-full md:w-1/3">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -97,8 +100,7 @@ const ViewInternalAccountantFolders = () => {
             </div>
             <input
               type="text"
-              placeholder="Search for a folder or client..."
-              value={searchQuery}
+              placeholder={t('search_folder_or_client')} value={searchQuery}
               onChange={handleSearchChange}
               className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
@@ -108,7 +110,7 @@ const ViewInternalAccountantFolders = () => {
         <div className="bg-white rounded-lg shadow overflow-hidden">
           {filteredFolders.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              {searchQuery ? "No folder found" : "No folders available"}
+      {searchQuery ? t('no_folder_found') : t('no_folders_available')}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -116,16 +118,16 @@ const ViewInternalAccountantFolders = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Folder
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Client
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Created At
+                      {t('folder')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('created_at')}
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('actions')}
                     </th>
                   </tr>
                 </thead>

@@ -61,32 +61,35 @@ const Navbar = () => {
           </Link>
           {(user?.role === 'ADMIN') && (
             <Link to="/admin/dashboard" className="nav-link">
-              {'Dashboard'}
+              {t('dashboard')}
             </Link>
           )}
           {(user?.role === 'ADMIN') && (
             <Link to="/users" className="nav-link">
-              {'Manage users'}
+              {t('manage_users')}
+
             </Link>
           )}
           {(user?.role === 'ADMIN') && (
             <Link to="/admin/user-oversight" className="nav-link">
-              {'Oversight'}
+              {t('oversight')}
             </Link>
           )}
           {user?.role === 'COMPANY' && (
             <Link to="/company/dashboard" className="nav-link">
-              {'Dashboard'}
+              {t('dashboard')}
+
             </Link>
           )}
           {user?.role === 'COMPANY' && (
             <Link to="/my-accountants-oversight" className="nav-link">
-              {'Oversight'}
+              {t('oversight')}
+
             </Link>
           )}
           {(user?.role === 'INTERNAL_ACCOUNTANT' || user?.role === 'INDEPENDENT_ACCOUNTANT') && (
             <Link to="/accountant/dashboard" className="nav-link">
-              { 'Dashboard'}
+              {t('dashboard')}
             </Link>
           )}
 
@@ -95,8 +98,8 @@ const Navbar = () => {
               {t('manageInvoices') || 'Manage Invoices'}
             </Link>
           )}
-          
-          { (!user) && (
+
+          {(!user) && (
 
             <Link to="/login" className="nav-link">
               {t('manageInvoices') || 'Manage Invoices'}

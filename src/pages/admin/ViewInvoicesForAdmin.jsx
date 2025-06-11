@@ -8,8 +8,12 @@ import Pagination from '../../components/Pagination';
 import { useInvoice } from '../../contexts/InvoiceContext';
 import InvoiceSavedViewer from '../../pages/company/SavedInvoiceViewerForAccountant';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
+
 
 const ViewInvoicesForAdmin = () => {
+    const { t } = useTranslation();
+
   const { folderId } = useParams();
   const navigate = useNavigate();
   const {
@@ -73,12 +77,12 @@ const ViewInvoicesForAdmin = () => {
             className="flex items-center text-violet-600 hover:text-blue-800 mr-4"
           >
             <FaArrowLeft className="mr-2" />
-            Back to Folders
+            {t('back_to_folders')}
           </button>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-          <h1 className="text-2xl font-bold text-gray-800">Invoices in Folder</h1>
+          <h1 className="text-2xl font-bold text-gray-800">{t('invoices_in_folder')}</h1>
           <div className="relative w-full md:w-1/4">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <FaSearch className="text-gray-400" />
@@ -93,7 +97,7 @@ const ViewInvoicesForAdmin = () => {
           </div>
         </div>
 
-        {loading && <p>Loading invoices...</p>}
+        {loading && <p>{t('loading_invoices')}</p>}
         {error && <p className="text-red-500">{error}</p>}
 
         <div className="bg-white rounded-xl shadow overflow-hidden">
@@ -102,16 +106,16 @@ const ViewInvoicesForAdmin = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Invoice Name
+                   {t('invoice_name')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date
+                    {t('date')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                    {t('status')}
                   </th>
                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b-2 border-gray-300">
-                    Actions
+                   {t('actions')}
                    </th>
                 </tr>
               </thead>
@@ -162,7 +166,7 @@ const ViewInvoicesForAdmin = () => {
                 ) : (
                   <tr>
                     <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500">
-                      No invoices found
+                     {t('no_invoices_found')}
                     </td>
                   </tr>
                 )}

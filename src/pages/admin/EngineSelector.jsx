@@ -4,8 +4,11 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import deepseekLogo from '../../assets/images/deepseek-logo.png';
 import geminiLogo from '../../assets/images/gemini-logo.png';
 import { useEngine } from '../../contexts/EngineContext';
+import { useTranslation } from 'react-i18next';
 
 const EngineSelector = () => {
+  const { t } = useTranslation();
+
   const { selectedEngine, setSelectedEngine, loading, saveEngine, engineConfig, setEngineConfig } = useEngine();
   const [error, setError] = useState(null);
 
@@ -15,7 +18,7 @@ const EngineSelector = () => {
     geminiModelVersion: '',
     deepseekApiKey: '',
     deepseekEndpoint: '',
-    deepseekModelVersion: '', 
+    deepseekModelVersion: '',
   });
 
   // Sync avec engineConfig du contexte au chargement / changement
@@ -34,33 +37,33 @@ const EngineSelector = () => {
   };
 
   // Save with config
- const handleSave = async () => {
-  try {
-    const currentConfig = JSON.stringify(engineConfig || {});
-    const newConfig = JSON.stringify(config);
+  const handleSave = async () => {
+    try {
+      const currentConfig = JSON.stringify(engineConfig || {});
+      const newConfig = JSON.stringify(config);
 
-    if (selectedEngine !== selectedEngine || currentConfig !== newConfig) {
-      await saveEngine(selectedEngine, config);
-      toast.success('AI engine updated successfully!', {
-        position: "top-center",
-        autoClose: 3000,
-        theme: "light",
-      });
-    } else {
-      toast.info('No changes detected.', {
+      if (selectedEngine !== selectedEngine || currentConfig !== newConfig) {
+        await saveEngine(selectedEngine, config);
+        toast.success(t('ai_engine_updated_successfully'), {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "light",
+        });
+      } else {
+        toast.info(t('no_changes_detected'), {
+          position: "top-center",
+          autoClose: 3000,
+          theme: "light",
+        });
+      }
+    } catch {
+      toast.error(t('failed_to_save_ai_engine'), {
         position: "top-center",
         autoClose: 3000,
         theme: "light",
       });
     }
-  } catch {
-    toast.error('Failed to save AI engine', {
-      position: "top-center",
-      autoClose: 3000,
-      theme: "light",
-    });
-  }
-};
+  };
 
 
   // Formulaire selon moteur sélectionné
@@ -68,9 +71,9 @@ const EngineSelector = () => {
     if (selectedEngine === 'gemini') {
       return (
         <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
-          <h3 className="text-xl font-semibold mb-4 text-purple-900">Gemini Configuration</h3>
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">{t('gemini_configuration')}</h3>
           <label className="block mb-3">
-            API Key:
+            {t('api_key')}
             <input
               type="text"
               name="geminiApiKey"
@@ -81,58 +84,58 @@ const EngineSelector = () => {
             />
           </label>
           <label className="block mb-3">
-            Model Version:
+            {t('model_version')}
             <input
               type="text"
               name="geminiModelVersion"
               value={config.geminiModelVersion}
               onChange={handleChange}
               className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-              placeholder="Enter Model Version"
+              placeholder={t('enter_model_version')}
             />
           </label>
         </div>
       );
-    }  else if (selectedEngine === 'deepseek') {
-  return (
-    <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
-      <h3 className="text-xl font-semibold mb-4 text-purple-900">DeepSeek Configuration</h3>
-      <label className="block mb-3">
-        API Key:
-        <input
-          type="text"
-          name="deepseekApiKey"
-          value={config.deepseekApiKey}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-          placeholder="Enter DeepSeek API Key"
-        />
-      </label>
-      <label className="block mb-3">
-        Endpoint URL:
-        <input
-          type="text"
-          name="deepseekEndpoint"
-          value={config.deepseekEndpoint}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-          placeholder="Enter DeepSeek Endpoint URL"
-        />
-      </label>
-      <label className="block mb-3">
-        Model Version:
-        <input
-          type="text"
-          name="deepseekModelVersion"
-          value={config.deepseekModelVersion || ''}
-          onChange={handleChange}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-          placeholder="e.g., deepseek-chat"
-        />
-      </label>
-    </div>
-  );
-}
+    } else if (selectedEngine === 'deepseek') {
+      return (
+        <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200 max-w-md mx-auto">
+          <h3 className="text-xl font-semibold mb-4 text-purple-900">{t('deepseek_configuration')}</h3>
+          <label className="block mb-3">
+            {t('endpoint_url')}
+            <input
+              type="text"
+              name="deepseekApiKey"
+              value={config.deepseekApiKey}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder={t('enter_deepseek_endpoint_url')}
+            />
+          </label>
+          <label className="block mb-3">
+            {t('model_version')}
+            <input
+              type="text"
+              name="deepseekEndpoint"
+              value={config.deepseekEndpoint}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder={t('enter_model_version')}
+            />
+          </label>
+          <label className="block mb-3">
+            {t('model_version')}
+            <input
+              type="text"
+              name="deepseekModelVersion"
+              value={config.deepseekModelVersion || ''}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
+              placeholder={t('deepseek_chat_placeholder')}
+            />
+          </label>
+        </div>
+      );
+    }
 
     return null;
   };
@@ -140,7 +143,7 @@ const EngineSelector = () => {
   return (
     <AdminLayout>
       <div className="p-8 max-w-3xl mx-auto min-h-screen" style={{ backgroundColor: '#f5f0ff' }}>
-        <h2 className="text-3xl font-bold mb-8 text-purple-900">Select AI Extraction Engine</h2>
+        <h2 className="text-3xl font-bold mb-8 text-purple-900">{t('select_ai_extraction_engine')}</h2>
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
@@ -165,7 +168,7 @@ const EngineSelector = () => {
             {selectedEngine && (
               <div className="mb-8 p-4 bg-white rounded-xl shadow-md border border-purple-200">
                 <p className="text-lg text-purple-800 font-semibold">
-                  You are currently using: <span className="text-purple-600 capitalize">{selectedEngine}</span> model
+                  {t('you_are_currently_using')} <span className="text-purple-600 capitalize">{selectedEngine}</span> {t('model')}
                 </p>
               </div>
             )}
@@ -174,11 +177,10 @@ const EngineSelector = () => {
               {/* Gemini */}
               <div
                 onClick={() => setSelectedEngine('gemini')}
-                className={`flex flex-col items-center p-6 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                  selectedEngine === 'gemini'
-                    ? 'bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-500 shadow-lg'
-                    : 'bg-white hover:bg-purple-50 shadow-md'
-                }`}
+                className={`flex flex-col items-center p-6 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${selectedEngine === 'gemini'
+                  ? 'bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-500 shadow-lg'
+                  : 'bg-white hover:bg-purple-50 shadow-md'
+                  }`}
                 style={{ width: '180px' }}
               >
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex items-center justify-center bg-white p-2">
@@ -187,7 +189,8 @@ const EngineSelector = () => {
                 <span className="font-semibold text-lg text-gray-800">Gemini</span>
                 {selectedEngine === 'gemini' && (
                   <div className="mt-2 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                    Selected
+                    {t('selected')}
+
                   </div>
                 )}
               </div>
@@ -195,11 +198,10 @@ const EngineSelector = () => {
               {/* DeepSeek */}
               <div
                 onClick={() => setSelectedEngine('deepseek')}
-                className={`flex flex-col items-center p-6 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-                  selectedEngine === 'deepseek'
-                    ? 'bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-500 shadow-lg'
-                    : 'bg-white hover:bg-purple-50 shadow-md'
-                }`}
+                className={`flex flex-col items-center p-6 rounded-xl cursor-pointer transition-all duration-300 transform hover:scale-105 ${selectedEngine === 'deepseek'
+                  ? 'bg-gradient-to-br from-purple-100 to-blue-100 border-2 border-purple-500 shadow-lg'
+                  : 'bg-white hover:bg-purple-50 shadow-md'
+                  }`}
                 style={{ width: '180px' }}
               >
                 <div className="w-24 h-24 rounded-full overflow-hidden mb-4 flex items-center justify-center bg-white p-2">
@@ -208,7 +210,7 @@ const EngineSelector = () => {
                 <span className="font-semibold text-lg text-gray-800">DeepSeek</span>
                 {selectedEngine === 'deepseek' && (
                   <div className="mt-2 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
-                    Selected
+                    {t('selected')}
                   </div>
                 )}
               </div>
@@ -222,7 +224,7 @@ const EngineSelector = () => {
                 onClick={handleSave}
                 className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl font-semibold text-lg"
               >
-                Save Preferences
+                {t('save_preferences')}
               </button>
             </div>
           </>
