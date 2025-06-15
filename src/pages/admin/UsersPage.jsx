@@ -71,6 +71,7 @@ const UsersPage = () => {
       firstName: isPerson ? e.target.firstName?.value : undefined,
       lastName: isPerson ? e.target.lastName?.value : undefined,
       companyName: !isPerson ? e.target.companyName?.value : undefined,
+      fiscalNumber: !isPerson ? e.target.fiscalNumber?.value : undefined,
       role: isPerson ? "INDEPENDENT_ACCOUNTANT" : "COMPANY",
     };
 

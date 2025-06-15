@@ -93,58 +93,61 @@ const AdminDashboard = () => {
             {t('export_pdf')}          </button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+          {/* Companies Card */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-blue-50 mr-4">
                 <FaBuilding className="text-blue-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-xl font-medium text-gray-500">{t('companies')}</h2>
-                <p className="text-2xl text-center font-bold text-gray-800">
+                <h2 className="text-lg sm:text-xl font-medium text-gray-500">{t('companies')}</h2>
+                <p className="text-xl sm:text-2xl text-center font-bold text-gray-800">
                   {stats?.totalCompanies || 0}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Accountants Card */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-green-50 mr-4">
                 <FaUserTie className="text-green-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-xltext-center text-center font-medium text-gray-500">{t('accountants')}</h2>
-                <p className="text-xl font-bold text-gray-800">
+                <h2 className="text-lg sm:text-xl text-center font-medium text-gray-500">{t('accountants')}</h2>
+                <p className="text-xl sm:text-2xl font-bold text-gray-800">
                   {stats?.totalIndependentAccountants || 0}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Invoices Card */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-indigo-50 mr-4">
                 <FaFileInvoice className="text-indigo-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-xl text-center font-medium text-gray-500">{t('invoices')}</h2>
-                <p className="text-2xl font-bold text-gray-800">
+                <h2 className="text-lg sm:text-xl text-center font-medium text-gray-500">{t('invoices')}</h2>
+                <p className="text-xl sm:text-2xl font-bold text-gray-800">
                   {stats?.totalInvoicesExtracted || 0}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Users Card */}
           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
             <div className="flex items-center">
               <div className="p-3 rounded-full bg-purple-50 mr-4">
                 <FaUsers className="text-purple-600 text-2xl" />
               </div>
               <div>
-                <h2 className="text-xl text-center font-medium text-gray-500">{t('users')}</h2>
-                <p className="text-2xl font-bold text-gray-800">
+                <h2 className="text-lg sm:text-xl text-center font-medium text-gray-500">{t('users')}</h2>
+                <p className="text-xl sm:text-2xl font-bold text-gray-800">
                   <span className="text-green-600">{stats?.activeUsers || 0}</span> /
                   <span className="text-red-600"> {stats?.inactiveUsers || 0}</span>
                 </p>
@@ -152,6 +155,7 @@ const AdminDashboard = () => {
             </div>
           </div>
         </div>
+
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { Modal, Form, Button, Spinner } from 'react-bootstrap';
 import { useClient } from '../../contexts/ClientContext';
-import { validateEmail, validatePhoneNumber } from '../../utils/validation'; // adjust path if needed
+import { validateEmail, validatePhoneNumber } from '../../utils/validation'; 
 
 const AddClientForm = ({ show, onHide }) => {
   const { addClient, loading: contextLoading } = useClient();

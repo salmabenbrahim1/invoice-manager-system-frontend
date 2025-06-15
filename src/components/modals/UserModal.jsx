@@ -41,6 +41,9 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
             if (!data.lastName) errors.push("Last Name is required");
         } else {
             if (!data.companyName) errors.push("Company Name is required");
+            if (!data.fiscalNumber) errors.push("Fical Number is required");
+           
+
         }
 
         // Check if email already exists 
@@ -173,6 +176,7 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                                 </div>
                             </>
                         ) : (
+                            <>
                             <div className="col-span-2">
                                 <label htmlFor="companyName" className="block mb-1 text-gray-700 font-medium">
                                     Company Name <RequiredStar />
@@ -186,7 +190,23 @@ const UserModal = ({ isOpen, onClose, onSubmit, isPerson, setIsPerson, error, us
                                     defaultValue={user?.companyName}
                                 />
                             </div>
-                        )}
+                             <div className="col-span-2">
+                                <label htmlFor="fiscalNumber" className="block mb-1 text-gray-700 font-medium">
+                                    Fiscal Number <RequiredStar />
+                                </label>
+                                <input
+                                    type="text"
+                                    id="fiscalNumber"
+                                    name="fiscalNumber"
+                                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#75529e] transition-all duration-200"
+                                    placeholder="Enter company fiscal Number"
+                                    defaultValue={user?.fiscalNumber}
+                                />
+                            </div>
+                            </>
+                                )}
+                            
+
 
                         <div className="col-span-1">
                             <label htmlFor="email" className="block mb-1 text-gray-700 font-medium">

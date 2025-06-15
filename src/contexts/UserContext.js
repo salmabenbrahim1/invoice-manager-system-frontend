@@ -90,6 +90,7 @@ export const UserProvider = ({ children }) => {
 
         if (existingUser.role === 'COMPANY') {
           updatedData.companyName = userData.companyName;
+          updatedData.fiscalNumber = userData.ficalNumber;
         } else {
           updatedData.firstName = userData.firstName;
           updatedData.lastName = userData.lastName;

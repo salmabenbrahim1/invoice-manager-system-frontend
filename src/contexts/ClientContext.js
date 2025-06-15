@@ -67,16 +67,19 @@ const ClientProvider = ({ children }) => {
 
   // Create a new client
   const addClient = async (clientData) => {
-    if (!user) return;
+  if (!user) return;
 
-    try {
-     await createClient(clientData, user.token);
-     await fetchClients();        
-    } catch (error) {
-      console.error('Error creating client', error);
-      setError('Failed to create client');
-    }
-  };
+  try {
+    const createdClient = await createClient(clientData, user.token);
+    await fetchClients();  
+    return createdClient; 
+  } catch (error) {
+    console.error('Error creating client', error);
+    setError('Failed to create client');
+    throw error; 
+  }
+};
+
 
   //  Update client
   const updateClient = async (clientId, updatedData) => {

@@ -97,13 +97,17 @@ const handleRefresh = useCallback(async () => {
   };
 
   const filteredClients = clients.filter(client => {
-    const query = searchQuery.toLowerCase();
-    return (
-      client.name.toLowerCase().includes(query) ||
-      client.email.toLowerCase().includes(query) ||
-      (client.phone && client.phone.replace(/\D/g, '').includes(searchQuery))
-    );
-  });
+  const query = searchQuery.toLowerCase();
+  const name = client.name || "";
+  const email = client.email || "";
+
+  return (
+    name.toLowerCase().includes(query) ||
+    email.toLowerCase().includes(query) ||
+    (client.phone && client.phone.replace(/\D/g, '').includes(searchQuery))
+  );
+});
+
 
   // Pagination calculations
   const totalPages = Math.ceil(filteredClients.length / clientsPerPage);
